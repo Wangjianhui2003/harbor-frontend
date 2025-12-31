@@ -20,12 +20,16 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@primeuix/themes": "^2.0.2",
+    "mitt": "^3.0.1",
     "pinia": "^3.0.4",
+    "primevue": "^4.5.4",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
+    "@primevue/auto-import-resolver": "^4.5.4",
     "@tsconfig/node24": "^24.0.3",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^24.10.4",
@@ -46,6 +50,7 @@
     "oxlint": "~1.35.0",
     "prettier": "3.7.4",
     "typescript": "~5.9.3",
+    "unplugin-vue-components": "^30.0.0",
     "vite": "npm:rolldown-vite@latest",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vitest": "^4.0.16",
