@@ -7,10 +7,12 @@ import App from './App.vue'
 import router from './router/router'
 import PrimeVue from 'primevue/config'
 import HarborPreset from './primevue-preset'
+import ToastService from 'primevue/toastservice'
 
 const app = createApp(App)
 app.use(createPinia())
 app.use(router)
+app.use(ToastService)
 app.use(PrimeVue, {
   theme: {
     preset: HarborPreset,
