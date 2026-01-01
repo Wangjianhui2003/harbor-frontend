@@ -1,7 +1,9 @@
-import type { CaptchaResp, LoginData, OnlineTerminal, RegisterReq, User } from '@/types/index.ts'
+import type { CaptchaResp, HttpResponse, OnlineTerminal, User } from '@/types/index'
+import type { RegisterReq } from '@/types/register'
+import type { LoginData } from '@/types/login.ts'
 import http from './http/http.ts'
 
-const login = async (loginData: LoginData) => {
+const login = async (loginData: LoginData): Promise<LoginData> => {
   const res = await http({
     url: '/login',
     method: 'post',
@@ -10,13 +12,13 @@ const login = async (loginData: LoginData) => {
   return res.data.data
 }
 
-const register = async (registerData: RegisterReq) => {
+const register = async (registerData: RegisterReq): Promise<HttpResponse<void>> => {
   const res = await http({
     url: '/register',
     method: 'post',
     data: registerData,
   })
-  return res.data.data
+  return res.data as HttpResponse<void>
 }
 
 const getCaptcha = async (): Promise<CaptchaResp> => {

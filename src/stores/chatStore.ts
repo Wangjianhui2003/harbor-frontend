@@ -9,6 +9,9 @@ import type { ChatsData } from '@/types/chat'
 import { showError } from '@/utils/message.js'
 import type { Group, User } from '@/types/index.js'
 import type { FriendInfoUpdate } from '@/types/friend.js'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
 
 /* 为了加速拉取离线消息效率，拉取时消息暂时存储到cacheChats,等
 待所有离线消息拉取完成后，再统一渲染*/
@@ -120,7 +123,7 @@ const useChatStore = defineStore('chatStore', () => {
         initChat(chatsData)
       }
     } catch (err) {
-      showError('错误', '消息加载失败')
+      showError(toast, '错误', '消息加载失败')
       console.log('消息加载失败', err)
       throw err
     }

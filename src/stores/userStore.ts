@@ -5,6 +5,9 @@ import type { Friend, User } from '@/types/index'
 import { showError } from '@/utils/message'
 import { defineStore } from 'pinia'
 import type { RTCStateType, WebRTCModeType } from '@/utils/enums'
+import { useToast } from 'primevue'
+
+const toast = useToast()
 
 // 用户信息（组合式写法）
 const useUserStore = defineStore('userStore', () => {
@@ -24,7 +27,7 @@ const useUserStore = defineStore('userStore', () => {
       const info = await getSelfInfo()
       setUserInfo(info)
     } catch (error) {
-      showError('异常', '加载用户信息失败')
+      showError(toast, '异常', '加载用户信息失败')
       console.error('加载用户信息失败', error)
       throw error
     }

@@ -5,6 +5,9 @@ import { TERMINAL_TYPE } from '@/utils/enums'
 import type { Friend, OnlineTerminal } from '@/types/index.js'
 import { showError } from '@/utils/message'
 import { defineStore } from 'pinia'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
 
 const useFriendStore = defineStore('friendStore', () => {
   const friends = ref<Friend[]>([])
@@ -17,7 +20,7 @@ const useFriendStore = defineStore('friendStore', () => {
       refreshOnlineStatus()
     } catch (error) {
       console.error('加载好友列表失败', error)
-      showError('异常', '加载好友列表失败')
+      showError(toast, '异常', '加载好友列表失败')
       throw error
     }
   }

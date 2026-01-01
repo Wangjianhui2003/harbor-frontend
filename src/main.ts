@@ -13,6 +13,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(ToastService)
+// PrimeVue theme configuration
 app.use(PrimeVue, {
   theme: {
     preset: HarborPreset,

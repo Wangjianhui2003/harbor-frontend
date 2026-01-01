@@ -1,9 +1,9 @@
 import axios, { type AxiosResponse } from 'axios'
-import type { HttpResponse, LoginResp as Token } from '../../types/index.ts'
-import { showError } from '@/utils/message.ts'
+import type { HttpResponse } from '../../types/index.ts'
+import type { LoginResp as Token } from '@/types/login.ts'
 
 const http = axios.create({
-  baseURL: import.meta.env.VITE_BASE_API,
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 1000 * 10,
 })
 
@@ -46,41 +46,31 @@ http.interceptors.response.use(
         return http(response.config)
       } catch (error) {
         location.href = '/login'
-        showError('错误', '请重新登录')
         return Promise.reject(error)
       }
     } else {
-      //其他错误,打印msg
-      showError('错误', resp.message)
       return Promise.reject(resp)
     }
   },
   (error) => {
     if (!error.response) {
-      showError('网络异常', '请检查您的网络连接')
       return Promise.reject(error)
     }
     switch (error.response.status) {
       case 400:
-        showError('请求错误', error.response.data)
-        break
+        return Promise.reject(error)
       case 401:
         location.href = '/'
-        break
+        return Promise.reject(error)
       case 405:
-        showError('请求方式错误', 'http请求方式有误')
-        break
+        return Promise.reject(error)
       case 404:
-        showError('请求失败', '请求的资源不存在')
-        break
+        return Promise.reject(error)
       case 500:
-        showError('服务器错误', '服务器出了点小差，请稍后再试')
-        break
+        return Promise.reject(error)
       case 501:
-        showError('服务未实现', '服务器不支持当前请求所需要的功能')
-        break
+        return Promise.reject(error)
     }
-
     return Promise.reject(error)
   },
 )

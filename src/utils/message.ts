@@ -1,7 +1,7 @@
-import { useToast } from 'primevue/usetoast'
-const toast = useToast()
+import type { ToastServiceMethods } from 'primevue/toastservice'
+//不能直接useToast
 
-const showSuccess = (summary: string, detail: string) => {
+const showSuccess = (toast: ToastServiceMethods, summary: string, detail: string) => {
   toast.add({
     severity: 'success',
     summary,
@@ -10,19 +10,19 @@ const showSuccess = (summary: string, detail: string) => {
   })
 }
 
-const showInfo = (summary: string, detail: string) => {
+const showInfo = (toast: ToastServiceMethods, summary: string, detail: string) => {
   toast.add({ severity: 'info', summary, detail, life: 3000 })
 }
 
-const showWarn = (summary: string, detail: string) => {
+const showWarn = (toast: ToastServiceMethods, summary: string, detail: string) => {
   toast.add({ severity: 'warn', summary, detail, life: 3000 })
 }
 
-const showError = (summary: string, detail: string) => {
+const showError = (toast: ToastServiceMethods, summary: string, detail: string) => {
   toast.add({ severity: 'error', summary, detail, life: 3000 })
 }
 
-const showSecondary = (summary: string, detail: string) => {
+const showSecondary = (toast: ToastServiceMethods, summary: string, detail: string) => {
   toast.add({
     severity: 'secondary',
     summary,
@@ -31,7 +31,7 @@ const showSecondary = (summary: string, detail: string) => {
   })
 }
 
-const showContrast = (summary: string, detail: string) => {
+const showContrast = (toast: ToastServiceMethods, summary: string, detail: string) => {
   toast.add({
     severity: 'contrast',
     summary,

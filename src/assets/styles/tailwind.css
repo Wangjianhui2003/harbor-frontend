@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+/*
+  tailwindcss PrimeVueUI integration
+  use "dark"
+*/
+@import 'tailwindcss-primeui';
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));

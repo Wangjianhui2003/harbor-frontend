@@ -5,26 +5,9 @@ export interface HttpResponse<T = unknown> {
   data: T
 }
 
-export interface LoginResp {
-  accessToken: string
-  accessTokenExpiresIn: number
-  refreshToken: string
-  refreshTokenExpiresIn: number
-}
-
 // 验证码响应
 export interface CaptchaResp {
   captchaPic: string
-  captchaKey: string
-}
-
-// 注册请求
-export interface RegisterReq {
-  email: string
-  username: string
-  password: string
-  nickname: string
-  captcha: string
   captchaKey: string
 }
 
@@ -97,14 +80,6 @@ export interface RTCInfo {
 export interface WebRTCConfig {
   maxChannel?: number
   iceServers?: RTCIceServer[]
-}
-
-// 登录类型
-export interface LoginData {
-  username: string
-  password: string
-  captcha: string
-  captchaId: string
 }
 
 // 在线终端类型
