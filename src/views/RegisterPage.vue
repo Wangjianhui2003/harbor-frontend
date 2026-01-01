@@ -57,17 +57,19 @@
 </template>
 
 <script setup lang="ts">
-import { getCaptcha, register } from '@/api/user'
+import { register } from '@/api/user'
 import type { RegisterForm, RegisterReq } from '@/types/register'
 import { showError, showInfo, showSuccess } from '@/utils/message'
 import { Form, type FormSubmitEvent } from '@primevue/forms'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
-import type { CaptchaResp } from '@/types'
+import { useCaptcha } from '@/composable/useCaptcha'
 
 const router = useRouter()
 const toast = useToast()
+
+const { captchaPic, captchaKey, loadCaptcha } = useCaptcha(toast)
 
 const formData = ref<RegisterForm>({
   username: '',
@@ -77,27 +79,23 @@ const formData = ref<RegisterForm>({
   captcha: '',
 })
 
-const captchaPic = ref<string>('')
-const captchaKey = ref<string>('')
-
 const resolver = ({ values }: { values: Record<string, unknown> }) => {
-  const formValues = values
   const errors: Record<string, Array<{ message: string }>> = {}
-  if (!formValues.username) {
+  if (!values.username) {
     errors.username = [{ message: '输入用户名' }]
   }
-  if (!formValues.password) {
+  if (!values.password) {
     errors.password = [{ message: '输入密码' }]
   }
-  if (!formValues.nickname) {
+  if (!values.nickname) {
     errors.nickname = [{ message: '输入昵称' }]
   }
-  if (!formValues.confirmPassword) {
+  if (!values.confirmPassword) {
     errors.confirmPassword = [{ message: '请确认密码' }]
-  } else if (formValues.confirmPassword !== formValues.password) {
+  } else if (values.confirmPassword !== values.password) {
     errors.confirmPassword = [{ message: '两次输入的密码不一致' }]
   }
-  if (!formValues.captcha) {
+  if (!values.captcha) {
     errors.captcha = [{ message: '输入验证码' }]
   }
   return {
@@ -133,17 +131,6 @@ const clear = () => {
     confirmPassword: '',
     nickname: '',
     captcha: '',
-  }
-}
-
-async function loadCaptcha() {
-  try {
-    const res: CaptchaResp = await getCaptcha()
-    captchaPic.value = res.captchaPic
-    captchaKey.value = res.captchaKey
-  } catch (error) {
-    showError(toast, '错误', '验证码加载失败')
-    console.info('验证码加载失败', error)
   }
 }
 
