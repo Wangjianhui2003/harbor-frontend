@@ -31,6 +31,7 @@ const useWebRTCStore = defineStore('WebRTCStore', () => {
       console.log('加载webrtc配置成功')
     } catch (err) {
       console.log('加载WebRTC配置出错', err)
+      throw err
     }
   }
 

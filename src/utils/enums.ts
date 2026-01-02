@@ -47,9 +47,11 @@ export const RTC_STATE = {
   CHATTING: 4, // 聊天中
 } as const
 
+//终端类型
 export const TERMINAL_TYPE = {
   WEB: 0,
   APP: 1,
+  PC: 2,
 } as const
 
 export const MESSAGE_STATUS = {
@@ -125,6 +127,9 @@ export const WEBRTC_MODE = {
   VOICE: 'VOICE',
 } as const
 
+export const WEBSOCKET_CLOSE_CODE = {
+  FORCE_LOGOUT: 3000,
+}
 // 类型导出
 export type MessageType = (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE]
 export type RTCStateType = (typeof RTC_STATE)[keyof typeof RTC_STATE]

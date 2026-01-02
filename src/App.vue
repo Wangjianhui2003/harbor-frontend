@@ -1,7 +1,7 @@
 <template>
   <Toast />
   <div>
-    <RouterView />
+    <router-view></router-view>
   </div>
   <Button @click="darkMode">Toggle Dark Mode</Button>
 </template>
@@ -11,7 +11,7 @@ import { RouterView } from 'vue-router'
 
 function darkMode() {
   document.documentElement.classList.toggle('dark-mode')
-} 
+}
 </script>
 
 <style scoped></style>

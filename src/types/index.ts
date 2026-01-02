@@ -29,9 +29,9 @@ export interface User {
 // 好友相关类型
 export interface Friend {
   id: number
-  nickname: string
+  friendNickname: string
   headImage: string
-  headImageThumb: string
+  headImageThumb?: string
   online: boolean
   onlineWeb: boolean
   onlineApp: boolean
@@ -89,7 +89,7 @@ export interface OnlineTerminal {
 }
 
 // WebSocket发送信息
-export interface WsSendInfo {
+export interface WebSocketMessage {
   cmd: number
   data: unknown
 }

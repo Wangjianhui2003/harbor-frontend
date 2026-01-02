@@ -32,6 +32,9 @@ importers:
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.26(typescript@5.9.3))
+      primeicons:
+        specifier: ^7.0.0
+        version: 7.0.0
       primevue:
         specifier: ^4.5.4
         version: 4.5.4(vue@3.5.26(typescript@5.9.3))
@@ -44,6 +47,12 @@ importers:
       vue:
         specifier: ^3.5.26
         version: 3.5.26(typescript@5.9.3)
+      vue-awesome:
+        specifier: ^4.5.0
+        version: 4.5.0(vue@3.5.26(typescript@5.9.3))
+      vue-icons-plus:
+        specifier: ^0.1.8
+        version: 0.1.8(vue@3.5.26(typescript@5.9.3))
       vue-router:
         specifier: ^4.6.4
         version: 4.6.4(vue@3.5.26(typescript@5.9.3))
@@ -2260,6 +2269,9 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  primeicons@7.0.0:
+    resolution: {integrity: sha512-jK3Et9UzwzTsd6tzl2RmwrVY/b8raJ3QZLzoDACj+oTJ0oX7L9Hy+XnVwgo4QVKlKpnP/Ur13SXV/pVh4LzaDw==}
+
   primevue@4.5.4:
     resolution: {integrity: sha512-nTyEohZABFJhVIpeUxgP0EJ8vKcJAhD+Z7DYj95e7ie/MNUCjRNcGjqmE1cXtXi4z54qDfTSI9h2uJ51qz2DIw==}
     engines: {node: '>=12.11.0'}
@@ -2667,6 +2679,12 @@ packages:
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
+  vue-awesome@4.5.0:
+    resolution: {integrity: sha512-pbtZkRecXLm3fg0eVkwObDRM9YNU1BW5wDsL4mMoSvUXZbTnS+N2E4CahAwKJL5OPbqmhJQgZPekQoJrID7dcQ==}
+    engines: {node: '>= 4.0.0', npm: '>= 3.0.0'}
+    peerDependencies:
+      vue: ^2.4.0
+
   vue-component-type-helpers@2.2.12:
     resolution: {integrity: sha512-YbGqHZ5/eW4SnkPNR44mKVc6ZKQoRs/Rux1sxC6rdwXb4qpbOSYfDr9DsTHolOTGmIKgM9j141mZbBeg05R1pw==}
 
@@ -2675,6 +2693,11 @@ packages:
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0
+
+  vue-icons-plus@0.1.8:
+    resolution: {integrity: sha512-Xc4hDsD/oP9waSUf44nSaFBhUPo+QkpKclx0S7//5BRACpXymctbit02epek0VRW6nb81pR486XmxPP/ofm2yQ==}
+    peerDependencies:
+      vue: '>=2.7.0'
 
   vue-router@4.6.4:
     resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
@@ -4814,6 +4837,8 @@ snapshots:
 
   prettier@3.7.4: {}
 
+  primeicons@7.0.0: {}
+
   primevue@4.5.4(vue@3.5.26(typescript@5.9.3)):
     dependencies:
       '@primeuix/styled': 0.7.4
@@ -5202,6 +5227,10 @@ snapshots:
 
   vscode-uri@3.1.0: {}
 
+  vue-awesome@4.5.0(vue@3.5.26(typescript@5.9.3)):
+    dependencies:
+      vue: 3.5.26(typescript@5.9.3)
+
   vue-component-type-helpers@2.2.12: {}
 
   vue-eslint-parser@10.2.0(eslint@9.39.2(jiti@2.6.1)):
@@ -5215,6 +5244,10 @@ snapshots:
       semver: 7.7.3
     transitivePeerDependencies:
       - supports-color
+
+  vue-icons-plus@0.1.8(vue@3.5.26(typescript@5.9.3)):
+    dependencies:
+      vue: 3.5.26(typescript@5.9.3)
 
   vue-router@4.6.4(vue@3.5.26(typescript@5.9.3)):
     dependencies:

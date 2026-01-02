@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row h-screen">
-    <div class="basis-1/5 bg-primary-400 dark:bg-primary-900 h-full">01</div>
+    <div class="basis-1/5 bg-primary-400 dark:bg-primary-900 h-full"></div>
     <div class="basis-4/5 bg-primary-100 dark:bg-primary-800 h-full flex flex-col justify-center">
       <Form :resolver="resolver" @submit="onFormSubmit">
         <FloatLabel variant="on">
@@ -42,9 +42,12 @@ import { useToast } from 'primevue/usetoast'
 import { login } from '@/api/user'
 import { Form, type FormSubmitEvent } from '@primevue/forms'
 import { showError, showInfo, showSuccess } from '@/utils/message'
+import { TERMINAL_TYPE } from '@/utils/enums'
+import { setCookie } from '@/utils/cookie-utils'
 
 const router = useRouter()
 const toast = useToast()
+const { captchaPic, captchaKey, loadCaptcha } = useCaptcha()
 
 const loginFormData = ref({
   username: '',
@@ -69,8 +72,6 @@ const resolver = async ({ values }: { values: Record<string, unknown> }) => {
   }
 }
 
-const { captchaPic, captchaKey, loadCaptcha } = useCaptcha()
-
 const clear = () => {
   loginFormData.value.username = ''
   loginFormData.value.password = ''
@@ -87,14 +88,18 @@ const onFormSubmit = async (e: FormSubmitEvent<Record<string, unknown>>) => {
   }
 
   const loginReqData: LoginData = {
-    terminal: 1,
+    terminal: TERMINAL_TYPE.WEB,
     username: loginFormData.value.username,
     password: loginFormData.value.password,
     captcha: loginFormData.value.captcha,
     captchaKey: captchaKey.value,
   }
   showInfo(toast, '提示', '正在登录...')
-  await login(loginReqData)
+  const loginRespData = await login(loginReqData)
+  setCookie('username', loginFormData.value.username)
+  setCookie('password', loginFormData.value.password)
+  sessionStorage.setItem('accessToken', loginRespData.accessToken)
+  sessionStorage.setItem('refreshToken', loginRespData.refreshToken)
   showSuccess(toast, '成功', '登录成功')
   router.push('/home')
 }

@@ -1,5 +1,8 @@
 import './assets/styles/main.css'
 
+// PrimeVue Icon
+import 'primeicons/primeicons.css'
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
@@ -9,7 +12,11 @@ import PrimeVue from 'primevue/config'
 import HarborPreset from './primevue-preset'
 import ToastService from 'primevue/toastservice'
 
+import 'vue-awesome/icons'
+import Icon from 'vue-awesome/components/Icon'
+
 const app = createApp(App)
+app.component('v-icon', Icon)
 app.use(createPinia())
 app.use(router)
 app.use(ToastService)

@@ -1,9 +1,9 @@
 import type { CaptchaResp, HttpResponse, OnlineTerminal, User } from '@/types/index'
 import type { RegisterReq } from '@/types/register'
-import type { LoginData } from '@/types/login.ts'
+import type { LoginData, LoginResp } from '@/types/login.ts'
 import http from './http/http.ts'
 
-const login = async (loginData: LoginData): Promise<LoginData> => {
+const login = async (loginData: LoginData): Promise<LoginResp> => {
   const res = await http({
     url: '/login',
     method: 'post',

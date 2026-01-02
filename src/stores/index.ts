@@ -15,14 +15,13 @@ const useMainStore = defineStore('mainStore', {
       const groupStore = useGroupStore()
       const webRTCStore = useWebRTCStore()
 
-      return userStore.loadUser().then(() => {
-        const promises = []
-        promises.push(friendStore.loadFriend())
-        promises.push(chatStore.loadChats())
-        promises.push(groupStore.loadGroups())
-        promises.push(webRTCStore.loadConfig())
-        return Promise.all(promises)
-      })
+      await userStore.loadUser()
+      const promises = []
+      promises.push(friendStore.loadFriend())
+      promises.push(chatStore.loadChats())
+      promises.push(groupStore.loadGroups())
+      promises.push(webRTCStore.loadConfig())
+      return Promise.all(promises)
     },
     clearAll() {},
   },

@@ -2,10 +2,6 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { findGroups } from '../api/group.js'
 import type { Group } from '@/types/index.js'
-import { showError } from '@/utils/message.js'
-import { useToast } from 'primevue/usetoast'
-
-const toast = useToast()
 
 const useGroupStore = defineStore('groupStore', () => {
   const groups = ref<Group[]>([])
@@ -16,7 +12,6 @@ const useGroupStore = defineStore('groupStore', () => {
       const fetchedGroups: Group[] = await findGroups()
       setGroups(fetchedGroups)
     } catch (err) {
-      showError(toast, '错误', '加载群组失败')
       console.error('加载群组失败', err)
       throw err
     }

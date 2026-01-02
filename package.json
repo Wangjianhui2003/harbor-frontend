@@ -28,10 +28,13 @@
     "localforage": "^1.10.0",
     "mitt": "^3.0.1",
     "pinia": "^3.0.4",
+    "primeicons": "^7.0.0",
     "primevue": "^4.5.4",
     "tailwindcss": "^4.1.18",
     "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.26",
+    "vue-awesome": "^4.5.0",
+    "vue-icons-plus": "^0.1.8",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
