@@ -10,26 +10,31 @@
 </template>
 
 <script setup lang="ts">
+import { pullOfflineGroupMessage } from '@/api/group-msg'
+import { pullOfflinePrivateMessage } from '@/api/private-msg'
 import useMainStore from '@/stores'
 import useChatStore from '@/stores/chatStore'
 import useFriendStore from '@/stores/friendStore'
+import useGroupStore from '@/stores/groupStore'
 import useUserStore from '@/stores/userStore'
-import type { Friend, WebSocketMessage } from '@/types'
-import type { ChatInfo, MessageInfo } from '@/types/chat'
+import type { Friend, Group, WebSocketMessage } from '@/types'
+import type { ChatInfo, BaseMessage, GroupMessage, PrivateMessage } from '@/types/chat'
 import checkMessageType from '@/utils/check-msgtype'
 import { ACCESS_TOKEN_KEY } from '@/utils/constant'
 import { CHATINFO_TYPE, CMD_TYPE, MESSAGE_TYPE, WEBSOCKET_CLOSE_CODE } from '@/utils/enums'
 import { showError, showWarn } from '@/utils/message'
 import { createWebSocketClient } from '@/utils/websocket-utils'
 import { useToast } from 'primevue/usetoast'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const toast = useToast()
 const wsClient = createWebSocketClient()
 const chatStore = useChatStore()
 const userStore = useUserStore()
 const friendStore = useFriendStore()
-// const groupStore = useGroupStore()
+const groupStore = useGroupStore()
+
+const isWebSocketReconnecting = ref<boolean>(false)
 
 onMounted(() => {
   //初始化
@@ -42,8 +47,10 @@ const init = async () => {
     await useMainStore().loadAll()
     wsClient.connect(
       import.meta.env.VITE_WEBSOCKET_URL,
-      localStorage.getItem(ACCESS_TOKEN_KEY) || '',
+      sessionStorage.getItem(ACCESS_TOKEN_KEY) || '',
     )
+    wsClient.onWebSocketLogin(handleWebSocketLogin)
+    wsClient.onClose(handleWebSocketClose)
     wsClient.onMessage(handleWebSocketMessage)
   } catch (err) {
     showError(toast, '错误', '初始化失败')
@@ -53,22 +60,57 @@ const init = async () => {
 
 const initRTC = () => {}
 
+const handleWebSocketLogin = () => {
+  if (!isWebSocketReconnecting.value) {
+    //第一次登录
+    console.log('开始拉取离线消息')
+    pullPrivateOfflineMsg()
+    pullGroupOfflineMsg()
+  }
+}
+
+const pullPrivateOfflineMsg = async () => {
+  //设置加载标识符
+  chatStore.setLoadingPrivateMsgState(true)
+  console.log('max private messageId:', chatStore.privateMsgMaxId)
+  try {
+    //从后端拉取离线消息
+    await pullOfflinePrivateMessage(chatStore.privateMsgMaxId)
+  } catch (err) {
+    console.log('拉取私聊离线消息出错', err)
+    chatStore.setLoadingPrivateMsgState(false)
+  }
+}
+
+const pullGroupOfflineMsg = async () => {
+  chatStore.setLoadingGroupMsgState(true)
+  console.log('max group messageId:', chatStore.groupMsgMaxId)
+  try {
+    //从后端拉取离线消息
+    await pullOfflineGroupMessage(chatStore.groupMsgMaxId)
+  } catch (err) {
+    console.log('拉取群聊离线消息出错', err)
+    chatStore.setLoadingGroupMsgState(false)
+  }
+}
+
+const handleWebSocketClose = () => {}
+
 const handleWebSocketMessage = (msg: WebSocketMessage) => {
   switch (msg.cmd) {
     case CMD_TYPE.FORCE_LOGOUT:
       wsClient.close(WEBSOCKET_CLOSE_CODE.FORCE_LOGOUT)
       showWarn(toast, '您已被强制下线', '您的账号在其他地方登录')
       location.href = '/login'
-
       break
     case CMD_TYPE.PRIVATE_MESSAGE:
-      handlePrivateMessage(msg.data as MessageInfo)
+      handlePrivateMessage(msg.data as PrivateMessage)
       break
     case CMD_TYPE.GROUP_MESSAGE:
-      handleGroupMessage(msg.data as MessageInfo)
+      handleGroupMessage(msg.data as GroupMessage)
       break
     case CMD_TYPE.SYSTEM_MESSAGE:
-      handleSystemMessage(msg.data as MessageInfo)
+      handleSystemMessage(msg.data as BaseMessage)
       break
     default:
       console.log('未知消息', msg)
@@ -76,7 +118,7 @@ const handleWebSocketMessage = (msg: WebSocketMessage) => {
 }
 
 //处理消息
-const handlePrivateMessage = (msgInfo: MessageInfo) => {
+const handlePrivateMessage = (msgInfo: PrivateMessage) => {
   // 标记这条消息是不是自己发的
   msgInfo.selfSend = msgInfo.sendId === userStore.userInfo.id
   const friendId = msgInfo.selfSend ? msgInfo.recvId : msgInfo.sendId
@@ -141,48 +183,64 @@ const handlePrivateMessage = (msgInfo: MessageInfo) => {
   }
 }
 
-const handleGroupMessage = (msgInfo: MessageInfo) => {
-  // 标记这条消息是不是自己发的
+//TODO:处理群聊消息
+const handleGroupMessage = (msgInfo: GroupMessage) => {
+  //表示是否是自己发的(其他终端或其他功能)
   msgInfo.selfSend = msgInfo.sendId === userStore.userInfo.id
-  const groupId = msgInfo.recvId
-
-  //会话信息
-  const chatInfo: ChatInfo = {
+  const chatInfo = {
     type: CHATINFO_TYPE.GROUP,
-    targetId: groupId,
+    targetId: msgInfo.groupId,
   } as ChatInfo
-
-  //加载消息
+  //更改加载标记
   if (msgInfo.type === MESSAGE_TYPE.LOADING) {
-    console.log('群聊加载标志:', msgInfo.content)
     chatStore.setLoadingGroupMsgState(JSON.parse(msgInfo.content))
     return
   }
-
-  // 已读消息
+  //收到已读信号，前端标记已读
   if (msgInfo.type === MESSAGE_TYPE.READ) {
     chatStore.resetUnread(chatInfo)
     return
   }
-
-  // 消息撤回
+  //回执消息
+  if (msgInfo.type === MESSAGE_TYPE.RECEIPT) {
+    // 更新消息已读人数
+    const newMsgInfo = {
+      id: msgInfo.id,
+      groupId: msgInfo.groupId,
+      readCount: msgInfo.readCount,
+      receiptOk: msgInfo.receiptOk,
+    } as GroupMessage
+    chatStore.updateMessage(newMsgInfo, chatInfo)
+    return
+  }
+  //撤回消息信号
   if (msgInfo.type === MESSAGE_TYPE.RECALL) {
     chatStore.recallMsg(msgInfo, chatInfo)
     return
   }
-
-  //需要会话显示的消息
+  //新增群聊
+  if (msgInfo.type === MESSAGE_TYPE.GROUP_NEW) {
+    groupStore.addGroup(JSON.parse(msgInfo.content))
+    return
+  }
+  // 删除群
+  if (msgInfo.type === MESSAGE_TYPE.GROUP_DEL) {
+    groupStore.removeGroup(msgInfo.groupId)
+    return
+  }
+  //插入群聊消息
   if (
     checkMessageType.isNormal(msgInfo.type) ||
     checkMessageType.isTip(msgInfo.type) ||
     checkMessageType.isAction(msgInfo.type)
   ) {
-    chatStore.openChat(chatInfo)
-    chatStore.insertMessage(msgInfo, chatInfo)
+    const group: Group = loadGroupInfo(msgInfo.groupId)
+    insertGroupMsg(group, msgInfo)
   }
+  // TODO:群视频
 }
 
-const handleSystemMessage = (msgInfo: MessageInfo) => {
+const handleSystemMessage = (msgInfo: BaseMessage) => {
   //TODO:系统消息处理
   console.log('系统消息:', msgInfo)
 }
@@ -205,7 +263,7 @@ const loadFriendInfo = (friendId: number): Friend => {
 }
 
 //插入私聊消息(有人发消息)
-const insertPrivateMsg = (friend: Friend, msgInfo: MessageInfo) => {
+const insertPrivateMsg = (friend: Friend, msgInfo: PrivateMessage) => {
   const chatInfo: ChatInfo = {
     type: CHATINFO_TYPE.PRIVATE,
     targetId: friend.id,
@@ -217,6 +275,31 @@ const insertPrivateMsg = (friend: Friend, msgInfo: MessageInfo) => {
   //插入信息
   chatStore.insertMessage(msgInfo, chatInfo)
   //TODO:私聊接收消息提示
+}
+
+const loadGroupInfo = (groupId: number): Group => {
+  const group = groupStore.findGroup(groupId)
+  if (!group) {
+    return {
+      id: groupId,
+      showGroupName: '未知群聊',
+      headImageThumb: '',
+    } as Group
+  }
+  return group
+}
+
+const insertGroupMsg = (group: Group, msgInfo: GroupMessage) => {
+  const chatInfo: ChatInfo = {
+    type: CHATINFO_TYPE.GROUP,
+    targetId: group.id,
+    showName: group.showGroupName || '未知',
+    headImage: group.headImageThumb,
+  }
+  //打开会话
+  chatStore.openChat(chatInfo)
+  //插入信息
+  chatStore.insertMessage(msgInfo, chatInfo)
 }
 </script>
 

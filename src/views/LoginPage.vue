@@ -44,6 +44,7 @@ import { Form, type FormSubmitEvent } from '@primevue/forms'
 import { showError, showInfo, showSuccess } from '@/utils/message'
 import { TERMINAL_TYPE } from '@/utils/enums'
 import { setCookie } from '@/utils/cookie-utils'
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '@/utils/constant'
 
 const router = useRouter()
 const toast = useToast()
@@ -98,8 +99,8 @@ const onFormSubmit = async (e: FormSubmitEvent<Record<string, unknown>>) => {
   const loginRespData = await login(loginReqData)
   setCookie('username', loginFormData.value.username)
   setCookie('password', loginFormData.value.password)
-  sessionStorage.setItem('accessToken', loginRespData.accessToken)
-  sessionStorage.setItem('refreshToken', loginRespData.refreshToken)
+  sessionStorage.setItem(ACCESS_TOKEN_KEY, loginRespData.accessToken)
+  sessionStorage.setItem(REFRESH_TOKEN_KEY, loginRespData.refreshToken)
   showSuccess(toast, '成功', '登录成功')
   router.push('/home')
 }

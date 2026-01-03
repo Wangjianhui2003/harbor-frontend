@@ -1,9 +1,18 @@
 import { defineStore } from 'pinia'
 import useUserStore from './userStore.js'
 import localForage from 'localforage'
-import { CHATINFO_TYPE, MESSAGE_STATUS, MESSAGE_TYPE } from '@/utils/enums'
+import { CHATINFO_TYPE, MESSAGE_STATUS, MESSAGE_TYPE, MSG_INFO_LOAD_STATUS } from '@/utils/enums'
 import { TIME_TIP_INTERVAL } from '@/utils/constant'
-import type { Chat, ChatInfo, MessageInfo, TimeTipMessage } from '@/types/chat.js'
+import type {
+  BaseMessage,
+  Chat,
+  ChatInfo,
+  GroupChat,
+  GroupMessage,
+  Message,
+  PrivateMessage,
+  TimeTipMessage,
+} from '@/types/chat.js'
 import type { ChatsData } from '@/types/chat'
 import type { Friend, Group, User } from '@/types/index.js'
 import type { FriendInfoUpdate } from '@/types/friend.js'
@@ -11,6 +20,10 @@ import type { FriendInfoUpdate } from '@/types/friend.js'
 /* 为了加速拉取离线消息效率，拉取时消息暂时存储到cacheChats,等
 待所有离线消息拉取完成后，再统一渲染*/
 let cacheChats: Chat[] = []
+
+const isGroupMessage = (msg: BaseMessage): msg is GroupMessage => 'groupId' in msg
+const isPrivateMessage = (msg: BaseMessage): msg is PrivateMessage => 'recvId' in msg
+const isContentMessage = (msg: Message): msg is BaseMessage => msg.type !== MESSAGE_TYPE.TIP_TIME
 
 /**
  * key,chatKey,chatsData结构
@@ -78,8 +91,9 @@ const useChatStore = defineStore('chatStore', {
       // 防止图片一直处在加载中状态
       cacheChats.forEach((chat) => {
         chat.messages.forEach((msg) => {
-          if ((msg as MessageInfo).loadStatus == 'loading') {
-            ;(msg as MessageInfo).loadStatus = 'fail'
+          if (!('loadStatus' in msg)) return
+          if (msg.loadStatus == MSG_INFO_LOAD_STATUS.LOADING) {
+            msg.loadStatus = MSG_INFO_LOAD_STATUS.FAIL
           }
         })
       })
@@ -113,7 +127,7 @@ const useChatStore = defineStore('chatStore', {
           stored: false,
           delete: false,
         }
-        chats.unshift(chat)
+        chats.unshift(chat!)
       }
     },
     //会话移动到顶部
@@ -177,20 +191,33 @@ const useChatStore = defineStore('chatStore', {
       this.chats = this.chats.filter((chat) => !chat.delete)
     },
 
-    insertMessage(msgInfo: MessageInfo, chatInfo: ChatInfo) {
-      const type = chatInfo.type
-      //记录消息的最大id
-      if (msgInfo.id && type === CHATINFO_TYPE.PRIVATE && msgInfo.id > this.privateMsgMaxId) {
-        this.privateMsgMaxId = msgInfo.id
-      }
-      if (msgInfo.id && type === CHATINFO_TYPE.GROUP && msgInfo.id > this.groupMsgMaxId) {
-        this.groupMsgMaxId = msgInfo.id
-      }
-      // 如果是已存在消息，则覆盖旧的消息数据
-      const chat: Chat | undefined = this.findChat(chatInfo)
+    insertMessage(msgInfo: BaseMessage, chatInfo: ChatInfo) {
+      const chat = this.findChat(chatInfo)
       if (!chat) {
         return
       }
+
+      const isGroupChat = chat.type === CHATINFO_TYPE.GROUP
+      if (isGroupChat && !isGroupMessage(msgInfo)) {
+        console.warn('收到群聊消息但数据格式不正确', msgInfo)
+        return
+      }
+      if (!isGroupChat && !isPrivateMessage(msgInfo)) {
+        console.warn('收到私聊消息但数据格式不正确', msgInfo)
+        return
+      }
+
+      if (
+        msgInfo.id &&
+        chatInfo.type === CHATINFO_TYPE.PRIVATE &&
+        msgInfo.id > this.privateMsgMaxId
+      ) {
+        this.privateMsgMaxId = msgInfo.id
+      }
+      if (msgInfo.id && chatInfo.type === CHATINFO_TYPE.GROUP && msgInfo.id > this.groupMsgMaxId) {
+        this.groupMsgMaxId = msgInfo.id
+      }
+
       const message = this.findMessage(chat, msgInfo)
       if (message) {
         Object.assign(message, msgInfo)
@@ -198,6 +225,7 @@ const useChatStore = defineStore('chatStore', {
         this.saveToStorage()
         return
       }
+
       if (
         msgInfo.type == MESSAGE_TYPE.TEXT ||
         msgInfo.type == MESSAGE_TYPE.RECALL ||
@@ -206,8 +234,12 @@ const useChatStore = defineStore('chatStore', {
         chat.lastContent = msgInfo.content
       }
       chat.lastSendTime = msgInfo.sendTime
-      chat.sendNickname = msgInfo.sendNickname
-      //未读+1
+      if (isGroupChat) {
+        ;(chat as Chat & { sendNickname?: string }).sendNickname = (
+          msgInfo as GroupMessage
+        ).sendNickname
+      }
+
       if (
         !msgInfo.selfSend &&
         msgInfo.status != MESSAGE_STATUS.READ &&
@@ -217,11 +249,11 @@ const useChatStore = defineStore('chatStore', {
         chat.unreadCount++
       }
 
-      //@我或@所有人
       if (
-        msgInfo.selfSend &&
-        chat.type === CHATINFO_TYPE.GROUP &&
-        msgInfo.atUserIds &&
+        isGroupChat &&
+        isGroupMessage(msgInfo) &&
+        !msgInfo.selfSend &&
+        msgInfo.atUserIds?.length &&
         msgInfo.status != MESSAGE_STATUS.READ
       ) {
         const userStore = useUserStore()
@@ -230,33 +262,35 @@ const useChatStore = defineStore('chatStore', {
           chat.atMe = true
         }
         if (msgInfo.atUserIds.indexOf(-1) >= 0) {
-          chat.atAll = true
+          ;(chat as GroupChat).atAll = true
         }
       }
 
-      //间隔大于十分钟插入一个时间提示
+      const messages = chat.messages as Message[]
       if (!chat.lastTimeTip || chat.lastTimeTip < msgInfo.sendTime - TIME_TIP_INTERVAL) {
         const timeTipMsg: TimeTipMessage = {
           sendTime: msgInfo.sendTime,
           type: MESSAGE_TYPE.TIP_TIME,
         }
-        chat.messages.push(timeTipMsg)
+        messages.push(timeTipMsg)
         chat.lastTimeTip = msgInfo.sendTime
       }
 
-      // 根据id顺序插入，防止消息乱序
-      let insertPos = chat.messages.length
+      let insertPos = messages.length
       if (msgInfo.id && msgInfo.id > 0) {
-        for (let idx = 0; idx < chat.messages.length; idx++) {
-          const currentMsg = chat.messages[idx] as MessageInfo
-          if (currentMsg.id && msgInfo.id < currentMsg.id) {
+        for (let idx = 0; idx < messages.length; idx++) {
+          const currentMsg = messages[idx] as Message
+          if (!isContentMessage(currentMsg) || !currentMsg.id) {
+            continue
+          }
+          if (msgInfo.id < currentMsg.id) {
             insertPos = idx
-            console.log(`消息出现乱序,位置:${chat.messages.length},修正至:${insertPos}`)
+            console.log(`消息出现乱序,位置:${messages.length},修正至:${insertPos}`)
             break
           }
         }
       }
-      chat.messages.splice(insertPos, 0, msgInfo)
+      messages.splice(insertPos, 0, msgInfo)
       chat.stored = false
       this.saveToStorage()
     },
@@ -378,9 +412,11 @@ const useChatStore = defineStore('chatStore', {
         if (chat && chat.type == chatInfo.type && chat.targetId == chatInfo.targetId) {
           chat.unreadCount = 0
           chat.atMe = false
-          chat.atAll = false
           chat.stored = false
           this.saveToStorage()
+          if (chat.type === CHATINFO_TYPE.GROUP) {
+            ;(chat as GroupChat).atAll = false
+          }
           break
         }
       }
@@ -390,10 +426,15 @@ const useChatStore = defineStore('chatStore', {
     markReadMessage(friendId: number, maxId: number | null) {
       const chat = this.findChatByFriendId(friendId)
       if (!chat) return
-      for (let idx = 0; idx < chat.messages.length; idx++) {
-        const msg = chat.messages[idx] as MessageInfo
+
+      const messages = chat.messages as Message[]
+      for (let idx = 0; idx < messages.length; idx++) {
+        const msg = messages[idx]
+        if (!msg) continue
+        if (!isContentMessage(msg) || !isPrivateMessage(msg)) {
+          continue
+        }
         if (msg.id && msg.selfSend && msg.status < MESSAGE_STATUS.RECALL) {
-          // pos.maxId为空表示整个会话已读
           if (!maxId || msg.id <= maxId) {
             msg.status = MESSAGE_STATUS.READ
             chat.stored = false
@@ -404,33 +445,42 @@ const useChatStore = defineStore('chatStore', {
     },
 
     //处理撤回消息
-    recallMsg(msgInfo: MessageInfo, chatInfo: ChatInfo) {
+    recallMsg(msgInfo: BaseMessage, chatInfo: ChatInfo) {
       const chat = this.findChat(chatInfo)
       if (!chat) return
       //要撤回的消息id
       const id: number = Number(msgInfo.content)
       //群聊和私聊撤回标识
-      const name = msgInfo.selfSend ? '你' : chat.type == 'PRIVATE' ? '对方' : msgInfo.sendNickname
-      for (let idx = 0; idx < chat.messages.length; idx++) {
-        const m = chat.messages[idx] as MessageInfo
-        if (m.id && m.id == id) {
-          // 改造成一条提示消息
-          m.status = MESSAGE_STATUS.RECALL
-          m.content = name + '撤回了一条消息'
-          m.type = MESSAGE_TYPE.TIP_TEXT
-          // 会话列表变化
-          chat.lastContent = m.content
+      let name = '对方'
+      if (msgInfo.selfSend) {
+        name = '你'
+      } else if (chat.type !== CHATINFO_TYPE.PRIVATE && isGroupMessage(msgInfo)) {
+        name = msgInfo.sendNickname
+      }
+
+      const messages = chat.messages as Message[]
+      for (let idx = 0; idx < messages.length; idx++) {
+        const msg = messages[idx]
+        if (!msg) return
+        if (!isContentMessage(msg)) {
+          continue
+        }
+        if (msg.id && msg.id == id) {
+          msg.status = MESSAGE_STATUS.RECALL
+          msg.content = name + '撤回了一条消息'
+          msg.type = MESSAGE_TYPE.TIP_TEXT
+          chat.lastContent = msg.content
           chat.lastSendTime = msgInfo.sendTime
-          chat.sendNickname = ''
+          ;(chat as Chat & { sendNickname?: string }).sendNickname = ''
           if (!msgInfo.selfSend && msgInfo.status != MESSAGE_STATUS.READ) {
             chat.unreadCount++
           }
         }
-        // 被引用的消息也要撤回
-        if (m.quoteMessage && m.quoteMessage.id == msgInfo.id) {
-          m.quoteMessage.content = '引用内容已撤回'
-          m.quoteMessage.status = MESSAGE_STATUS.RECALL
-          m.quoteMessage.type = MESSAGE_TYPE.TIP_TEXT
+        const quoted = msg.quoteMessage
+        if (quoted && quoted.id == msgInfo.id) {
+          quoted.content = '引用内容已撤回'
+          quoted.status = MESSAGE_STATUS.RECALL
+          quoted.type = MESSAGE_TYPE.TIP_TEXT
         }
       }
       chat.stored = false
@@ -451,7 +501,7 @@ const useChatStore = defineStore('chatStore', {
       }
     },
     //更新消息
-    updateMessage(msgInfo: MessageInfo, chatInfo: ChatInfo) {
+    updateMessage(msgInfo: BaseMessage, chatInfo: ChatInfo) {
       const chat = this.findChat(chatInfo)
       if (!chat) return
       const message = this.findMessage(chat, msgInfo)
@@ -475,9 +525,9 @@ const useChatStore = defineStore('chatStore', {
     },
     //找到对应信息
     findMessage() {
-      return (chat: Chat, msgInfo: MessageInfo) => {
+      return (chat: Chat, msgInfo: BaseMessage) => {
         for (let idx = 0; idx < chat.messages.length; idx++) {
-          const message = chat.messages[idx] as MessageInfo
+          const message = chat.messages[idx] as BaseMessage
           if (!message) continue
           // 通过id判断
           if (msgInfo.id && message.id == msgInfo.id) {

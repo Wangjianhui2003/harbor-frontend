@@ -50,13 +50,12 @@ export interface Group {
   showNickname?: string
   showGroupName?: string
   remarkGroupName?: string
-  remark?: string
-  dissolve?: boolean
-  quit?: boolean
-  isBanned?: boolean
-  reason?: string
-  joinType?: number
+  dissolve: boolean
+  isBanned: boolean
+  reason: string
   memberCount: number
+  joinType?: number
+  quit: boolean
 }
 
 export interface GroupMember {

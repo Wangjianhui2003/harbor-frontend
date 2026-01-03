@@ -1,7 +1,12 @@
-import type { MESSAGE_TYPE, MessageType } from '@/utils/enums'
+import type { MESSAGE_TYPE } from '@/utils/enums'
 
-// 聊天会话类型
-export interface Chat {
+export type BaseMessage = GroupMessage | PrivateMessage
+
+export type Message = GroupMessage | PrivateMessage | TimeTipMessage
+
+export type Chat = GroupChat | PrivateChat
+
+export interface GroupChat {
   atAll: boolean
   atMe: boolean
   delete: boolean
@@ -9,54 +14,63 @@ export interface Chat {
   lastContent: string
   lastSendTime: number
   lastTimeTip?: number
-  messages: (MessageInfo | TimeTipMessage)[]
-  sendNickname?: string
-  showName: string
+  messages: (GroupMessage | TimeTipMessage)[]
+  showName: string // 显示名称,由ChatInfo决定
+  groupName: string
   stored: boolean
   targetId: number
   type: string
   unreadCount: number
 }
 
-// 消息相关类型
-export interface MessageInfo {
-  id: number
-  sendId: number
-  recvId: number
-  content: string
-  type: number
-  status: number
-  sendTime: number
-  sendNickname?: string
-  loadStatus?: string
-  selfSend?: boolean
-  groupId?: number
-  atUserIds?: number[]
-  receipt?: boolean
-  receiptOk?: boolean
-  quoteMessage?: MessageInfo
-  tmpId?: string
-}
-
-export interface TimeTipMessage {
-  sendTime: number
-  type: typeof MESSAGE_TYPE.TIP_TIME
-}
-
-// 聊天信息类型
-export interface ChatInfo {
+export interface PrivateChat {
+  atMe: boolean
+  delete: boolean
+  headImage: string
+  lastContent: string
+  lastSendTime: number
+  lastTimeTip?: number
+  messages: (PrivateMessage | TimeTipMessage)[]
+  showName: string // 显示名称,由ChatInfo决定
+  stored: boolean
   targetId: number
   type: string
-  showName: string
-  headImage: string
+  unreadCount: number
 }
 
-//
-export interface ChatsData {
-  privateMsgMaxId: number
-  groupMsgMaxId: number
-  chatKeys: string[]
-  chats?: Chat[]
+// 群聊消息
+export interface GroupMessage {
+  atUserIds: number[]
+  content: string
+  groupId: number
+  id: number
+  readCount: number
+  receipt: boolean
+  receiptOk: boolean | null
+  selfSend: boolean
+  sendId: number
+  sendNickname: string
+  sendTime: number
+  status: number | null
+  type: number
+  tmpId?: string
+  quoteMessage?: GroupMessage
+  loadStatus?: string
+}
+
+// 私聊消息
+export interface PrivateMessage {
+  content: string
+  id: number
+  recvId: number
+  selfSend: boolean
+  sendId: number
+  sendTime: number
+  status: number
+  type: number
+  quoteMessage?: PrivateMessage
+  loadStatus?: string
+  tmpId?: string
 }
 
 // 私聊消息DTO
@@ -73,4 +87,25 @@ export interface GroupMessageDTO {
   type: number
   atUserIds?: number[]
   receipt?: boolean
+}
+
+export interface TimeTipMessage {
+  sendTime: number
+  type: typeof MESSAGE_TYPE.TIP_TIME
+}
+
+// 聊天信息类型
+export interface ChatInfo {
+  targetId: number
+  type: string
+  showName: string
+  headImage: string
+}
+
+//本地存储的聊天数据结构
+export interface ChatsData {
+  privateMsgMaxId: number
+  groupMsgMaxId: number
+  chatKeys: string[]
+  chats?: (GroupChat | PrivateChat)[]
 }

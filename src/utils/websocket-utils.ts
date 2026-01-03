@@ -7,7 +7,7 @@ export function createWebSocketClient() {
   let isConnected: boolean = false
   let reconnectTimer: ReturnType<typeof setTimeout> | null = null
   //连接成功回调(拉取消息)
-  let onConnect: (() => void) | null = null
+  let onWebSocketLogin: (() => void) | null = null
   //收到消息回调（处理消息）
   let onMessage: ((msg: WebSocketMessage) => void) | null = null
   //连接关闭回调
@@ -46,7 +46,7 @@ export function createWebSocketClient() {
         case CMD_TYPE.LOGIN:
           // 登录成功
           heartbeat.reset()
-          onConnect?.()
+          onWebSocketLogin?.()
           break
         case CMD_TYPE.HEARTBEAT:
           // 收到心跳响应
@@ -98,7 +98,7 @@ export function createWebSocketClient() {
     connect,
     close,
     send,
-    onConnect: (handler: () => void) => (onConnect = handler),
+    onWebSocketLogin: (handler: () => void) => (onWebSocketLogin = handler), //闭包,传入函数,将传入的函数赋值给onWebSocketLogin
     onMessage: (handler: (msg: WebSocketMessage) => void) => (onMessage = handler),
     onClose: (handler: (e: CloseEvent) => void) => (onClose = handler),
   }
