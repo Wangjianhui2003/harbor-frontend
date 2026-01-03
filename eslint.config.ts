@@ -1,6 +1,6 @@
 import { globalIgnores } from 'eslint/config'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
-import pluginVue from 'eslint-plugin-vue'
+import pluginVue, { rules } from 'eslint-plugin-vue'
 import pluginPlaywright from 'eslint-plugin-playwright'
 import pluginVitest from '@vitest/eslint-plugin'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
@@ -35,4 +35,10 @@ export default defineConfigWithVueTs(
   skipFormatting,
 
   ...pluginOxlint.configs['flat/recommended'],
+  {
+    rules: {
+      // Override or add custom rules here
+      'vue/multi-word-component-names': 'off',
+    },
+  },
 )

@@ -1,10 +1,9 @@
 <template>
-  <div class="base3 h-screen flex flex-col justify-start items-center">
+  <div class="h-screen flex flex-col justify-start items-center">
     <component
       v-for="item in navItems"
       :key="item.label"
       :is="item.icon"
-      :class="['icon-pressable', isActive(item.to) && 'icon-actived']"
       :aria-label="item.label"
       @click="navigate(item.to)"
     />

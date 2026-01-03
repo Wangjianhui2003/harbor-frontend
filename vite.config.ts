@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 
+import path from 'node:path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -21,8 +22,9 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '~': fileURLToPath(new URL('./', import.meta.url)), // 添加这行
+      // '@': fileURLToPath(new URL('./src', import.meta.url)),
+      // '~': fileURLToPath(new URL('./', import.meta.url)), // 添加这行
+      '@': path.resolve(__dirname, './src'),
     },
   },
 })

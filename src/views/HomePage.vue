@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-row">
-    <div class="basis-1/25 bg-primary-100 dark:bg-primary-700">
+    <div class="basis-1/25">
       <navi-bar />
     </div>
-    <div class="basis-24/25 bg-primary-100 dark:bg-primary-800">
+    <div class="basis-24/25">   
       <router-view></router-view>
     </div>
   </div>
