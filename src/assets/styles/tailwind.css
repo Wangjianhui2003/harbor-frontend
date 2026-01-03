@@ -5,3 +5,27 @@
 */
 @import 'tailwindcss-primeui';
 @custom-variant dark (&:where(.dark-mode, .dark-mode *));
+
+@layer components {
+  .icon-pressable {
+    /* Shared clickable icon styling */
+    @apply text-primary-400 dark:text-primary-500 mt-4 cursor-pointer hover:text-primary-900 dark:hover:text-primary-100 transition-colors duration-200;
+  }
+
+  .icon-actived {
+    /* Active state styling for clickable icons */
+    @apply text-primary-900! dark:text-primary-100!;
+  }
+
+  .base3 {
+    @apply bg-primary-300 dark:bg-primary-900;
+  }
+
+  .base2 {
+    @apply bg-primary-200 dark:bg-primary-800;
+  }
+
+  .base1 {
+    @apply bg-primary-100 dark:bg-primary-700;
+  }
+}

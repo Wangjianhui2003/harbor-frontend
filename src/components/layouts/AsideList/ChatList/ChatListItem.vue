@@ -1,6 +1,13 @@
 <template>
-  <div class="flex flex-row items-center bg-primary-100">
-    <Avatar label="" :image="props.chat.headImage" size="large" shape="circle" />
+  <div class="base2 flex flex-row items-center">
+    <div>
+      <Avatar label="" :image="props.chat.headImage" size="large" shape="circle" class="static" />
+      <BaseBadge
+        v-if="props.chat.unreadCount > 0"
+        :number="props.chat.unreadCount"
+        class="relative left-9 bottom-12"
+      />
+    </div>
     <div class="">
       <div class="">{{ props.chat.showName }}</div>
       <div class="">{{ lastContent }}</div>

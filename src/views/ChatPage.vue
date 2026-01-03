@@ -11,8 +11,6 @@
 <script setup lang="ts">
 import useChatStore from '@/stores/chatStore'
 const { chats } = useChatStore()
-
-console.log('ChatPage chats:', chats)
 </script>
 
 <style scoped></style>

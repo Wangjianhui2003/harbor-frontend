@@ -9,8 +9,6 @@ const props = defineProps({
     type: Array,
   },
 })
-
-console.log('ChatList props:', props.chats)
 </script>
 
 <style scoped></style>

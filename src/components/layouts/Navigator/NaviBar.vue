@@ -1,12 +1,10 @@
 <template>
-  <div
-    class="text-primary-400 dark:text-primary-500 h-screen bg-primary-200 flex flex-col justify-start items-center dark:bg-primary-900"
-  >
+  <div class="base3 h-screen flex flex-col justify-start items-center">
     <component
       v-for="item in navItems"
       :key="item.label"
       :is="item.icon"
-      :class="[baseIconClass, isActive(item.to) && 'text-primary-900 dark:text-primary-100']"
+      :class="['icon-pressable', isActive(item.to) && 'icon-actived']"
       :aria-label="item.label"
       @click="navigate(item.to)"
     />
@@ -30,9 +28,6 @@ type NavItem = {
 
 const router = useRouter()
 const route = useRoute()
-
-const baseIconClass =
-  'mt-4 cursor-pointer hover:text-primary-900 dark:hover:text-primary-100 transition-colors duration-200'
 
 const navItems: NavItem[] = [
   { label: 'Chat', icon: Chat, to: 'Chat' },
