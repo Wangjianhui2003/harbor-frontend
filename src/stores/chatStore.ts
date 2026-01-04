@@ -298,7 +298,7 @@ const useChatStore = defineStore('chatStore', {
     //将cacheChats刷新到chats
     refreshChat() {
       //没有缓存，不刷新
-      if (!cacheChats) {
+      if (!cacheChats || cacheChats.length == 0) {
         return
       }
       console.log('refresh chat')

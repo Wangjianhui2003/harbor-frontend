@@ -35,7 +35,7 @@ export interface Friend {
   online: boolean
   onlineWeb: boolean
   onlineApp: boolean
-  deleted?: boolean
+  deleted: boolean
 }
 
 // 群组相关类型
@@ -46,10 +46,10 @@ export interface Group {
   headImage: string
   headImageThumb: string
   notice?: string
-  remarkNickname?: string
-  showNickname?: string
-  showGroupName?: string
-  remarkGroupName?: string
+  remarkNickname?: string //用户在群内的备注昵称
+  showNickname?: string //用户在群内显示的昵称
+  showGroupName?: string //显示给该用户的群名称
+  remarkGroupName?: string //用户备注的群名称
   dissolve: boolean
   isBanned: boolean
   reason: string

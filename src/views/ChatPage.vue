@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-row h-screen">
     <div class="basis-4/24">
-      <Card class="h-full flex flex-col">
-        <CardHeader>
-          <Input  />
+      <Card class="h-full flex flex-col rounded-sm">
+        <CardHeader class="gap-0">
+          <Input />
         </CardHeader>
         <CardContent class="flex-1 min-h-0 p-0">
           <ScrollArea class="h-full w-full"> <ChatList :chats="chatStore.chats" /></ScrollArea>
@@ -11,21 +11,18 @@
       </Card>
     </div>
     <div class="basis-20/24 h-screen">
-      <Card class="h-full flex flex-col">
-        <CardContent class="flex-1 min-h-0 p-0">
-          <ScrollArea class="h-full w-full"> Chat Content Area </ScrollArea>
-        </CardContent>
-      </Card>
+      <Card class="h-full flex flex-col p-0 m-0 rounded-sm"></Card>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import useChatStore from '@/stores/chatStore'
-const chatStore = useChatStore()
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import ChatList from '@/components/layouts/AsideList/ChatList/ChatList.vue'
+
+const chatStore = useChatStore()
 </script>
 
 <style scoped></style>

@@ -8,6 +8,7 @@ import { defineStore } from 'pinia'
 const useFriendStore = defineStore('friendStore', () => {
   const friends = ref<Friend[]>([])
   const timer = ref<ReturnType<typeof setTimeout> | null>(null)
+  const activeFriendIndex = ref<number | null>(null)
 
   const loadFriend = async (): Promise<void> => {
     try {
@@ -92,6 +93,10 @@ const useFriendStore = defineStore('friendStore', () => {
     timer.value = null
   }
 
+  const activateFriend = (index: number) => {
+    activeFriendIndex.value = index
+  }
+
   const isFriend = computed(
     () => (userId: number) => friends.value.filter((f) => !f.deleted).some((f) => f.id == userId),
   )
@@ -101,6 +106,7 @@ const useFriendStore = defineStore('friendStore', () => {
   return {
     friends,
     timer,
+    activeFriendIndex,
     loadFriend,
     setFriends,
     updateFriend,
@@ -109,6 +115,7 @@ const useFriendStore = defineStore('friendStore', () => {
     refreshOnlineStatus,
     setOnlineStatus,
     clear,
+    activateFriend,
     isFriend,
     findFriend,
   }

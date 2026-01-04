@@ -5,6 +5,8 @@ import type { Group } from '@/types/index.js'
 
 const useGroupStore = defineStore('groupStore', () => {
   const groups = ref<Group[]>([])
+  //选中的群组索引
+  const activeGroupIndex = ref<number | null>(null)
 
   //加载groups
   const loadGroups = async (): Promise<void> => {
@@ -44,6 +46,10 @@ const useGroupStore = defineStore('groupStore', () => {
     }
   }
 
+  const activateGroup = (index: number): void => {
+    activeGroupIndex.value = index
+  }
+
   //根据id查找group
   const findGroup = computed(
     () =>
@@ -51,7 +57,16 @@ const useGroupStore = defineStore('groupStore', () => {
         groups.value.find((g) => g.id == id),
   )
 
-  return { groups, addGroup, removeGroup, updateGroup, loadGroups, findGroup }
+  return {
+    groups,
+    activeGroupIndex,
+    addGroup,
+    removeGroup,
+    updateGroup,
+    loadGroups,
+    activateGroup,
+    findGroup,
+  }
 })
 
 export default useGroupStore

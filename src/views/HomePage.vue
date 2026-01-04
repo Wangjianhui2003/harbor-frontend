@@ -3,7 +3,7 @@
     <div class="basis-1/25">
       <navi-bar />
     </div>
-    <div class="basis-24/25">   
+    <div class="basis-24/25">
       <router-view></router-view>
     </div>
   </div>
@@ -60,12 +60,23 @@ const init = async () => {
 
 const initRTC = () => {}
 
-const handleWebSocketLogin = () => {
-  if (!isWebSocketReconnecting.value) {
-    //第一次登录
-    console.log('开始拉取离线消息')
+const handleWebSocketLogin = async () => {
+  try {
+    if (isWebSocketReconnecting.value) {
+      //第一次登录
+      console.log('开始拉取离线消息')
+      //重连成功
+      isWebSocketReconnecting.value = false
+      const promises = []
+      promises.push(friendStore.loadFriend())
+      promises.push(groupStore.loadGroups())
+      await Promise.all(promises)
+    }
     pullPrivateOfflineMsg()
     pullGroupOfflineMsg()
+  } catch (err) {
+    console.log('WebSocket登录处理出错', err)
+    location.href = '/'
   }
 }
 
@@ -77,8 +88,8 @@ const pullPrivateOfflineMsg = async () => {
     //从后端拉取离线消息
     await pullOfflinePrivateMessage(chatStore.privateMsgMaxId)
   } catch (err) {
-    console.log('拉取私聊离线消息出错', err)
     chatStore.setLoadingPrivateMsgState(false)
+    console.log('拉取私聊离线消息出错', err)
   }
 }
 
@@ -89,12 +100,32 @@ const pullGroupOfflineMsg = async () => {
     //从后端拉取离线消息
     await pullOfflineGroupMessage(chatStore.groupMsgMaxId)
   } catch (err) {
-    console.log('拉取群聊离线消息出错', err)
     chatStore.setLoadingGroupMsgState(false)
+    console.log('拉取群聊离线消息出错', err)
   }
 }
 
-const handleWebSocketClose = () => {}
+const handleWebSocketClose = async () => {
+  try {
+    console.log('WebSocket连接关闭')
+    isWebSocketReconnecting.value = true
+    await userStore.loadUser()
+    showError(toast, '连接已断开', '正在尝试重新连接...')
+    wsClient.connect(
+      import.meta.env.VITE_WEBSOCKET_URL,
+      sessionStorage.getItem(ACCESS_TOKEN_KEY) || '',
+    )
+  } catch (err) {
+    console.log('WebSocket重连处理出错', err)
+    exitWeb()
+  }
+}
+
+const exitWeb = () => {
+  wsClient.close(WEBSOCKET_CLOSE_CODE.FORCE_LOGOUT)
+  sessionStorage.removeItem(ACCESS_TOKEN_KEY)
+  location.href = '/'
+}
 
 const handleWebSocketMessage = (msg: WebSocketMessage) => {
   switch (msg.cmd) {
