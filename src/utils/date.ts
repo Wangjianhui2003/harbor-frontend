@@ -1,35 +1,33 @@
+const ONE_MINUTE = 60000
+const ONE_HOUR = 3600000
+const ONE_DAY = 86400000
+
+const pad = (value: number): string => value.toString().padStart(2, '0')
+
 export const toTimeText = (timeStamp: number, simple?: boolean): string => {
   const dateTime = new Date(timeStamp)
-  const currentTime = Date.parse(new Date().toString()) //当前时间
-  const timeDiff = currentTime - dateTime.getTime() //与当前时间误差
-  let timeText = ''
-  if (timeDiff <= 60000) {
-    //一分钟内
-    timeText = '刚刚'
-  } else if (timeDiff > 60000 && timeDiff < 3600000) {
-    //1小时内
-    timeText = Math.floor(timeDiff / 60000) + '分钟前'
-  } else if (timeDiff >= 3600000 && timeDiff < 86400000 && !isYestday(dateTime)) {
-    //今日
-    timeText = formatDateTime(dateTime).substr(11, 5)
-  } else if (isYestday(dateTime)) {
-    //昨天
-    timeText = '昨天' + formatDateTime(dateTime).substr(11, 5)
-  } else if (isYear(dateTime)) {
-    //今年
-    timeText = formatDateTime(dateTime).substr(5, simple ? 5 : 14)
-  } else {
-    //不属于今年
-    timeText = formatDateTime(dateTime)
-    if (simple) {
-      timeText = timeText.substr(2, 8)
-    }
+  const timeDiff = Date.now() - dateTime.getTime()
+
+  const formatted = formatDateTime(dateTime)
+
+  switch (true) {
+    case timeDiff <= ONE_MINUTE:
+      return '刚刚'
+    case timeDiff < ONE_HOUR:
+      return `${Math.floor(timeDiff / ONE_MINUTE)}分钟前`
+    case timeDiff < ONE_DAY && !isYestday(dateTime):
+      return formatted.slice(11, 16)
+    case isYestday(dateTime):
+      return `昨天${formatted.slice(11, 16)}`
+    case isYear(dateTime):
+      return simple ? formatted.slice(5, 10) : formatted.slice(5)
+    default:
+      return simple ? formatted.slice(2, 10) : formatted
   }
-  return timeText
 }
 
 export const isYestday = (date: Date): boolean => {
-  const yesterday = new Date(Date.now() - 1000 * 60 * 60 * 24)
+  const yesterday = new Date(Date.now() - ONE_DAY)
   return (
     yesterday.getFullYear() === date.getFullYear() &&
     yesterday.getMonth() === date.getMonth() &&
@@ -37,25 +35,20 @@ export const isYestday = (date: Date): boolean => {
   )
 }
 
-export const isYear = (date: Date): boolean => {
-  return date.getFullYear() === new Date().getFullYear()
-}
+export const isYear = (date: Date): boolean => date.getFullYear() === new Date().getFullYear()
 
 export const formatDateTime = (date: Date | string | number): string => {
   if (date === '' || !date) {
     return ''
   }
+
   const dateObject = new Date(date)
   const y = dateObject.getFullYear()
-  let m: string | number = dateObject.getMonth() + 1
-  m = m < 10 ? '0' + m : m
-  let d: string | number = dateObject.getDate()
-  d = d < 10 ? '0' + d : d
-  let h: string | number = dateObject.getHours()
-  h = h < 10 ? '0' + h : h
-  let minute: string | number = dateObject.getMinutes()
-  minute = minute < 10 ? '0' + minute : minute
-  let second: string | number = dateObject.getSeconds()
-  second = second < 10 ? '0' + second : second
-  return y + '/' + m + '/' + d + ' ' + h + ':' + minute + ':' + second
+  const m = pad(dateObject.getMonth() + 1)
+  const d = pad(dateObject.getDate())
+  const h = pad(dateObject.getHours())
+  const minute = pad(dateObject.getMinutes())
+  const second = pad(dateObject.getSeconds())
+
+  return `${y}/${m}/${d} ${h}:${minute}:${second}`
 }

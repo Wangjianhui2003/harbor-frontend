@@ -1,5 +1,5 @@
 <template>
-  <div>file</div>
+  <div>audio</div>
 </template>
 
 <script setup lang="ts"></script>

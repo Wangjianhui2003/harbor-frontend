@@ -59,6 +59,7 @@ const lastContent = computed(() => {
   }
   return str
 })
+
 </script>
 
 <style scoped></style>

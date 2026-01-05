@@ -1,12 +1,19 @@
 <template>
-  <div>{{ props.message }}</div>
+  <div>
+    <BaseAvatar />
+    <div>
+
+    </div>
+    {{ props.message.content }}
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { Message } from '@/types/chat'
+import BaseAvatar from '@/components/common/BaseAvatar.vue'
+import type { BaseMessage } from '@/types/chat'
 
 const props = defineProps<{
-  message: Message
+  message: BaseMessage
 }>()
 </script>
 

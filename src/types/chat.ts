@@ -6,6 +6,22 @@ export type Message = GroupMessage | PrivateMessage | TimeTipMessage
 
 export type Chat = GroupChat | PrivateChat
 
+// 聊天信息类型
+export interface ChatInfo {
+  targetId: number
+  type: string
+  showName: string
+  headImage: string
+}
+
+//本地存储的聊天数据结构
+export interface ChatsData {
+  privateMsgMaxId: number
+  groupMsgMaxId: number
+  chatKeys: string[]
+  chats?: (GroupChat | PrivateChat)[]
+}
+
 export interface GroupChat {
   atAll: boolean
   atMe: boolean
@@ -92,20 +108,4 @@ export interface GroupMessageDTO {
 export interface TimeTipMessage {
   sendTime: number
   type: typeof MESSAGE_TYPE.TIP_TIME
-}
-
-// 聊天信息类型
-export interface ChatInfo {
-  targetId: number
-  type: string
-  showName: string
-  headImage: string
-}
-
-//本地存储的聊天数据结构
-export interface ChatsData {
-  privateMsgMaxId: number
-  groupMsgMaxId: number
-  chatKeys: string[]
-  chats?: (GroupChat | PrivateChat)[]
 }

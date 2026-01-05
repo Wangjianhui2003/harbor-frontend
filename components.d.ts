@@ -12,7 +12,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Accordion: typeof import('primevue/accordion')['default']
+    AccordionContent: typeof import('primevue/accordioncontent')['default']
     AudioCallModal: typeof import('./src/components/layouts/Modal/AudioCallModal.vue')['default']
+    AudioMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/AudioMessage.vue')['default']
     Avatar: typeof import('primevue/avatar')['default']
     Badge: typeof import('./src/components/ui/badge/Badge.vue')['default']
     BaseAvatar: typeof import('./src/components/common/BaseAvatar.vue')['default']
@@ -72,7 +75,9 @@ declare module 'vue' {
     Separator: typeof import('./src/components/ui/separator/Separator.vue')['default']
     SettingWindow: typeof import('./src/components/layouts/Window/SettingWindow.vue')['default']
     TextMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TextMessage.vue')['default']
+    TimeTipMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TimeTipMessage.vue')['default']
     TipMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TipMessage.vue')['default']
+    TipTimeMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TipTimeMessage.vue')['default']
     Toast: typeof import('primevue/toast')['default']
     Toggle: typeof import('./src/components/ui/toggle/Toggle.vue')['default']
     ToolBar: typeof import('./src/components/layouts/Window/ChatWindow/ToolBar.vue')['default']
@@ -84,7 +89,10 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
+  const Accordion: typeof import('primevue/accordion')['default']
+  const AccordionContent: typeof import('primevue/accordioncontent')['default']
   const AudioCallModal: typeof import('./src/components/layouts/Modal/AudioCallModal.vue')['default']
+  const AudioMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/AudioMessage.vue')['default']
   const Avatar: typeof import('primevue/avatar')['default']
   const Badge: typeof import('./src/components/ui/badge/Badge.vue')['default']
   const BaseAvatar: typeof import('./src/components/common/BaseAvatar.vue')['default']
@@ -144,7 +152,9 @@ declare global {
   const Separator: typeof import('./src/components/ui/separator/Separator.vue')['default']
   const SettingWindow: typeof import('./src/components/layouts/Window/SettingWindow.vue')['default']
   const TextMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TextMessage.vue')['default']
+  const TimeTipMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TimeTipMessage.vue')['default']
   const TipMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TipMessage.vue')['default']
+  const TipTimeMessage: typeof import('./src/components/layouts/Window/ChatWindow/MessageItem/TipTimeMessage.vue')['default']
   const Toast: typeof import('primevue/toast')['default']
   const Toggle: typeof import('./src/components/ui/toggle/Toggle.vue')['default']
   const ToolBar: typeof import('./src/components/layouts/Window/ChatWindow/ToolBar.vue')['default']
