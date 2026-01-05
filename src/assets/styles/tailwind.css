@@ -4,35 +4,13 @@
   use "dark"
 */
 @import 'tailwindcss-primeui';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 @custom-variant dark (&:where(.dark-mode, .dark-mode *));
 
 @layer components {
   .icon-pressable {
     /* Shared clickable icon styling */
     @apply text-primary-400 dark:text-primary-500 mt-4 cursor-pointer hover:text-primary-900 dark:hover:text-primary-100 transition-colors duration-200;
-  }
-
-  .icon-actived {
-    /* Active state styling for clickable icons */
-    @apply text-primary-900! dark:text-primary-100!;
-  }
-
-  .panel-pressable {
-    /* Shared clickable panel styling */
-    @apply bg-primary-200 hover:bg-primary-400 dark:bg-primary-800  dark:hover:bg-primary-700 cursor-pointer transition-colors duration-200;
-  }
-
-  .base3 {
-    @apply bg-primary-300 dark:bg-primary-900;
-  }
-
-  .base2 {
-    @apply bg-primary-200 dark:bg-primary-800;
-  }
-
-  .base1 {
-    @apply bg-primary-100 dark:bg-primary-700;
   }
 }
 
@@ -41,7 +19,6 @@
 */
 
 @theme inline {
-
   --radius-sm: calc(var(--radius) - 4px);
 
   --radius-md: calc(var(--radius) - 2px);
@@ -118,7 +95,6 @@
 */
 
 :root {
-
   --radius: 0.625rem;
 
   --background: oklch(1 0 0);
@@ -189,7 +165,6 @@
 */
 
 .dark {
-
   --background: oklch(0.145 0 0);
 
   --foreground: oklch(0.985 0 0);

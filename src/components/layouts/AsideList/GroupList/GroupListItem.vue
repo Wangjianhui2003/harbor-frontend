@@ -6,14 +6,7 @@
     >
       <ItemContent>
         <div class="rounded-xl flex flex-row items-center h-13 gap-3">
-          <div class="relative">
-            <img
-              v-if="props.group.headImage != ''"
-              :src="props.group.headImage"
-              class="w-9 h-9 rounded-full object-cover"
-            />
-            <div v-else class="w-9 h-9 rounded-full bg-gray-200"></div>
-          </div>
+          <BaseAvatar :headImage="props.group.headImage" :name="props.group.showGroupName" />
           <div class="flex flex-col justify-around gap-1 text-sm text-40xl">
             <div>{{ props.group.showGroupName }}</div>
           </div>
@@ -24,6 +17,7 @@
 </template>
 
 <script setup lang="ts">
+import BaseAvatar from '@/components/common/BaseAvatar.vue'
 import Item from '@/components/ui/item/Item.vue'
 import useGroupStore from '@/stores/groupStore'
 import type { Group } from '@/types'

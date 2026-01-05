@@ -21,7 +21,10 @@
           >
             <FormField name="username" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>用户名</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">用户名</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <Input
                     autocomplete="username"
@@ -29,13 +32,15 @@
                     v-bind="componentField"
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
 
             <FormField name="password" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>密码</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">密码</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <Input
                     type="password"
@@ -44,13 +49,15 @@
                     v-bind="componentField"
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
 
             <FormField name="captcha" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>验证码</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">验证码</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <div class="flex items-center gap-3">
                     <Input
@@ -67,7 +74,6 @@
                     />
                   </div>
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
             <div class="flex flex-row justify-between w-full gap-2">
@@ -78,11 +84,10 @@
             </div>
           </Form>
         </CardContent>
-        <CardFooter class="flex items-center justify-between">
-          <span>没有账号？</span>
-          <Button variant="link">
-            <a href="/register">注册</a>
-          </Button>
+        <CardFooter class="flex items-center">
+          <span>没有账号?</span>
+          <a href="/register" class="ml-2 hover:underline">注册</a>
+          <Button variant="link"> </Button>
         </CardFooter>
       </Card>
     </div>

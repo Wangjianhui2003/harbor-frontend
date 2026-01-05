@@ -6,12 +6,13 @@
     <ItemContent>
       <div class="rounded-xl flex flex-row items-center h-13 gap-3">
         <div class="relative">
-          <img
+          <!-- <img
             v-if="props.chat.headImage != ''"
             :src="props.chat.headImage"
             class="w-9 h-9 rounded-full object-cover"
           />
-          <div v-else class="w-9 h-9 rounded-full bg-gray-200"></div>
+          <div v-else class="w-9 h-9 rounded-full bg-gray-200"></div> -->
+          <base-avatar :headImage="props.chat.headImage" :name="props.chat.showName" />
           <base-badge
             v-if="props.chat.unreadCount > 0"
             :number="props.chat.unreadCount"
@@ -31,6 +32,9 @@
 import { computed } from 'vue'
 import { Item, ItemContent } from '@/components/ui/item'
 import useChatStore from '@/stores/chatStore'
+import type { Chat } from '@/types/chat'
+
+const props = defineProps<{ chat: Chat }>()
 
 const chatStore = useChatStore()
 
@@ -42,13 +46,6 @@ const isChosen = computed(() => {
     chatStore.activeChat.targetId == props.chat.targetId &&
     chatStore.activeChat.type == props.chat.type
   )
-})
-
-const props = defineProps({
-  chat: {
-    required: true,
-    type: Object,
-  },
 })
 
 //显示最近一条消息

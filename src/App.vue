@@ -1,6 +1,6 @@
 <template>
   <Toast />
-  <div>
+  <div class="font-sans">
     <router-view></router-view>
   </div>
   <Button @click="switchMode">Toggle Dark Mode</Button>

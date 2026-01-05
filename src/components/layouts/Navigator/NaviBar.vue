@@ -1,23 +1,27 @@
 <template>
-  <div class="h-screen flex flex-col justify-start items-center">
-    <component
-      v-for="item in navItems"
+  <Card class="h-screen flex flex-col items-center gap-3 py-3 rounded-xs">
+    <Button
+      v-for="item in navButtons"
       :key="item.label"
-      :is="item.icon"
+      :variant="isActive(item.to) ? 'default' : 'ghost'"
       :aria-label="item.label"
+      class="h-10 w-10 p-0"
       @click="navigate(item.to)"
-    />
-  </div>
+    >
+      <component :is="item.icon" class="h-5 w-5" />
+    </Button>
+  </Card>
 </template>
 
 <script setup lang="ts">
 import type { Component } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Fa6Message as Chat } from 'vue-icons-plus/fa6'
-import { FaUserFriends as Friend } from 'vue-icons-plus/fa'
-import { Fa6Users as Group } from 'vue-icons-plus/fa6'
-import { Fa6Gear as Setting } from 'vue-icons-plus/fa6'
-import { Fa6Robot as ChatBot } from 'vue-icons-plus/fa6'
+import { MessageSquareMore } from 'lucide-vue-next'
+import { User } from 'lucide-vue-next'
+import { Users } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
+import { Bot } from 'lucide-vue-next'
+import { Card } from '@/components/ui/card'
 
 type NavItem = {
   label: string
@@ -28,12 +32,11 @@ type NavItem = {
 const router = useRouter()
 const route = useRoute()
 
-const navItems: NavItem[] = [
-  { label: 'Chat', icon: Chat, to: 'Chat' },
-  { label: 'Friend', icon: Friend, to: 'Friend' },
-  { label: 'Group', icon: Group, to: 'Group' },
-  { label: 'Setting', icon: Setting, to: 'Setting' },
-  { label: 'ChatBot', icon: ChatBot, to: 'ChatBot' },
+const navButtons: NavItem[] = [
+  { label: 'Chat', icon: MessageSquareMore, to: 'Chat' },
+  { label: 'Friend', icon: User, to: 'Friend' },
+  { label: 'Group', icon: Users, to: 'Group' },
+  { label: 'ChatBot', icon: Bot, to: 'ChatBot' },
 ]
 
 const isActive = (name: string) => route.name === name

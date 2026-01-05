@@ -18,7 +18,10 @@
           >
             <FormField name="username" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>用户名</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">用户名</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <Input
                     autocomplete="username"
@@ -26,23 +29,27 @@
                     v-bind="componentField"
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
 
             <FormField name="nickname" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>昵称</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">昵称</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <Input autocomplete="nickname" placeholder="请输入昵称" v-bind="componentField" />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
 
             <FormField name="password" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>密码</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">密码</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <Input
                     type="password"
@@ -51,13 +58,15 @@
                     v-bind="componentField"
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
 
             <FormField name="confirmPassword" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>确认密码</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">确认密码</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <Input
                     type="password"
@@ -66,13 +75,15 @@
                     v-bind="componentField"
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
 
             <FormField name="captcha" v-slot="{ componentField }">
               <FormItem>
-                <FormLabel>验证码</FormLabel>
+                <div class="flex items-center">
+                  <FormLabel class="mr-3">验证码</FormLabel>
+                  <FormMessage class="text-[10px] leading-tight" />
+                </div>
                 <FormControl>
                   <div class="flex items-center gap-3">
                     <Input
@@ -89,7 +100,6 @@
                     />
                   </div>
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </FormField>
 
@@ -101,11 +111,9 @@
             </div>
           </Form>
         </CardContent>
-        <CardFooter class="flex items-center justify-between">
+        <CardFooter class="flex items-center">
           <span>已有账号？</span>
-          <Button variant="link">
-            <a href="/login">登录</a>
-          </Button>
+          <a href="/login" class="ml-2 hover:underline">登录</a>
         </CardFooter>
       </Card>
     </div>
