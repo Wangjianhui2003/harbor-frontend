@@ -5,7 +5,6 @@ import localForage from 'localforage'
 type UseCachedOptions = {
   prefix?: string
   fetchInit?: RequestInit
-  disableCache?: boolean
 }
 
 const DEFAULT_PREFIX = 'media:'
@@ -16,7 +15,7 @@ export const useCached = (
   source: MaybeRef<string | undefined | null>,
   options: UseCachedOptions = {},
 ) => {
-  const { prefix = DEFAULT_PREFIX, fetchInit, disableCache = false } = options
+  const { prefix = DEFAULT_PREFIX, fetchInit } = options
 
   const cachedSrc = ref<string>('')
   let objectUrl: string | null = null
@@ -40,13 +39,11 @@ export const useCached = (
 
     const cacheKey = `${prefix}:${url}`
     try {
-      if (!disableCache) {
-        const cachedBlob = await localForage.getItem<Blob>(cacheKey)
-        if (cachedBlob) {
-          objectUrl = createObjectUrl(cachedBlob)
-          cachedSrc.value = objectUrl
-          return
-        }
+      const cachedBlob = await localForage.getItem<Blob>(cacheKey)
+      if (cachedBlob) {
+        objectUrl = createObjectUrl(cachedBlob)
+        cachedSrc.value = objectUrl
+        return
       }
 
       const response = await fetch(url, {
@@ -58,9 +55,7 @@ export const useCached = (
       }
 
       const blob = await response.blob()
-      if (!disableCache) {
-        await localForage.setItem(cacheKey, blob)
-      }
+      await localForage.setItem(cacheKey, blob)
       objectUrl = createObjectUrl(blob)
       cachedSrc.value = objectUrl
     } catch (error) {
@@ -70,7 +65,7 @@ export const useCached = (
   }
 
   watch(
-    () => unref(source),
+    () => unref(source), //source 类型是 MaybeRef<string | undefined | null>，可能是一个 ref，也可能是普通字符串
     () => {
       void load()
     },

@@ -10,12 +10,13 @@
         </CardContent>
       </Card>
     </div>
-    <Card class="basis-20/24 h-screen flex flex-col p-0 m-0 rounded-xs"></Card>
+    <div class="basis-20/24"><GroupInfo /></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import GroupList from '@/components/layouts/AsideList/GroupList/GroupList.vue'
+import GroupInfo from '@/components/layouts/Window/GroupInfo.vue'
 import useGroupStore from '@/stores/groupStore'
 
 const groupStore = useGroupStore()

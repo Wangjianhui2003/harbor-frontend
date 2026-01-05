@@ -29,7 +29,7 @@ const { cachedSrc } = useCached(headImage, { prefix: 'avatar' })
 const fallbackName = computed(() => {
   const name = props.name?.trim() ?? ''
   if (name.length === 0) {
-    return 'unknown'
+    return 'O'
   }
 
   const firstChar = name.charAt(0)

@@ -10,6 +10,7 @@
     >
       <component :is="item.icon" class="h-5 w-5" />
     </Button>
+    <Button @click="switchMode" class="h-10 w-10 p-0">D</Button>
   </Card>
 </template>
 
@@ -22,6 +23,7 @@ import { Users } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Bot } from 'lucide-vue-next'
 import { Card } from '@/components/ui/card'
+import { useColorMode } from '@vueuse/core'
 
 type NavItem = {
   label: string
@@ -45,6 +47,11 @@ const navigate = (name: string) => {
   if (!isActive(name)) {
     router.push({ name })
   }
+}
+
+const mode = useColorMode()
+const switchMode = () => {
+  mode.value = mode.value === 'light' ? 'dark' : 'light'
 }
 </script>
 <style></style>

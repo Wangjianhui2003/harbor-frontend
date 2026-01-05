@@ -1,5 +1,5 @@
 <template>
-  <div>Group Info Component</div>
+  <Card class="h-full p-0 rounded-sm">hello</Card>
 </template>
 
 <script setup lang="ts"></script>

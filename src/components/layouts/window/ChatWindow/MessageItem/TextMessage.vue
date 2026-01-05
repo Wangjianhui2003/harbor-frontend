@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrap-anywhere">
     {{ props.message.content }}
   </div>
 </template>
