@@ -4,7 +4,7 @@
     <Item
       :class="[
         'p-2 bg-primary/10 ',
-        props.message.selfSend && 'bg-primary text-primary-foreground',
+        props.message.selfSend && 'bg-primary/90 text-primary-foreground',
         'max-w-1/2',
       ]"
     >

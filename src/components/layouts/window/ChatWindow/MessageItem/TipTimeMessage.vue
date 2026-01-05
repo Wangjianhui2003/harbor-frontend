@@ -8,6 +8,7 @@
 import type { TimeTipMessage } from '@/types/chat'
 import { toTimeText } from '@/utils/date'
 import { computed } from 'vue'
+import { Badge } from '@/components/ui/badge'
 
 const props = defineProps<{ message: TimeTipMessage }>()
 
