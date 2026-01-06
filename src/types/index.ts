@@ -34,7 +34,7 @@ export interface User {
 // 好友相关类型
 export interface Friend {
   id: number
-  friendNickname: string
+  friendNickname: string //好友备注昵称
   headImage: string
   headImageThumb?: string
   online: boolean

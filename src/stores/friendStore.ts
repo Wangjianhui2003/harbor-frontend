@@ -40,6 +40,15 @@ const useFriendStore = defineStore('friendStore', () => {
     })
   }
 
+  const updateFriendNickName = (friendId: number, newNickName: string): void => {
+    friends.value.forEach((f) => {
+      if (f.id == friendId) {
+        f.friendNickname = newNickName
+      }
+    })
+  }
+
+
   const removeFriend = (id: number): void => {
     friends.value.filter((f) => f.id == id).forEach((f) => (f.deleted = true))
   }
@@ -116,6 +125,7 @@ const useFriendStore = defineStore('friendStore', () => {
     setOnlineStatus,
     clear,
     activateFriend,
+    updateFriendNickName,
     isFriend,
     findFriend,
   }
