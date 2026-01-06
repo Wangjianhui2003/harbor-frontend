@@ -13,7 +13,7 @@
       </Card>
     </div>
     <div class="basis-20/24 h-screen flex flex-col">
-      <FriendInfo />
+      <FriendInfo v-if="friendStore.activeFriendIndex !== null" />
     </div>
   </div>
 </template>

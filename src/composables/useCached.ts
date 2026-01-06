@@ -1,5 +1,5 @@
 import { onBeforeUnmount, ref, unref, watch } from 'vue'
-import type { MaybeRef } from 'vue'
+import type { MaybeRef, Ref } from 'vue'
 import localForage from 'localforage'
 
 type UseCachedOptions = {
@@ -12,7 +12,7 @@ const DEFAULT_PREFIX = 'media:'
 const createObjectUrl = (blob: Blob): string => URL.createObjectURL(blob)
 
 export const useCached = (
-  source: MaybeRef<string | undefined | null>,
+  source: Ref<string | undefined | null>,
   options: UseCachedOptions = {},
 ) => {
   const { prefix = DEFAULT_PREFIX, fetchInit } = options
@@ -64,13 +64,7 @@ export const useCached = (
     }
   }
 
-  watch(
-    () => unref(source), //source 类型是 MaybeRef<string | undefined | null>，可能是一个 ref，也可能是普通字符串
-    () => {
-      void load()
-    },
-    { immediate: true },
-  )
+  watch(source, load, { immediate: true })
 
   onBeforeUnmount(() => revokeObjectUrl())
 

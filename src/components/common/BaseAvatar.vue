@@ -1,9 +1,15 @@
 <template>
   <div>
-    <img v-if="cachedSrc" :src="cachedSrc" class="w-9 h-9 rounded-full object-cover" />
+    <img
+      v-if="cachedSrc"
+      :src="cachedSrc"
+      class="w-9 h-9 rounded-full object-cover"
+      :style="`width: ${props.size}rem; height: ${props.size}rem`"
+    />
     <div
       v-else
       class="w-9 h-9 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center"
+      :style="`width: ${props.size}rem; height: ${props.size}rem`"
     >
       {{ fallbackName }}
     </div>
@@ -11,26 +17,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, toRef } from 'vue'
 import { useCached } from '@/composables/useCached'
 
-const props = defineProps({
-  headImage: {
-    type: String,
-  },
-  name: {
-    type: String,
-  },
+interface props {
+  headImage?: string
+  name?: string
+  size?: number
+}
+
+const props = withDefaults(defineProps<props>(), {
+  headImage: '',
+  name: 'NA',
+  size: 2.25,
 })
 
-const headImage = computed(() => props.headImage ?? '')
-const { cachedSrc } = useCached(headImage, { prefix: 'avatar' })
+//必须toRef
+const { cachedSrc } = useCached(
+  toRef(() => props.headImage),
+  { prefix: 'avatar' },
+)
 
 const fallbackName = computed(() => {
   const name = props.name?.trim() ?? ''
-  if (name.length === 0) {
-    return 'O'
-  }
 
   const firstChar = name.charAt(0)
   const isEnglish = /^[A-Za-z]/.test(firstChar)

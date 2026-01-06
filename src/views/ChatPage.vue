@@ -10,7 +10,7 @@
         </CardContent>
       </Card>
     </div>
-    <div class="basis-20/24"><ChatWindow /></div>
+    <div class="basis-20/24"><ChatWindow v-if="chatStore.activeChat" /></div>
   </div>
 </template>
 

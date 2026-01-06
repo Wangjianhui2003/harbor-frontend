@@ -33,6 +33,7 @@ import { computed } from 'vue'
 import { Item, ItemContent } from '@/components/ui/item'
 import useChatStore from '@/stores/chatStore'
 import type { Chat } from '@/types/chat'
+import BaseAvatar from '@/components/common/BaseAvatar.vue'
 
 const props = defineProps<{ chat: Chat }>()
 
@@ -59,7 +60,6 @@ const lastContent = computed(() => {
   }
   return str
 })
-
 </script>
 
 <style scoped></style>

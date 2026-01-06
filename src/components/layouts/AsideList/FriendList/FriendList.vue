@@ -16,12 +16,14 @@ const props = defineProps<{
   friends: Friend[]
 }>()
 
+const friendStore = useFriendStore()
+
 const chooseFriend = (index: number) => {
   const friend = props.friends[index]
   if (!friend) {
     return
   }
-  useFriendStore().activateFriend(index)
+  friendStore.activateFriend(index)
 }
 </script>
 

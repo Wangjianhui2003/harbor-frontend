@@ -20,10 +20,15 @@ export interface User {
   headImageThumb: string
   email?: string
   phoneNumber?: string
-  sex?: number
-  isBanned?: boolean
-  signature: string
-  type: number
+  sex: number
+  isBanned: boolean
+  signature?: string
+  type: number //用户类型
+  addType: number //添加方式
+  lastLoginTime?: string
+  region?: string //地区
+  online: boolean
+  reason?: string
 }
 
 // 好友相关类型
