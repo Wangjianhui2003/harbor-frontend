@@ -1,10 +1,7 @@
 <template>
-  <Item
-    :class="['h-16 p-1 hover:bg-primary/10', { 'bg-primary/10 border-primary': isChosen }]"
-    variant="outline"
-  >
+  <Item :class="['h-16 p-1 hover:bg-primary/10', { 'bg-primary/10': isChosen }]">
     <ItemContent>
-      <div class="rounded-xl flex flex-row items-center h-13 gap-3">
+      <div class="flex flex-row items-center h-13 gap-3">
         <div class="relative">
           <!-- <img
             v-if="props.chat.headImage != ''"
@@ -21,7 +18,7 @@
         </div>
         <div class="flex flex-col justify-around gap-1 text-sm text-40xl">
           <div>{{ props.chat.showName }}</div>
-          <div>{{ lastContent }}</div>
+          <div class="text-[11px] text-muted-foreground">{{ lastContent }}</div>
         </div>
       </div>
     </ItemContent>

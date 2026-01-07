@@ -48,7 +48,6 @@ const useFriendStore = defineStore('friendStore', () => {
     })
   }
 
-
   const removeFriend = (id: number): void => {
     friends.value.filter((f) => f.id == id).forEach((f) => (f.deleted = true))
   }

@@ -1,6 +1,22 @@
 import http from '@/api/http/http'
 import type { Group, GroupMember } from '../types'
 
+//群聊信息
+export interface GroupResult {
+  id: number
+  name: string
+  ownerId: number
+  headImage: string
+  headImageThumb: string
+  notice: string
+  isBanned: boolean
+  reason: string
+  dissolve: number
+  joinType: number | null
+  updateTime: string | null
+  createdTime: string
+}
+
 interface CreateGroupData {
   name: string
   memberIds: number[]
@@ -48,7 +64,7 @@ export const deleteGroup = async (groupId: number): Promise<void> => {
   return undefined
 }
 
-// 查询单个群聊
+// 查询单个所在群聊信息
 export const findGroup = async (groupId: number): Promise<Group> => {
   const res = await http({
     url: `/group/find/${groupId}`,
@@ -102,4 +118,13 @@ export const kickGroup = async (groupId: number, userId: number): Promise<void> 
     params: { userId },
   })
   return undefined
+}
+
+export const searchGroup = async (groupId: number): Promise<GroupResult> => {
+  const res = await http({
+    url: `/group/search/${groupId}`,
+    method: 'GET',
+    params: { groupId },
+  })
+  return res.data.data
 }

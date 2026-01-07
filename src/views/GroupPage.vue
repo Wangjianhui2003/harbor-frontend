@@ -3,7 +3,11 @@
     <div class="basis-4/24">
       <Card class="h-full flex flex-col rounded-xs">
         <CardHeader class="gap-0">
-          <Input />
+          <div class="flex flex-row gap-2">
+            <Input class="flex-1" />
+            <Button variant="outline"><Search /></Button>
+            <Button variant="outline" @click="showAddGroupDialog = true"><UserRoundPlus /></Button>
+          </div>
         </CardHeader>
         <CardContent class="flex-1 min-h-0 p-0">
           <ScrollArea class="h-full w-full"><GroupList :groups="groupStore.groups" /></ScrollArea>
@@ -11,15 +15,22 @@
       </Card>
     </div>
     <div class="basis-20/24"><GroupInfo /></div>
+    <AddGroupDialog v-model:visible="showAddGroupDialog" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import GroupList from '@/components/layouts/AsideList/GroupList/GroupList.vue'
 import GroupInfo from '@/components/layouts/Window/GroupInfo.vue'
+import AddGroupDialog from '@/components/layouts/Dialog/AddGroupDialog.vue'
 import useGroupStore from '@/stores/groupStore'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { UserRoundPlus, Search } from 'lucide-vue-next'
 
 const groupStore = useGroupStore()
+const showAddGroupDialog = ref(false)
 </script>
 
 <style scoped></style>

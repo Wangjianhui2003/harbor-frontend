@@ -1,16 +1,24 @@
 <template>
-  <Card class="h-screen flex flex-col items-center gap-3 py-3 rounded-xs">
-    <Button
-      v-for="item in navButtons"
-      :key="item.label"
-      :variant="isActive(item.to) ? 'default' : 'ghost'"
-      :aria-label="item.label"
-      class="h-10 w-10 p-0"
-      @click="navigate(item.to)"
-    >
-      <component :is="item.icon" class="h-5 w-5" />
-    </Button>
-    <Button @click="switchMode" class="h-10 w-10 p-0">D</Button>
+  <Card class="h-screen flex flex-col items-center gap-3 rounded-xs justify-between">
+    <div class="flex flex-col items-center gap-3">
+      <Button
+        v-for="item in navButtons"
+        :key="item.label"
+        :variant="isActive(item.to) ? 'default' : 'ghost'"
+        :aria-label="item.label"
+        class="h-10 w-10 p-0"
+        @click="navigate(item.to)"
+      >
+        <component :is="item.icon" class="h-5 w-5" />
+      </Button>
+    </div>
+    <UserDropdownMenu>
+      <BaseAvatar
+        :headImage="userStore.userInfo.headImage"
+        :name="userStore.userInfo.nickname"
+        class="cursor-pointer"
+      />
+    </UserDropdownMenu>
   </Card>
 </template>
 
@@ -23,7 +31,9 @@ import { Users } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Bot } from 'lucide-vue-next'
 import { Card } from '@/components/ui/card'
-import { useColorMode } from '@vueuse/core'
+import BaseAvatar from '@/components/common/BaseAvatar.vue'
+import UserDropdownMenu from './UserDropdownMenu.vue'
+import useUserStore from '@/stores/userStore'
 
 type NavItem = {
   label: string
@@ -33,6 +43,7 @@ type NavItem = {
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUserStore()
 
 const navButtons: NavItem[] = [
   { label: 'Chat', icon: MessageSquareMore, to: 'Chat' },
@@ -47,11 +58,6 @@ const navigate = (name: string) => {
   if (!isActive(name)) {
     router.push({ name })
   }
-}
-
-const mode = useColorMode()
-const switchMode = () => {
-  mode.value = mode.value === 'light' ? 'dark' : 'light'
 }
 </script>
 <style></style>

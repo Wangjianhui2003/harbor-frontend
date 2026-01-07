@@ -31,10 +31,10 @@ export interface User {
   reason?: string
 }
 
-// 好友相关类型
+// 好友state
 export interface Friend {
   id: number
-  friendNickname: string //好友备注昵称
+  friendNickname: string //后端返回的好友昵称 备注 > 原昵称
   headImage: string
   headImageThumb?: string
   online: boolean

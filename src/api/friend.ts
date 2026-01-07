@@ -47,9 +47,9 @@ export const findFriend = async (friendId: number): Promise<Friend> => {
 }
 
 export const updateFriendNickName = async (friend: Friend) => {
-  http({
-    url: `/friend/editFriendNickName/`,
+  return http({
+    url: '/friend/updateFriendNickName',
     method: 'post',
-    data: friend
+    data: friend,
   })
 }

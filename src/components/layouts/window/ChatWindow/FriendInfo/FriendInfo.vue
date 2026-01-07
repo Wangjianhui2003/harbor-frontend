@@ -14,16 +14,23 @@
         <div class="flex items-center text-3xl">{{ friendUserInfo?.nickname }}</div>
         <div class="flex items-center">@{{ friendUserInfo?.username }}</div>
         <div class="flex gap-x-3">
-          <Button class="w-8 h-8 rounded-full cursor-pointer" title="发送信息" @click="sendMessage"
-            ><MailPlus
-          /></Button>
+          <Button class="w-8 h-8 rounded-full cursor-pointer" title="发送信息" @click="sendMessage">
+            <MailPlus />
+          </Button>
           <Button
             class="w-8 h-8 rounded-full cursor-pointer"
             title="移除好友 "
-            @click="removeFriend"
-            ><UserMinus
-          /></Button>
-          <Button class="w-8 h-8 rounded-full cursor-pointer" title="更改备注"><PenLine /></Button>
+            @click="openRemoveDialog"
+          >
+            <UserMinus />
+          </Button>
+          <Button
+            class="w-8 h-8 rounded-full cursor-pointer"
+            title="更改备注"
+            @click="openEditNicknameDialog"
+          >
+            <PenLine />
+          </Button>
         </div>
         <div class="flex items-center"><PencilLine />{{ friendUserInfo?.signature }}</div>
         <div class="flex items-center"><Mail /> {{ friendUserInfo?.email }}</div>
@@ -37,6 +44,20 @@
         <div class="flex items-center"><Clock /> {{ friendUserInfo?.lastLoginTime }}</div>
         <div class="flex items-center"><MapPin />{{ friendUserInfo?.region }}</div>
       </div>
+      <FriendNicknameDialog
+        v-if="friendInfo && friendUserInfo"
+        v-model:visible="editNicknameVisible"
+        :friend-id="friendInfo.id"
+        :current-nickname="friendInfo.friendNickname || friendUserInfo.nickname"
+        @updated="handleNicknameUpdated"
+      />
+      <RemoveFriendDialog
+        v-if="friendInfo && friendUserInfo"
+        v-model:visible="removeFriendVisible"
+        :friend-id="friendInfo.id"
+        :friend-name="friendInfo.friendNickname || friendUserInfo.nickname"
+        @removed="handleRemoved"
+      />
     </div>
   </Card>
 </template>
@@ -66,18 +87,19 @@ import useChatStore from '@/stores/chatStore'
 import type { ChatInfo } from '@/types/chat'
 import { CHATINFO_TYPE } from '@/utils/enums'
 import { useRouter } from 'vue-router'
-import { findFriend, updateFriendNickName } from '@/api/friend'
-import { useToast } from 'primevue/usetoast'
-import { showError } from '@/utils/message'
+import { findFriend } from '@/api/friend'
+import FriendNicknameDialog from './FriendNicknameDialog.vue'
+import RemoveFriendDialog from './RemoveFriendDialog.vue'
 
 const router = useRouter()
 const { activeFriendIndex, friends } = storeToRefs(useFriendStore())
 const friendStore = useFriendStore()
 const chatStore = useChatStore()
-const toast = useToast()
 
 const friendUserInfo = ref<User | null>(null)
 const friendInfo = ref<Friend | null>(null)
+const editNicknameVisible = ref(false)
+const removeFriendVisible = ref(false)
 
 watch(
   activeFriendIndex,
@@ -111,23 +133,25 @@ const sendMessage = () => {
   router.push({ name: 'Chat' })
 }
 
-const removeFriend = () => {
-  // Implement remove friend functionality
+const openEditNicknameDialog = () => {
+  if (!friendInfo.value) return
+  editNicknameVisible.value = true
 }
 
-//修改好友备注名
-const editFriendNickName = async (friendId: number, newFriendNickName: string) => {
-  try {
-    const friendData = {
-      id: friendId,
-      friendNickname: newFriendNickName,
-    } as Friend
-    await updateFriendNickName(friendData)
-    friendStore.updateFriendNickName(friendData.id, friendData.friendNickname)
-  } catch (err) {
-    console.log(err)
-    showError(toast, '错误', '更新用户名备注失败')
-  }
+const handleNicknameUpdated = (newNickname: string) => {
+  if (!friendInfo.value) return
+  friendInfo.value.friendNickname = newNickname
+  friendStore.updateFriendNickName(friendInfo.value.id, newNickname)
+}
+
+const openRemoveDialog = () => {
+  if (!friendInfo.value) return
+  removeFriendVisible.value = true
+}
+
+const handleRemoved = (id: number) => {
+  friendStore.removeFriend(id)
+  removeFriendVisible.value = false
 }
 </script>
 
