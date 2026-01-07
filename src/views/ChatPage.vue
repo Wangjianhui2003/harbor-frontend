@@ -3,7 +3,7 @@
     <div class="basis-4/24">
       <Card class="h-full flex flex-col rounded-xs">
         <CardHeader class="gap-0">
-          <Input />
+          <Input class="bg-background" />
         </CardHeader>
         <CardContent class="flex-1 min-h-0 p-0">
           <ScrollArea class="h-full w-full"> <ChatList :chats="chatStore.chats" /></ScrollArea>
@@ -20,6 +20,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import ChatList from '@/components/layouts/AsideList/ChatList/ChatList.vue'
 import ChatWindow from '@/components/layouts/Window/ChatWindow/ChatWindow.vue'
+import { Input } from '@/components/ui/input'
 
 const chatStore = useChatStore()
 </script>

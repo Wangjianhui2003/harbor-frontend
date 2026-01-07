@@ -110,7 +110,7 @@
                   <div class="flex-1 min-w-0">
                     <div class="font-medium">群组ID: {{ request.groupId }}</div>
                     <div class="text-sm text-muted-foreground">
-                      {{ request.requestNote || '无留言' }}
+                      {{ request.requestNote || '' }}
                     </div>
                     <div class="text-xs text-muted-foreground mt-1">
                       {{ formatTime(request.createdTime) }}

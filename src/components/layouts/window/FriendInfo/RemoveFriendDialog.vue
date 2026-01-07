@@ -33,10 +33,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { removeFriend as removeFriendApi } from '@/api/friend'
+import { removeFriend as removeFriendApi } from '@/api/friend.ts'
 import { useToast } from 'primevue/usetoast'
-import { showError, showSuccess } from '@/utils/message'
-import useFriendStore from '@/stores/friendStore'
+import { showError, showSuccess } from '@/utils/message.ts'
+import useFriendStore from '@/stores/friendStore.ts'
 
 const friendStore = useFriendStore()
 const props = defineProps<{

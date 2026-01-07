@@ -25,9 +25,9 @@ import { ref, watch } from 'vue'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { updateFriendNickName } from '@/api/friend'
+import { updateFriendNickName } from '@/api/friend.ts'
 import { useToast } from 'primevue/usetoast'
-import { showError, showSuccess } from '@/utils/message'
+import { showError, showSuccess } from '@/utils/message.ts'
 import type { Friend } from '@/types'
 
 const props = defineProps<{

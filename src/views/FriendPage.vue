@@ -4,9 +4,11 @@
       <Card class="h-full flex flex-col rounded-xs">
         <CardHeader class="gap-0">
           <div class="flex flex-row gap-2">
-            <Input class="flex-1" />
-            <Button variant="outline"><Search /></Button>
-            <Button variant="outline" @click="showAddFriendDialog = true"><UserRoundPlus /></Button>
+            <Input class="flex-1 bg-background" />
+            <Button class="w-9" variant="ghost"><Search /></Button>
+            <Button class="w-9" variant="ghost" @click="showAddFriendDialog = true"
+              ><UserRoundPlus
+            /></Button>
           </div>
         </CardHeader>
         <CardContent class="flex-1 min-h-0 p-0">
@@ -27,7 +29,7 @@
 import { ref } from 'vue'
 import FriendList from '@/components/layouts/AsideList/FriendList/FriendList.vue'
 import useFriendStore from '@/stores/friendStore'
-import FriendInfo from '@/components/layouts/Window/ChatWindow/FriendInfo/FriendInfo.vue'
+import FriendInfo from '@/components/layouts/Window/FriendInfo/FriendInfo.vue'
 import AddFriendDialog from '@/components/layouts/Dialog/AddFriendDialog.vue'
 import { UserRoundPlus, Search } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'

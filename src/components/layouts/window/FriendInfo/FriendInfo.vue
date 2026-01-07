@@ -12,7 +12,7 @@
       </div>
       <div class="mt-15 m-11 grid gap-3">
         <div class="flex items-center text-3xl">{{ friendUserInfo?.nickname }}</div>
-        <div class="flex items-center">@{{ friendUserInfo?.username }}</div>
+        <div class="flex items-center text-muted-foreground">@{{ friendUserInfo?.username }}</div>
         <div class="flex gap-x-3">
           <Button class="w-8 h-8 rounded-full cursor-pointer" title="发送信息" @click="sendMessage">
             <MailPlus />
@@ -65,10 +65,10 @@
 <script setup lang="ts">
 import { watch, ref } from 'vue'
 import { Card } from '@/components/ui/card'
-import useFriendStore from '@/stores/friendStore'
+import useFriendStore from '@/stores/friendStore.ts'
 
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
-import { getUserInfo } from '@/api/user'
+import { getUserInfo } from '@/api/user.ts'
 import type { Friend, User } from '@/types'
 import { storeToRefs } from 'pinia'
 import {
@@ -83,11 +83,11 @@ import {
   UserMinus,
   PenLine,
 } from 'lucide-vue-next'
-import useChatStore from '@/stores/chatStore'
-import type { ChatInfo } from '@/types/chat'
-import { CHATINFO_TYPE } from '@/utils/enums'
+import useChatStore from '@/stores/chatStore.ts'
+import type { ChatInfo } from '@/types/chat.ts'
+import { CHATINFO_TYPE } from '@/utils/enums.ts'
 import { useRouter } from 'vue-router'
-import { findFriend } from '@/api/friend'
+import { findFriend } from '@/api/friend.ts'
 import FriendNicknameDialog from './FriendNicknameDialog.vue'
 import RemoveFriendDialog from './RemoveFriendDialog.vue'
 
