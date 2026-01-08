@@ -5,7 +5,9 @@
         <CardHeader class="gap-0">
           <div class="flex flex-row gap-2">
             <Input class="flex-1 bg-background" />
-            <Button class="w-9" variant="ghost"><Search /></Button>
+            <HoverTip content="搜索">
+              <Button class="w-9" variant="ghost"><Search /></Button
+            ></HoverTip>
             <Button class="w-9" variant="ghost" @click="showAddFriendDialog = true"
               ><UserRoundPlus
             /></Button>
@@ -34,6 +36,7 @@ import AddFriendDialog from '@/components/layouts/Dialog/AddFriendDialog.vue'
 import { UserRoundPlus, Search } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import HoverTip from '@/components/common/HoverTip.vue'
 
 const friendStore = useFriendStore()
 const showAddFriendDialog = ref(false)

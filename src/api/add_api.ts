@@ -154,3 +154,17 @@ export const getGroupRequests = async (groupId: number): Promise<AddGroupRequest
   })
   return res.data.data
 }
+
+/**
+ * 根据群组ID列表查询请求
+ */
+export const findRequestsByGroupIds = async (
+  groupIds: number[],
+): Promise<AddGroupRequestRecord[]> => {
+  const res = await http({
+    url: '/add/group/list',
+    method: 'post',
+    data: groupIds,
+  })
+  return res.data.data
+}

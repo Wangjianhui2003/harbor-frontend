@@ -6,6 +6,10 @@
         <div class="flex flex-col justify-around gap-1 text-sm text-40xl">
           <div>{{ props.friend.friendNickname }}</div>
         </div>
+        <div class="flex flex-col gap-1">
+          <Monitor v-if="props.friend.onlineWeb" class="w-4 h-4 text-green-500" />
+          <Smartphone v-if="props.friend.onlineApp" class="w-4 h-4 text-green-500" />
+        </div>
       </div>
     </ItemContent>
   </Item>
@@ -17,6 +21,7 @@ import { Item, ItemContent } from '@/components/ui/item'
 import useFriendStore from '@/stores/friendStore'
 import type { Friend } from '@/types'
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
+import { Monitor, Smartphone } from 'lucide-vue-next'
 
 const props = defineProps<{
   friend: Friend

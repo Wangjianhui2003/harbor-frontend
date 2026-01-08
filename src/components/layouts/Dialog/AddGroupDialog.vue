@@ -4,7 +4,6 @@
       <DialogHeader>
         <DialogTitle>加入群聊</DialogTitle>
       </DialogHeader>
-
       <div class="flex flex-col flex-1 min-h-0">
         <!-- 标签切换 -->
         <div class="flex border-b mb-4">
@@ -22,17 +21,10 @@
             {{ tab.label }}
           </button>
         </div>
-
         <!-- 查找群组 -->
         <div v-if="activeTab === 'search'" class="flex-1 min-h-0 flex flex-col">
           <div class="flex gap-2 mb-4">
-            <Input
-              v-model="searchGroupId"
-              type="number"
-              placeholder="输入群组ID"
-              class="flex-1"
-              @keyup.enter="handleSearch"
-            />
+            <Input v-model="searchGroupId" placeholder="输入群组ID" @keyup.enter="handleSearch" />
             <Button @click="handleSearch" :disabled="searching">
               <Search class="w-4 h-4 mr-2" />
               搜索
@@ -125,32 +117,29 @@
           </ScrollArea>
         </div>
 
-        <!-- 群组请求列表（需要选择群组） -->
+        <!-- 群组请求列表（自动加载管理的群组） -->
         <div v-if="activeTab === 'group'" class="flex-1 min-h-0 flex flex-col">
-          <div class="flex gap-2 mb-4">
-            <Input
-              v-model="selectedGroupId"
-              type="number"
-              placeholder="输入群组ID查看请求"
-              class="flex-1"
-              @keyup.enter="loadGroupRequests"
-            />
-            <Button @click="loadGroupRequests" :disabled="loadingGroup || !selectedGroupId">
-              <Search class="w-4 h-4 mr-2" />
-              查看
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-sm text-muted-foreground">加群申请</span>
+            <Button variant="outline" size="sm" @click="loadGroupRequests" :disabled="loadingGroup">
+              <RefreshCw class="w-4 h-4 mr-2" :class="{ 'animate-spin': loadingGroup }" />
+              刷新
             </Button>
           </div>
 
           <ScrollArea class="flex-1 min-h-0">
             <div v-if="loadingGroup" class="text-center py-8 text-muted-foreground">加载中...</div>
             <div
-              v-else-if="groupRequests.length === 0 && selectedGroupId"
+              v-else-if="managedGroupIds.length === 0"
               class="text-center py-8 text-muted-foreground"
             >
-              该群组暂无请求
+              您不是任何群组的群主或管理员
             </div>
-            <div v-else-if="!selectedGroupId" class="text-center py-8 text-muted-foreground">
-              请输入群组ID查看请求列表
+            <div
+              v-else-if="groupRequests.length === 0"
+              class="text-center py-8 text-muted-foreground"
+            >
+              暂无加群请求
             </div>
             <div v-else class="space-y-2">
               <div v-for="request in groupRequests" :key="request.id" class="p-3 rounded-lg border">
@@ -202,11 +191,11 @@ import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import { Search, RefreshCw } from 'lucide-vue-next'
-import { searchGroup, type GroupResult } from '@/api/group'
+import { searchGroup, getManagedGroupIds, type GroupResult } from '@/api/group'
 import {
   addGroupRequest,
   getSentGroupRequests,
-  getGroupRequests,
+  findRequestsByGroupIds,
   dealAddGroupRequest,
   type AddGroupRequestRecord,
   type DealAddGroupReq,
@@ -237,7 +226,7 @@ const sentRequests = ref<AddGroupRequestRecord[]>([])
 const groupRequests = ref<AddGroupRequestRecord[]>([])
 const loadingSent = ref(false)
 const loadingGroup = ref(false)
-const selectedGroupId = ref('')
+const managedGroupIds = ref<number[]>([])
 const isProcessing = ref<Record<number, boolean>>({})
 
 const onOpenChange = (open: boolean) => {
@@ -310,28 +299,28 @@ const loadSentRequests = async () => {
   }
 }
 
-// 加载群组请求
+// 加载群组请求（自动加载管理的群组）
 const loadGroupRequests = async () => {
-  if (!selectedGroupId.value.trim()) {
-    showError(toast, '提示', '请输入群组ID')
-    return
-  }
-
-  const groupId = Number(selectedGroupId.value.trim())
-  if (isNaN(groupId) || groupId <= 0) {
-    showError(toast, '提示', '请输入有效的群组ID')
-    return
-  }
-
   loadingGroup.value = true
   try {
-    const requests = await getGroupRequests(groupId)
+    // 先获取当前用户管理的群组ID列表
+    const groupIds = await getManagedGroupIds()
+    managedGroupIds.value = groupIds
+
+    if (groupIds.length === 0) {
+      groupRequests.value = []
+      return
+    }
+
+    // 根据群组ID列表获取加群申请
+    const requests = await findRequestsByGroupIds(groupIds)
     groupRequests.value = requests
   } catch (err: unknown) {
     console.error(err)
     const error = err as { response?: { data?: { message?: string } } }
     showError(toast, '错误', error.response?.data?.message || '加载请求列表失败')
     groupRequests.value = []
+    managedGroupIds.value = []
   } finally {
     loadingGroup.value = false
   }
@@ -403,8 +392,7 @@ watch(activeTab, (newTab) => {
   if (newTab === 'sent') {
     loadSentRequests()
   } else if (newTab === 'group') {
-    groupRequests.value = []
-    selectedGroupId.value = ''
+    loadGroupRequests()
   }
 })
 
