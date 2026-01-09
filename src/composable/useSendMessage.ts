@@ -186,7 +186,11 @@ export function useSendMessage() {
    * @returns 是否发送成功
    */
   async function resendMessage(message: BaseMessage, chatInfo: ChatInfo): Promise<boolean> {
-    if (message.status !== MESSAGE_STATUS.ERROR || isSending.value) {
+    // 支持 UNSENT（定时器超时重发）或 ERROR（用户手动重发）状态
+    if (
+      (message.status !== MESSAGE_STATUS.ERROR && message.status !== MESSAGE_STATUS.UNSENT) ||
+      isSending.value
+    ) {
       return false
     }
 

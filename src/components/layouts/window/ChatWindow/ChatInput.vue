@@ -4,12 +4,12 @@
       <Button variant="ghost" class="rounded-full w-10 h-10" @click="scrollToBottom()">
         <CircleArrowDown class="size-6" />
       </Button>
-      {{ unreadCount }}
+      <span>{{ unreadCount }} 条未读</span>
     </div>
     <InputGroup class="w-full bg-secondary">
       <InputGroupTextarea
         v-model="messageContent"
-        placeholder="输入消息,shift+enter换行"
+        placeholder="输入消息 shift+enter 换行"
         @keydown="handleKeydown"
       />
       <InputGroupAddon align="block-end">

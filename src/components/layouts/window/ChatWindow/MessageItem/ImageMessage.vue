@@ -20,6 +20,7 @@ const props = defineProps<{ message: BaseMessage }>()
 
 interface ImageContent {
   originUrl: string
+  thumbUrl: string
 }
 
 const content = JSON.parse(props.message.content) as ImageContent

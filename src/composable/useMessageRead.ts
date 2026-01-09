@@ -19,20 +19,15 @@ export function useMessageRead(message: BaseMessage, elementRef: Ref<HTMLElement
   let observer: IntersectionObserver | null = null
 
   const markAsRead = () => {
-    // 自己发送的消息不需要标记
     if (message.selfSend) return
-    // 已经是已读状态不需要重复标记
     if (message.status === MESSAGE_STATUS.READ) return
-    // 已撤回的消息不需要标记
     if (message.status === MESSAGE_STATUS.RECALL) return
-    // 没有打开的聊天不需要标记
     if (!chatStore.activeChat) return
 
     const chatType = chatStore.activeChat.type
     const targetId = chatStore.activeChat.targetId
     const chatKey = `${chatType}-${targetId}`
 
-    // 更新本地消息状态
     message.status = MESSAGE_STATUS.READ
 
     // 更新未读计数

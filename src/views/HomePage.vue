@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { pullOfflineGroupMessage } from '@/api/group-msg'
 import { pullOfflinePrivateMessage } from '@/api/private-msg'
+import { useAuth } from '@/composable/useAuth'
 import useMainStore from '@/stores'
 import useChatStore from '@/stores/chatStore'
 import useFriendStore from '@/stores/friendStore'
@@ -132,7 +133,7 @@ const handleWebSocketMessage = (msg: WebSocketMessage) => {
     case CMD_TYPE.FORCE_LOGOUT:
       wsClient.close(WEBSOCKET_CLOSE_CODE.FORCE_LOGOUT)
       showWarn(toast, '您已被强制下线', '您的账号在其他地方登录')
-      location.href = '/login'
+      useAuth().logout()
       break
     case CMD_TYPE.PRIVATE_MESSAGE:
       handlePrivateMessage(msg.data as PrivateMessage)

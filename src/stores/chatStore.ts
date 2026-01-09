@@ -17,8 +17,6 @@ import type { ChatsData } from '@/types/chat'
 import type { Group, User } from '@/types/index.js'
 import type { FriendInfoUpdate } from '@/types/friend.js'
 import { isScrollAtBottom, scrollToBottom } from '@/utils/dom.js'
-import { readPrivateMessage } from '@/api/private-msg.js'
-import { readGroupMessage } from '@/api/group-msg.js'
 
 /* 为了加速拉取离线消息效率，拉取时消息暂时存储到cacheChats,等
 待所有离线消息拉取完成后，再统一渲染*/
