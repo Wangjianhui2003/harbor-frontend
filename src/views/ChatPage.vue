@@ -23,6 +23,8 @@ import ChatWindow from '@/components/layouts/Window/ChatWindow/ChatWindow.vue'
 import { Input } from '@/components/ui/input'
 
 const chatStore = useChatStore()
+
+
 </script>
 
 <style scoped></style>

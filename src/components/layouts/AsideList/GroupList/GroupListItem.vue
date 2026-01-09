@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Item :class="['h-16 p-1 hover:bg-primary/10', { 'bg-primary/10': isChosen }]">
+    <Item :class="['h-16 p-1 hover:bg-primary/10 rounded-none', { 'bg-primary/10': isChosen }]">
       <ItemContent>
         <div class="flex flex-row items-center h-13 gap-3">
           <BaseAvatar :headImage="props.group.headImage" :name="props.group.showGroupName" />

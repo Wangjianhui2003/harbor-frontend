@@ -1,5 +1,5 @@
 <template>
-  <div>file</div>
+  <div>文件消息</div>
 </template>
 
 <script setup lang="ts"></script>

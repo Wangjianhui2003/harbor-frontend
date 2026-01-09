@@ -10,7 +10,10 @@
 <script setup lang="ts">
 import useChatStore from '@/stores/chatStore'
 import type { Chat, ChatInfo } from '@/types/chat'
-import ChatListItem from './ChatListItem.vue';
+import ChatListItem from './ChatListItem.vue'
+import { readPrivateMessage } from '@/api/private-msg'
+import { CHATINFO_TYPE } from '@/utils/enums'
+import { readGroupMessage } from '@/api/group-msg'
 
 const props = defineProps<{
   chats: Chat[]
@@ -28,7 +31,14 @@ const chooseChat = (index: number) => {
     targetId: chat.targetId,
     type: chat.type,
   } as ChatInfo
+  if (chat.unreadCount == 0) return
+  //已读
   chatStore.resetUnread(chatInfo)
+  if (chatInfo.type == CHATINFO_TYPE.PRIVATE) {
+    readPrivateMessage(chatInfo.targetId)
+  } else {
+    readGroupMessage(chatInfo.targetId)
+  }
 }
 </script>
 

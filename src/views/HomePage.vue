@@ -167,7 +167,7 @@ const handlePrivateMessage = (msgInfo: PrivateMessage) => {
     return
   }
 
-  // 已读消息
+  // 收到已读信号
   if (msgInfo.type === MESSAGE_TYPE.READ) {
     chatStore.resetUnread(chatInfo)
     return
@@ -227,7 +227,7 @@ const handleGroupMessage = (msgInfo: GroupMessage) => {
     chatStore.setLoadingGroupMsgState(JSON.parse(msgInfo.content))
     return
   }
-  //收到已读信号，前端标记已读
+  //收到已读信号
   if (msgInfo.type === MESSAGE_TYPE.READ) {
     chatStore.resetUnread(chatInfo)
     return
@@ -305,7 +305,6 @@ const insertPrivateMsg = (friend: Friend, msgInfo: PrivateMessage) => {
   chatStore.openChat(chatInfo)
   //插入信息
   chatStore.insertMessage(msgInfo, chatInfo)
-  //TODO:私聊接收消息提示
 }
 
 const loadGroupInfo = (groupId: number): Group => {

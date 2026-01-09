@@ -64,12 +64,13 @@ export const MESSAGE_STATUS = {
   SENT: 1,
   RECALL: 2,
   READ: 3,
+  ERROR: 4, //后端没有这个状态，前端用来标记重发
 } as const
 
 export const MSG_INFO_LOAD_STATUS = {
-  LOADING: 'loading',
-  FAIL: 'fail',
-  OK: 'ok',
+  LOADING: 0,
+  FAIL: 1,
+  OK: 2,
 } as const
 
 /**
@@ -146,3 +147,4 @@ export type MsgContentType = (typeof MSG_CONTENT_TYPE)[keyof typeof MSG_CONTENT_
 export type MsgItemOpType = (typeof MSG_ITEM_OP)[keyof typeof MSG_ITEM_OP]
 export type WebRTCStateType = (typeof WEBRTC_STATE)[keyof typeof WEBRTC_STATE]
 export type WebRTCModeType = (typeof WEBRTC_MODE)[keyof typeof WEBRTC_MODE]
+export type MsgInfoLoadStatusType = (typeof MSG_INFO_LOAD_STATUS)[keyof typeof MSG_INFO_LOAD_STATUS]

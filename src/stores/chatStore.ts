@@ -14,8 +14,11 @@ import type {
   TimeTipMessage,
 } from '@/types/chat.js'
 import type { ChatsData } from '@/types/chat'
-import type { Friend, Group, User } from '@/types/index.js'
+import type { Group, User } from '@/types/index.js'
 import type { FriendInfoUpdate } from '@/types/friend.js'
+import { isScrollAtBottom, scrollToBottom } from '@/utils/dom.js'
+import { readPrivateMessage } from '@/api/private-msg.js'
+import { readGroupMessage } from '@/api/group-msg.js'
 
 /* 为了加速拉取离线消息效率，拉取时消息暂时存储到cacheChats,等
 待所有离线消息拉取完成后，再统一渲染*/
@@ -290,6 +293,18 @@ const useChatStore = defineStore('chatStore', {
           }
         }
       }
+      //设置为已发送
+      if (msgInfo.status == MESSAGE_STATUS.UNSENT) {
+        msgInfo.status = MESSAGE_STATUS.SENT
+      }
+      //当前打开了该聊天，且滚动条在底部，直接设置为已读
+      if (
+        useChatStore().activeChat?.targetId == chatInfo.targetId &&
+        useChatStore().activeChat?.type == chatInfo.type &&
+        isScrollAtBottom()
+      ) {
+        scrollToBottom()
+      }
       messages.splice(insertPos, 0, msgInfo)
       chat.stored = false
       this.saveToStorage()
@@ -406,20 +421,21 @@ const useChatStore = defineStore('chatStore', {
 
     //清除未读状态(未读消息数，at等)
     resetUnread(chatInfo: ChatInfo) {
-      const chats = this.getChatList
-      for (let idx = 0; idx < chats.length; idx++) {
-        const chat = chats[idx]
-        if (chat && chat.type == chatInfo.type && chat.targetId == chatInfo.targetId) {
-          chat.unreadCount = 0
-          chat.atMe = false
-          chat.stored = false
-          this.saveToStorage()
-          if (chat.type === CHATINFO_TYPE.GROUP) {
-            ;(chat as GroupChat).atAll = false
-          }
-          break
-        }
+      const chat = this.findChat(chatInfo)
+      if (!chat) return
+
+      chat.unreadCount = 0
+      chat.atMe = false
+      chat.stored = false
+      chat.messages.forEach((msg) => {
+        if (!msg) return
+        if (!isContentMessage(msg)) return
+        msg.status = MESSAGE_STATUS.READ
+      })
+      if (chat.type === CHATINFO_TYPE.GROUP) {
+        ;(chat as GroupChat).atAll = false
       }
+      this.saveToStorage()
     },
 
     //将私聊会话maxId以下的全部设为已读(多时其他客户端已读客户端)
@@ -434,11 +450,12 @@ const useChatStore = defineStore('chatStore', {
         if (!isContentMessage(msg) || !isPrivateMessage(msg)) {
           continue
         }
-        if (msg.id && msg.selfSend && msg.status < MESSAGE_STATUS.RECALL) {
-          if (!maxId || msg.id <= maxId) {
-            msg.status = MESSAGE_STATUS.READ
-            chat.stored = false
-          }
+        if (!msg.id || !msg.selfSend || msg.status == MESSAGE_STATUS.RECALL) {
+          continue
+        }
+        if (!maxId || msg.id <= maxId) {
+          msg.status = MESSAGE_STATUS.READ
+          chat.stored = false
         }
       }
       this.saveToStorage()
@@ -530,7 +547,7 @@ const useChatStore = defineStore('chatStore', {
           const message = chat.messages[idx] as BaseMessage
           if (!message) continue
           // 通过id判断
-          if (msgInfo.id && message.id == msgInfo.id) {
+          if (msgInfo.id != -1 && msgInfo.id && message.id == msgInfo.id) {
             return message
           }
           // 正在发送中的消息可能没有id,只有tmpId

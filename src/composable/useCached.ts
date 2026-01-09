@@ -1,5 +1,5 @@
 import { onBeforeUnmount, ref, unref, watch } from 'vue'
-import type { MaybeRef, Ref } from 'vue'
+import type { Ref } from 'vue'
 import localForage from 'localforage'
 
 type UseCachedOptions = {

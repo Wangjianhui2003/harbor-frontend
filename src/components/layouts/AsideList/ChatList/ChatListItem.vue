@@ -1,14 +1,8 @@
 <template>
-  <Item :class="['h-16 p-1 hover:bg-primary/10', { 'bg-primary/10': isChosen }]">
+  <Item :class="['h-16 p-1 hover:bg-primary/10 rounded-none', { 'bg-primary/10': isChosen }]">
     <ItemContent>
       <div class="flex flex-row items-center h-13 gap-3">
         <div class="relative">
-          <!-- <img
-            v-if="props.chat.headImage != ''"
-            :src="props.chat.headImage"
-            class="w-9 h-9 rounded-full object-cover"
-          />
-          <div v-else class="w-9 h-9 rounded-full bg-gray-200"></div> -->
           <base-avatar :headImage="props.chat.headImage" :name="props.chat.showName" />
           <base-badge
             v-if="props.chat.unreadCount > 0"

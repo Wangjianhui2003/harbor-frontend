@@ -1,4 +1,9 @@
-import type { MESSAGE_TYPE } from '@/utils/enums'
+import type {
+  MESSAGE_TYPE,
+  MessageStatusType,
+  MsgInfoLoadStatusType,
+  MessageType,
+} from '@/utils/enums'
 
 export type BaseMessage = GroupMessage | PrivateMessage
 
@@ -67,11 +72,11 @@ export interface GroupMessage {
   sendId: number
   sendNickname: string
   sendTime: number
-  status: number | null
-  type: number
+  status: MessageStatusType
+  type: MessageType
   tmpId?: string
   quoteMessage?: GroupMessage
-  loadStatus?: string
+  loadStatus?: MsgInfoLoadStatusType
 }
 
 // 私聊消息
@@ -82,10 +87,10 @@ export interface PrivateMessage {
   selfSend: boolean
   sendId: number
   sendTime: number
-  status: number
-  type: number
+  status: MessageStatusType
+  type: MessageType
   quoteMessage?: PrivateMessage
-  loadStatus?: string
+  loadStatus?: MsgInfoLoadStatusType
   tmpId?: string
 }
 
@@ -93,19 +98,24 @@ export interface PrivateMessage {
 export interface PrivateMessageDTO {
   recvId: number
   content: string
-  type: number
+  type: MessageType
 }
 
 // 群聊消息DTO
 export interface GroupMessageDTO {
   groupId: number
   content: string
-  type: number
+  type: MessageType
   atUserIds?: number[]
   receipt?: boolean
 }
 
 export interface TimeTipMessage {
   sendTime: number
-  type: typeof MESSAGE_TYPE.TIP_TIME
+  type: MessageType
+}
+
+export interface ImageContent {
+  thumbUrl: string
+  originUrl: string
 }
