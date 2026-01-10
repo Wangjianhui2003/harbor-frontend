@@ -26,9 +26,8 @@ const useWebRTCStore = defineStore('WebRTCStore', () => {
   const loadConfig = async (): Promise<void> => {
     try {
       const config = await loadWebRTCConfig()
-      console.log(config)
       setConfig(config)
-      console.log('加载webrtc配置成功')
+      console.log('加载webrtc配置成功,配置为', config)
     } catch (err) {
       console.log('加载WebRTC配置出错', err)
       throw err

@@ -16,24 +16,8 @@
         <ImageButton />
         <FileButton />
         <VoiceButton />
-        <HoverTip content="语言通话">
-          <InputGroupButton
-            @click="handleSendVoiceCall"
-            variant="ghost"
-            class="hover:bg-primary/10 size-7"
-          >
-            <PhoneOutgoing class="size-5" />
-          </InputGroupButton>
-        </HoverTip>
-        <HoverTip content="视频通话">
-          <InputGroupButton
-            @click="handleSendVideoCall"
-            variant="ghost"
-            class="hover:bg-primary/10 size-7"
-          >
-            <Video class="size-5" />
-          </InputGroupButton>
-        </HoverTip>
+        <VoiceCallButton />
+        <VideoCallButton />
         <InputGroupText class="ml-auto"> 发送 </InputGroupText>
         <Separator orientation="vertical" class="h-4!" />
         <InputGroupButton
@@ -51,7 +35,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { PhoneOutgoing, Video, ArrowUpIcon, CircleArrowDown } from 'lucide-vue-next'
+import { ArrowUpIcon, CircleArrowDown } from 'lucide-vue-next'
 
 import {
   InputGroup,
@@ -62,7 +46,6 @@ import {
 } from '@/components/ui/input-group'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
-import HoverTip from '@/components/common/HoverTip.vue'
 import { useSendMessage } from '@/composable/useSendMessage'
 import { scrollToBottom } from '@/utils/dom'
 import useChatStore from '@/stores/chatStore'
@@ -71,6 +54,8 @@ import useChatStore from '@/stores/chatStore'
 import ImageButton from './ImageButton.vue'
 import FileButton from './FileButton.vue'
 import VoiceButton from './VoiceButton.vue'
+import VoiceCallButton from './VoiceCallButton.vue'
+import VideoCallButton from './VideoCallButton.vue'
 
 const chatStore = useChatStore()
 const messageContent = ref('')
@@ -93,12 +78,6 @@ async function handleSend() {
   if (success) {
   }
 }
-
-/** 发送语言通话 */
-function handleSendVoiceCall() {}
-
-/** 发送视频通话 */
-function handleSendVideoCall() {}
 
 const unreadCount = computed(() => {
   return chatStore.activeChat?.unreadCount || 0

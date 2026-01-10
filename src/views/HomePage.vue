@@ -6,6 +6,48 @@
     <div class="basis-24/25">
       <router-view></router-view>
     </div>
+
+    <!-- 视频通话 -->
+    <VideoCallAlert
+      :show="showVideoCallAlert"
+      :is-caller="videoCall.isCaller.value"
+      :friend="videoCall.targetFriend.value"
+      :offer="incomingVideoOffer"
+      @accept="handleAcceptVideoCall"
+      @reject="handleRejectVideoCall"
+      @cancel="handleCancelVideoCall"
+    />
+
+    <VideoCall
+      :show="showVideoCall"
+      :is-calling="videoCall.isCaller.value"
+      :friend="videoCall.targetFriend.value"
+      :local-stream="videoCall.localStream.value"
+      :remote-stream="videoCall.remoteStream.value"
+      @hangup="handleHangupVideoCall"
+      @cancel="handleCancelVideoCall"
+    />
+
+    <!-- 语音通话 -->
+    <VoiceCallAlert
+      :show="showVoiceCallAlert"
+      :is-caller="voiceCall.isCaller.value"
+      :friend="voiceCall.targetFriend.value"
+      :offer="incomingVoiceOffer"
+      @accept="handleAcceptVoiceCall"
+      @reject="handleRejectVoiceCall"
+      @cancel="handleCancelVoiceCall"
+    />
+
+    <VoiceCall
+      :show="showVoiceCall"
+      :is-calling="voiceCall.isCaller.value"
+      :is-chatting="voiceCall.isChatting.value"
+      :friend="voiceCall.targetFriend.value"
+      :remote-stream="voiceCall.remoteStream.value"
+      @hangup="handleHangupVoiceCall"
+      @cancel="handleCancelVoiceCall"
+    />
   </div>
 </template>
 
@@ -26,7 +68,15 @@ import { CHATINFO_TYPE, CMD_TYPE, MESSAGE_TYPE, WEBSOCKET_CLOSE_CODE } from '@/u
 import { showError, showWarn } from '@/utils/message'
 import { createWebSocketClient } from '@/utils/websocket-utils'
 import { useToast } from 'primevue/usetoast'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import mitter from '@/event/mitt'
+import { RTC_EVENTS } from '@/event/rtc_events'
+import { useVideoCall } from '@/composable/useVideoCall'
+import { useVoiceCall } from '@/composable/useVoiceCall'
+import VideoCallAlert from '@/components/layouts/Float/VideoCallAlert.vue'
+import VideoCall from '@/components/layouts/Float/VideoCall.vue'
+import VoiceCallAlert from '@/components/layouts/Float/VoiceCallAlert.vue'
+import VoiceCall from '@/components/layouts/Float/VoiceCall.vue'
 
 const toast = useToast()
 const wsClient = createWebSocketClient()
@@ -41,6 +91,40 @@ onMounted(() => {
   //初始化
   initRTC()
   init()
+})
+
+// 视频通话
+const videoCall = useVideoCall()
+const incomingVideoOffer = ref<RTCSessionDescriptionInit | null>(null)
+
+// 语音通话
+const voiceCall = useVoiceCall()
+const incomingVoiceOffer = ref<RTCSessionDescriptionInit | null>(null)
+
+// 视频通话显示控制
+const showVideoCallAlert = computed(() => {
+  return videoCall.callState.value === 'INCOMING'
+})
+
+const showVideoCall = computed(() => {
+  return (
+    videoCall.callState.value === 'CALLING' ||
+    videoCall.callState.value === 'CONNECTING' ||
+    videoCall.callState.value === 'CHATTING'
+  )
+})
+
+// 语音通话显示控制
+const showVoiceCallAlert = computed(() => {
+  return voiceCall.callState.value === 'INCOMING'
+})
+
+const showVoiceCall = computed(() => {
+  return (
+    voiceCall.callState.value === 'CALLING' ||
+    voiceCall.callState.value === 'CONNECTING' ||
+    voiceCall.callState.value === 'CHATTING'
+  )
 })
 
 const init = async () => {
@@ -59,7 +143,115 @@ const init = async () => {
   }
 }
 
-const initRTC = () => {}
+const initRTC = () => {
+  // 注册视频通话事件监听
+  videoCall.setupEventListeners()
+  // 注册语音通话事件监听
+  voiceCall.setupEventListeners()
+}
+
+// 视频通话事件处理
+const handleAcceptVideoCall = (offer: RTCSessionDescriptionInit | null) => {
+  if (offer) {
+    videoCall.acceptCallWithOffer(offer)
+  }
+}
+
+const handleRejectVideoCall = () => {
+  videoCall.rejectCall()
+}
+
+const handleCancelVideoCall = () => {
+  videoCall.cancelCall()
+}
+
+const handleHangupVideoCall = () => {
+  videoCall.hangup()
+}
+
+// 语音通话事件处理
+const handleAcceptVoiceCall = (offer: RTCSessionDescriptionInit | null) => {
+  if (offer) {
+    voiceCall.acceptCallWithOffer(offer)
+  }
+}
+
+const handleRejectVoiceCall = () => {
+  voiceCall.rejectCall()
+}
+
+const handleCancelVoiceCall = () => {
+  voiceCall.cancelCall()
+}
+
+const handleHangupVoiceCall = () => {
+  voiceCall.hangup()
+}
+
+// 处理RTC信令
+const handleRTCSignaling = (msgInfo: PrivateMessage) => {
+  switch (msgInfo.type) {
+    case MESSAGE_TYPE.RTC_CALL_VIDEO:
+      try {
+        incomingVideoOffer.value = JSON.parse(msgInfo.content) as RTCSessionDescriptionInit
+      } catch (e) {
+        console.error('解析 offer 失败', e)
+      }
+      mitter.emit(RTC_EVENTS.VIDEO_CALL_INCOMING, msgInfo)
+      break
+    case MESSAGE_TYPE.RTC_CALL_VOICE:
+      try {
+        incomingVoiceOffer.value = JSON.parse(msgInfo.content) as RTCSessionDescriptionInit
+      } catch (e) {
+        console.error('解析 offer 失败', e)
+      }
+      mitter.emit(RTC_EVENTS.VOICE_CALL_INCOMING, msgInfo)
+      break
+    case MESSAGE_TYPE.RTC_ACCEPT:
+      // 根据当前状态判断是视频还是语音
+      if (videoCall.callState.value !== 'IDLE') {
+        mitter.emit(RTC_EVENTS.VIDEO_CALL_ACCEPTED, msgInfo)
+      } else {
+        mitter.emit(RTC_EVENTS.VOICE_CALL_ACCEPTED, msgInfo)
+      }
+      break
+    case MESSAGE_TYPE.RTC_REJECT:
+      if (videoCall.callState.value !== 'IDLE') {
+        mitter.emit(RTC_EVENTS.VIDEO_CALL_REJECTED, msgInfo)
+      } else {
+        mitter.emit(RTC_EVENTS.VOICE_CALL_REJECTED, msgInfo)
+      }
+      break
+    case MESSAGE_TYPE.RTC_CANCEL:
+      if (videoCall.callState.value !== 'IDLE') {
+        mitter.emit(RTC_EVENTS.VIDEO_CALL_CANCELLED, msgInfo)
+      } else {
+        mitter.emit(RTC_EVENTS.VOICE_CALL_CANCELLED, msgInfo)
+      }
+      break
+    case MESSAGE_TYPE.RTC_HANGUP:
+      if (videoCall.callState.value !== 'IDLE') {
+        mitter.emit(RTC_EVENTS.VIDEO_CALL_HANGUP, msgInfo)
+      } else {
+        mitter.emit(RTC_EVENTS.VOICE_CALL_HANGUP, msgInfo)
+      }
+      break
+    case MESSAGE_TYPE.RTC_CANDIDATE:
+      if (videoCall.callState.value !== 'IDLE') {
+        mitter.emit(RTC_EVENTS.VIDEO_CALL_CANDIDATE, msgInfo)
+      } else {
+        mitter.emit(RTC_EVENTS.VOICE_CALL_CANDIDATE, msgInfo)
+      }
+      break
+    case MESSAGE_TYPE.RTC_FAILED:
+      if (videoCall.callState.value !== 'IDLE') {
+        mitter.emit(RTC_EVENTS.VIDEO_CALL_FAILED, msgInfo)
+      } else {
+        mitter.emit(RTC_EVENTS.VOICE_CALL_FAILED, msgInfo)
+      }
+      break
+  }
+}
 
 const handleWebSocketLogin = async () => {
   try {
@@ -198,11 +390,11 @@ const handlePrivateMessage = (msgInfo: PrivateMessage) => {
     return
   }
 
-  // //单人RTC信令
-  // if (checkMsgType.isRtcPrivate(msgInfo.type)) {
-  //   rtcPrivateVideo.value.onRTCPrivateMsg(msgInfo)
-  //   return
-  // }
+  // 单人RTC信令
+  if (checkMessageType.isRtcPrivate(msgInfo.type)) {
+    handleRTCSignaling(msgInfo)
+    return
+  }
 
   //需要会话显示的消息
   if (

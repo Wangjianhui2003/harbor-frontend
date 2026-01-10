@@ -1,8 +1,11 @@
 <template>
   <!-- 录音中 UI-->
   <div v-if="voiceState === 'RECORDING'" class="flex items-center gap-2 bg-card rounded-sm p-1">
-    <InputGroupButton variant="destructive" @click="stopRecording" class="size-5">
-    </InputGroupButton>
+    <InputGroupButton
+      variant="destructive"
+      @click="stopRecording"
+      class="size-3 p-1 ml-1 cursor-pointer rounded-xs"
+    />
     <InputGroupText class="flex items-center gap-2">
       <span class="animate-pulse text-destructive">●</span>
       <span>{{ formatDuration(recordingDuration) }}</span>
@@ -55,7 +58,7 @@ import uploadFile from '@/api/file'
 
 const { sendAudioMessage } = useSendMessage()
 
-// ========== 语音录制相关 ==========
+//状态
 type VoiceState = 'IDLE' | 'RECORDING' | 'PREVIEW'
 const voiceState = ref<VoiceState>('IDLE')
 const recordingDuration = ref(0)

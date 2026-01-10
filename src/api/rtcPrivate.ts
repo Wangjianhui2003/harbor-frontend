@@ -1,8 +1,9 @@
 import http from './http/http'
 import { WEBRTC_MODE } from '@/utils/enums'
+import type { WebRTCModeType } from '@/utils/enums'
 
 //呼叫视频通话
-const call = async (userId: number, mode = WEBRTC_MODE.VIDEO, offer: string) => {
+const call = async (userId: number, mode: WebRTCModeType = WEBRTC_MODE.VIDEO, offer: string) => {
   const res = await http({
     url: '/webrtc/private/call',
     method: 'post',
