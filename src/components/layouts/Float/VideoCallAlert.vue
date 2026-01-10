@@ -1,5 +1,5 @@
 <template>
-  <div>音频消息</div>
+  <div>video call alert</div>
 </template>
 
 <script setup lang="ts"></script>

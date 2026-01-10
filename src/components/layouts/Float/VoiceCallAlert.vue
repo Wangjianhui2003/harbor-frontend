@@ -1,5 +1,5 @@
 <template>
-  <div>call alarm modal</div>
+  <div>voice call alert</div>
 </template>
 
 <script setup lang="ts"></script>

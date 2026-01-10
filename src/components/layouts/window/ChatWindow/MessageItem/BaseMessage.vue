@@ -40,6 +40,8 @@ import { useMessageRead } from '@/composable/useMessageRead'
 import useUserStore from '@/stores/userStore'
 import { getUserInfo } from '@/api/user'
 import type { User } from '@/types'
+import FileMessage from './FileMessage.vue'
+import VoiceMessage from './VoiceMessage.vue'
 
 const props = defineProps<{
   message: BaseMessage
@@ -93,6 +95,8 @@ useMessageRead(props.message, messageRef)
 const messageMap: Record<number, Component> = {
   [MESSAGE_TYPE.TEXT]: TextMessage,
   [MESSAGE_TYPE.IMAGE]: ImageMessage,
+  [MESSAGE_TYPE.FILE]: FileMessage,
+  [MESSAGE_TYPE.AUDIO]: VoiceMessage,
 }
 
 //处理重发

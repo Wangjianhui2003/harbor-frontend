@@ -179,6 +179,11 @@ export function useSendMessage() {
     return sendMessage({ content: fileInfo, type: MESSAGE_TYPE.FILE })
   }
 
+  /** 发送语音消息 */
+  function sendAudioMessage(audioInfo: string) {
+    return sendMessage({ content: audioInfo, type: MESSAGE_TYPE.AUDIO })
+  }
+
   /**
    * 重发失败的消息
    * @param message 需要重发的消息
@@ -247,6 +252,7 @@ export function useSendMessage() {
     sendTextMessage,
     sendImageMessage,
     sendFileMessage,
+    sendAudioMessage,
     resendMessage,
   }
 }
