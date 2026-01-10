@@ -23,7 +23,7 @@
 import useChatStore from '@/stores/chatStore'
 import BaseMessage from './MessageItem/BaseMessage.vue'
 import { MESSAGE_TYPE } from '@/utils/enums'
-import ChatInput from './ChatInput.vue'
+import ChatInput from './ChatInput/ChatInput.vue'
 
 // 各类型的气泡组件
 import type { Component } from 'vue'

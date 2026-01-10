@@ -1,0 +1,207 @@
+<template>
+  <!-- 录音中 UI-->
+  <div v-if="voiceState === 'RECORDING'" class="flex items-center gap-2 bg-card rounded-sm p-1">
+    <InputGroupButton variant="destructive" @click="stopRecording" class="size-5">
+    </InputGroupButton>
+    <InputGroupText class="flex items-center gap-2">
+      <span class="animate-pulse text-destructive">●</span>
+      <span>{{ formatDuration(recordingDuration) }}</span>
+    </InputGroupText>
+    <InputGroupButton variant="ghost" size="icon-xs" @click="cancelRecording" class="size-5">
+      <X class="size-4" />
+    </InputGroupButton>
+  </div>
+  <!-- 预览模式 UI-->
+  <div v-else-if="voiceState === 'PREVIEW'" class="flex items-center gap-2 bg-card rounded-sm p-1">
+    <InputGroupButton variant="ghost" @click="togglePreviewPlayback" class="size-5">
+      <component :is="isPreviewPlaying ? Pause : Play" class="size-4" />
+    </InputGroupButton>
+    <div class="flex items-center gap-2 px-1 min-w-32">
+      <Slider
+        v-model="previewProgress"
+        :max="100"
+        :step="1"
+        class="w-24"
+        @update:model-value="(v) => v && seekPreview(v)"
+      />
+      <span class="text-xs text-muted-foreground">
+        {{ formatDuration(recordingDuration) }}
+      </span>
+    </div>
+    <InputGroupButton variant="default" class="rounded-full size-5" @click="sendVoiceMessage">
+      <ArrowUpIcon class="size-4" />
+    </InputGroupButton>
+    <InputGroupButton variant="ghost" class="size-5" @click="cancelRecording">
+      <X class="size-4" />
+    </InputGroupButton>
+  </div>
+  <!-- 正常状态的麦克风按钮 -->
+  <HoverTip v-else content="发送语音">
+    <InputGroupButton @click="startRecording" variant="ghost" class="hover:bg-primary/10 size-7">
+      <Mic class="size-5" />
+    </InputGroupButton>
+  </HoverTip>
+</template>
+
+<script setup lang="ts">
+import { ref, onUnmounted } from 'vue'
+import { Mic, X, Play, Pause, ArrowUpIcon } from 'lucide-vue-next'
+import { InputGroupButton, InputGroupText } from '@/components/ui/input-group'
+import { Slider } from '@/components/ui/slider'
+import HoverTip from '@/components/common/HoverTip.vue'
+import { useSendMessage } from '@/composable/useSendMessage'
+import { scrollToBottom } from '@/utils/dom'
+import uploadFile from '@/api/file'
+
+const { sendAudioMessage } = useSendMessage()
+
+// ========== 语音录制相关 ==========
+type VoiceState = 'IDLE' | 'RECORDING' | 'PREVIEW'
+const voiceState = ref<VoiceState>('IDLE')
+const recordingDuration = ref(0)
+const isPreviewPlaying = ref(false)
+const previewProgress = ref([0])
+
+let mediaRecorder: MediaRecorder | null = null
+let audioChunks: Blob[] = []
+let recordingTimer: ReturnType<typeof setInterval> | null = null
+let audioBlob: Blob | null = null
+let previewAudio: HTMLAudioElement | null = null
+let isCancelled = false // 标记是否取消录音
+
+/** 格式化时长 mm:ss */
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+/** 开始录音 */
+async function startRecording() {
+  try {
+    isCancelled = false // 重置取消标记
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    mediaRecorder = new MediaRecorder(stream)
+    audioChunks = []
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunks.push(event.data)
+      }
+    }
+
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
+      stream.getTracks().forEach((track) => track.stop())
+      // 只有非取消状态下才进入预览模式
+      if (!isCancelled) {
+        voiceState.value = 'PREVIEW'
+        createPreviewAudio()
+      }
+    }
+
+    mediaRecorder.start()
+    voiceState.value = 'RECORDING'
+    recordingDuration.value = 0
+
+    recordingTimer = setInterval(() => {
+      recordingDuration.value++
+    }, 1000)
+  } catch (error) {
+    console.error('无法访问麦克风', error)
+  }
+}
+
+/** 停止录音 */
+function stopRecording() {
+  if (recordingTimer) {
+    clearInterval(recordingTimer)
+    recordingTimer = null
+  }
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop()
+  }
+}
+
+/** 取消录音 */
+function cancelRecording() {
+  isCancelled = true // 标记为取消操作
+  stopRecording()
+  cleanupRecording()
+  voiceState.value = 'IDLE'
+}
+
+/** 清理录音资源 */
+function cleanupRecording() {
+  if (previewAudio) {
+    previewAudio.pause()
+    previewAudio = null
+  }
+  audioBlob = null
+  audioChunks = []
+  recordingDuration.value = 0
+  previewProgress.value = [0]
+  isPreviewPlaying.value = false
+}
+
+/** 创建预览音频 */
+function createPreviewAudio() {
+  if (!audioBlob) return
+  previewAudio = new Audio(URL.createObjectURL(audioBlob))
+  previewAudio.ontimeupdate = () => {
+    if (previewAudio && previewAudio.duration) {
+      previewProgress.value = [(previewAudio.currentTime / previewAudio.duration) * 100]
+    }
+  }
+  previewAudio.onended = () => {
+    isPreviewPlaying.value = false
+    previewProgress.value = [0]
+  }
+}
+
+/** 切换预览播放 */
+function togglePreviewPlayback() {
+  if (!previewAudio) return
+  if (isPreviewPlaying.value) {
+    previewAudio.pause()
+  } else {
+    previewAudio.play()
+  }
+  isPreviewPlaying.value = !isPreviewPlaying.value
+}
+
+/** 拖动进度条 */
+function seekPreview(value: number[]) {
+  if (previewAudio && previewAudio.duration && value[0] !== undefined) {
+    previewAudio.currentTime = (value[0] / 100) * previewAudio.duration
+  }
+}
+
+/** 发送语音消息 */
+async function sendVoiceMessage() {
+  if (!audioBlob) return
+
+  const formData = new FormData()
+  formData.append('file', audioBlob, `voice_${Date.now()}.webm`)
+
+  try {
+    const url = await uploadFile(formData, '/file/upload', {})
+    const content = JSON.stringify({
+      url,
+      duration: recordingDuration.value,
+    })
+    await sendAudioMessage(content)
+    scrollToBottom()
+  } catch (error) {
+    console.error('语音上传失败', error)
+  } finally {
+    cleanupRecording()
+    voiceState.value = 'IDLE'
+  }
+}
+
+// 组件卸载时清理
+onUnmounted(() => {
+  cancelRecording()
+})
+</script>
