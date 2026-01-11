@@ -1,6 +1,6 @@
 <template>
-  <HoverTip content="发送图片">
-    <InputGroupButton @click="handleSendImage" variant="ghost" class="hover:bg-primary/10 size-7">
+  <HoverTip content="发送图片/视频">
+    <InputGroupButton @click="handleSendMedia" variant="ghost" class="hover:bg-primary/10 size-7">
       <Image class="size-5" />
     </InputGroupButton>
   </HoverTip>
@@ -13,14 +13,25 @@ import HoverTip from '@/components/common/HoverTip.vue'
 import { useSendMessage } from '@/composable/useSendMessage'
 import { scrollToBottom } from '@/utils/dom'
 import uploadFile from '@/api/file'
+import type { UploadImageResp, UploadVideoResp } from '@/types/file'
 
-const { sendImageMessage } = useSendMessage()
+const { sendImageMessage, sendVideoMessage } = useSendMessage()
 
-/** 发送图片 */
-function handleSendImage() {
+/** 判断是否为视频文件 */
+function isVideoFile(file: File): boolean {
+  return file.type.startsWith('video/')
+}
+
+/** 判断是否为图片文件 */
+function isImageFile(file: File): boolean {
+  return file.type.startsWith('image/')
+}
+
+/** 发送图片或视频 */
+function handleSendMedia() {
   const input = document.createElement('input')
   input.type = 'file'
-  input.accept = 'image/*'
+  input.accept = 'image/*,video/*'
   input.onchange = async () => {
     const file = input.files?.[0]
     if (!file) return
@@ -29,15 +40,29 @@ function handleSendImage() {
     formData.append('file', file)
 
     try {
-      const result = await uploadFile(formData, '/image/upload', {})
-      const content = JSON.stringify({
-        originUrl: result.originUrl,
-        thumbUrl: result.thumbUrl,
-      })
-      await sendImageMessage(content)
+      if (isVideoFile(file)) {
+        // 视频文件上传
+        const result = await uploadFile<UploadVideoResp>(formData, '/video/upload')
+        const content = JSON.stringify({
+          url: result.url,
+          coverUrl: result.coverUrl,
+          duration: result.duration,
+          name: file.name,
+          size: file.size,
+        })
+        await sendVideoMessage(content)
+      } else if (isImageFile(file)) {
+        // 图片文件上传
+        const result = await uploadFile<UploadImageResp>(formData, '/image/upload')
+        const content = JSON.stringify({
+          originUrl: result.originUrl,
+          thumbUrl: result.thumbUrl,
+        })
+        await sendImageMessage(content)
+      }
       scrollToBottom()
     } catch (error) {
-      console.error('图片上传失败', error)
+      console.error('媒体上传失败', error)
     }
   }
   input.click()

@@ -184,6 +184,11 @@ export function useSendMessage() {
     return sendMessage({ content: audioInfo, type: MESSAGE_TYPE.AUDIO })
   }
 
+  /** 发送视频消息 */
+  function sendVideoMessage(videoInfo: string) {
+    return sendMessage({ content: videoInfo, type: MESSAGE_TYPE.VIDEO })
+  }
+
   /**
    * 重发失败的消息
    * @param message 需要重发的消息
@@ -253,6 +258,7 @@ export function useSendMessage() {
     sendImageMessage,
     sendFileMessage,
     sendAudioMessage,
+    sendVideoMessage,
     resendMessage,
   }
 }

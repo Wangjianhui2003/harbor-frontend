@@ -1,6 +1,6 @@
 <template>
   <div class="relative inline-block">
-    <n-image width="250" :src="originUrl" :loading="originLoading">
+    <n-image width="250" :src="originUrl">
       <template #error>
         <ImageOff />
       </template>
@@ -12,7 +12,7 @@
 import type { BaseMessage } from '@/types/chat'
 import { useCached } from '@/composable/useCached'
 import { toRef } from 'vue'
-import { useImage } from '@vueuse/core'
+// import { useImage } from '@vueuse/core'
 import { NImage } from 'naive-ui'
 import { ImageOff } from 'lucide-vue-next'
 
@@ -30,5 +30,5 @@ const { cachedSrc: originUrl } = useCached(
   { prefix: 'image' },
 )
 
-const { isLoading: originLoading } = useImage({ src: originUrl.value })
+// const { isLoading: originLoading } = useImage({ src: originUrl.value })
 </script>

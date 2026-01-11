@@ -1,12 +1,14 @@
 import http from './http/http'
-import type { UploadImageResp } from '@/types/file'
 
-//返回url
-const uploadFile = async (
+/**
+ * 通用文件上传函数
+ * @template T 响应数据类型
+ */
+const uploadFile = async <T>(
   formData: FormData,
   url: string,
-  header: Record<string, string>,
-): Promise<UploadImageResp> => {
+  header: Record<string, string> = {},
+): Promise<T> => {
   const res = await http({
     url,
     method: 'POST',

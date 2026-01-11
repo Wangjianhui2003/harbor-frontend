@@ -13,6 +13,7 @@ import HoverTip from '@/components/common/HoverTip.vue'
 import { useSendMessage } from '@/composable/useSendMessage'
 import { scrollToBottom } from '@/utils/dom'
 import uploadFile from '@/api/file'
+import type { UploadFileResp } from '@/types/file'
 
 const { sendFileMessage } = useSendMessage()
 
@@ -28,7 +29,7 @@ function handleSendFile() {
     formData.append('file', file)
 
     try {
-      const result = await uploadFile(formData, '/file/upload', {})
+      const result = await uploadFile<UploadFileResp>(formData, '/file/upload', {})
       const content = JSON.stringify({
         url: result,
         name: file.name,
