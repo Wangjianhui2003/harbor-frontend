@@ -89,9 +89,19 @@ const useChatStore = defineStore('chatStore', {
       this.privateMsgMaxId = chatsData.privateMsgMaxId || 0
       this.groupMsgMaxId = chatsData.groupMsgMaxId || 0
       cacheChats = chatsData.chats || []
-      // 防止图片一直处在加载中状态
+      // 处理加载状态
       cacheChats.forEach((chat) => {
         chat.messages.forEach((msg) => {
+          // 处理消息内容类型（非 TIP_TIME）
+          if (!('status' in msg)) return
+
+          // UNSENT 状态的消息在页面刷新后应变为 ERROR，让用户手动重发
+          // 避免自动重发导致消息重复（无法确定后端是否已收到）
+          if (msg.status === MESSAGE_STATUS.UNSENT) {
+            msg.status = MESSAGE_STATUS.ERROR
+          }
+
+          // 防止图片一直处在加载中状态
           if (!('loadStatus' in msg)) return
           if (msg.loadStatus == MSG_INFO_LOAD_STATUS.LOADING) {
             msg.loadStatus = MSG_INFO_LOAD_STATUS.FAIL
@@ -290,10 +300,6 @@ const useChatStore = defineStore('chatStore', {
             break
           }
         }
-      }
-      //设置为已发送
-      if (msgInfo.status == MESSAGE_STATUS.UNSENT) {
-        msgInfo.status = MESSAGE_STATUS.SENT
       }
       //当前打开了该聊天，且滚动条在底部，直接设置为已读
       if (

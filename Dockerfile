@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-
+# carry nginx
 # Build stage
 FROM node:22-alpine AS builder
 
@@ -26,7 +26,7 @@ RUN pnpm run build-only
 # Production stage
 FROM nginx:stable-alpine
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx-docker.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/dist /harbor-frontend
 
 # run

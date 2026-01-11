@@ -3,12 +3,14 @@
     <ItemContent>
       <div class="flex flex-row items-center h-13 gap-3">
         <div class="relative">
-          <base-avatar :headImage="props.chat.headImage" :name="props.chat.showName" />
-          <base-badge
+          <BaseAvatar :headImage="props.chat.headImage" :name="props.chat.showName" />
+          <Badge
+            variant="destructive"
             v-if="props.chat.unreadCount > 0"
-            :number="props.chat.unreadCount"
-            class="absolute top-0 right-0"
-          />
+            class="absolute top-0 left-7 size-4 rounded-full"
+          >
+            {{ props.chat.unreadCount }}
+          </Badge>
         </div>
         <div class="flex flex-col justify-around gap-1 text-sm text-40xl">
           <div>{{ props.chat.showName }}</div>
@@ -25,6 +27,7 @@ import { Item, ItemContent } from '@/components/ui/item'
 import useChatStore from '@/stores/chatStore'
 import type { Chat } from '@/types/chat'
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
+import { Badge } from '@/components/ui/badge'
 
 const props = defineProps<{ chat: Chat }>()
 

@@ -1,62 +1,65 @@
 <template>
-  <div v-if="show" ref="floatRef" class="fixed z-50" :style="floatStyle">
-    <Card class="w-72 shadow-xl border-2 border-primary/20 bg-background/95 backdrop-blur">
-      <!-- 拖动手柄 -->
-      <CardHeader ref="dragHandle" class="cursor-move select-none pb-2">
-        <div class="flex items-center gap-3">
-          <BaseAvatar
-            :headImage="friend?.headImage"
-            :name="friend?.friendNickname"
-            :size="3"
-            class="border-2 border-primary/30 rounded-full"
-          />
-          <div class="flex-1 min-w-0">
-            <CardTitle class="text-base truncate">{{ friend?.friendNickname }}</CardTitle>
-            <CardDescription class="text-sm">
-              {{ isCaller ? '正在呼叫...' : '视频来电...' }}
-            </CardDescription>
-          </div>
-          <Video class="size-6 text-primary animate-pulse" />
+  <Card
+    v-if="show"
+    ref="floatRef"
+    class="fixed z-50 w-72 shadow-xl border-2 border-primary/20 bg-background/95 backdrop-blur"
+    :style="floatStyle"
+  >
+    <!-- 拖动手柄 -->
+    <CardHeader ref="dragHandle" class="cursor-move select-none pb-2">
+      <div class="flex items-center gap-3">
+        <BaseAvatar
+          :headImage="friend?.headImage"
+          :name="friend?.friendNickname"
+          :size="3"
+          class="border-2 border-primary/30 rounded-full"
+        />
+        <div class="flex-1 min-w-0">
+          <CardTitle class="text-base truncate">{{ friend?.friendNickname }}</CardTitle>
+          <CardDescription class="text-sm">
+            {{ isCaller ? '正在呼叫...' : '视频来电...' }}
+          </CardDescription>
         </div>
-      </CardHeader>
+        <Video class="size-6 text-primary animate-pulse" />
+      </div>
+    </CardHeader>
 
-      <CardContent class="pt-0 pb-4">
-        <div class="flex justify-center gap-4">
-          <!-- 发起方：只有取消按钮 -->
-          <template v-if="isCaller">
-            <Button
-              variant="destructive"
-              size="lg"
-              class="rounded-full size-14"
-              @click="handleCancel"
-            >
-              <PhoneOff class="size-6" />
-            </Button>
-          </template>
+    <CardContent class="pt-0 pb-4">
+      <div class="flex justify-center gap-4">
+        <!-- 发起方：只有取消按钮 -->
+        <template v-if="isCaller">
+          <Button
+            variant="destructive"
+            size="lg"
+            class="rounded-full size-14"
+            @click="handleCancel"
+          >
+            <PhoneOff class="size-6" />
+          </Button>
+        </template>
 
-          <!-- 接收方：接受和拒绝按钮 -->
-          <template v-else>
-            <Button
-              variant="destructive"
-              size="lg"
-              class="rounded-full size-14"
-              @click="handleReject"
-            >
-              <PhoneOff class="size-6" />
-            </Button>
-            <Button
-              variant="default"
-              size="lg"
-              class="rounded-full size-14 bg-green-600 hover:bg-green-700"
-              @click="handleAccept"
-            >
-              <Phone class="size-6" />
-            </Button>
-          </template>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
+        <!-- 接收方：接受和拒绝按钮 -->
+        <template v-else>
+          <Button
+            variant="destructive"
+            size="lg"
+            class="rounded-full size-14"
+            @click="handleReject"
+          >
+            <PhoneOff class="size-6" />
+          </Button>
+          <Button
+            variant="default"
+            size="lg"
+            class="rounded-full size-14 bg-green-600 hover:bg-green-700"
+            @click="handleAccept"
+          >
+            <Phone class="size-6" />
+          </Button>
+        </template>
+      </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup lang="ts">

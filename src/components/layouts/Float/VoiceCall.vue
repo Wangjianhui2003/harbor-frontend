@@ -1,23 +1,21 @@
 <template>
   <div v-if="show" ref="floatRef" class="fixed z-50" :style="floatStyle">
     <Card
-      class="shadow-2xl border-2 border-primary/20 bg-background/95 backdrop-blur overflow-hidden"
+      ref="dragHandle"
+      class="flex flex-col items-center cursor-move select-none p-0 gap-0 shadow-2xl border-2 border-primary/20 bg-background/95 backdrop-blur overflow-hidden"
     >
-      <!-- 拖动手柄 Header -->
-      <CardHeader ref="dragHandle" class="cursor-move select-none p-3 bg-secondary/50">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <Phone class="size-4 text-green-500" />
-            <span class="text-sm font-medium">语音通话</span>
-          </div>
-          <div class="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{{ formattedDuration }}</span>
-          </div>
+      <div class="flex items-center justify-between p-3 gap-2">
+        <div class="flex items-center gap-2">
+          <Phone class="size-4 text-green-500" />
+          <span class="text-sm font-medium">语音通话</span>
         </div>
-      </CardHeader>
+        <div class="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>{{ formattedDuration }}</span>
+        </div>
+      </div>
 
       <!-- 语音通话显示头像 -->
-      <CardContent class="p-6 flex flex-col items-center gap-4">
+      <div class="flex flex-col items-center">
         <BaseAvatar
           :headImage="friend?.headImage"
           :name="friend?.friendNickname"
@@ -30,21 +28,15 @@
             {{ isCalling ? '正在呼叫...' : isChatting ? '通话中' : '连接中...' }}
           </div>
         </div>
-      </CardContent>
-
-      <!-- 控制按钮 -->
-      <CardFooter class="p-3 justify-center">
-        <Button
-          variant="destructive"
-          size="lg"
-          class="rounded-full size-14"
-          @click="isCalling ? handleCancel() : handleHangup()"
-        >
-          <PhoneOff class="size-6" />
-        </Button>
-      </CardFooter>
+      </div>
+      <Button
+        variant="destructive"
+        class="rounded-full size-8 m-2"
+        @click="isCalling ? handleCancel() : handleHangup()"
+      >
+        <Phone class="size-4" />
+      </Button>
     </Card>
-
     <!-- 隐藏的音频元素用于播放远程音频 -->
     <audio ref="audioRef" autoplay />
   </div>
@@ -53,8 +45,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted, nextTick } from 'vue'
 import { useDraggable } from '@vueuse/core'
-import { Phone, PhoneOff } from 'lucide-vue-next'
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
+import { Phone } from 'lucide-vue-next'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
 import type { Friend } from '@/types'
