@@ -141,24 +141,40 @@ const useChatStore = defineStore('chatStore', {
         chats.unshift(chat!)
       }
     },
-    //会话移动到顶部
+    //会话移动到顶部（固定会话下方）
     moveTop(idx: number): void {
       // 加载中不移动，很耗性能
       if (this.isLoading) {
         return
       }
-      if (idx > 0) {
-        const chats = this.getChatList
-        const chat = chats[idx]
-        if (!chat) {
-          return
-        }
-        chats.splice(idx, 1)
-        chats.unshift(chat)
-        chat.stored = false
-        chat.lastSendTime = new Date().getTime()
-        this.saveToStorage()
+      const chats = this.getChatList
+      const chat = chats[idx]
+      if (!chat) {
+        return
       }
+
+      // 计算目标位置：固定会话始终在最前，非固定会话移到固定会话之后
+      let targetIdx = 0
+      if (!chat.pinned) {
+        // 找到第一个非固定会话的位置
+        for (let i = 0; i < chats.length; i++) {
+          if (!chats[i]?.pinned) {
+            targetIdx = i
+            break
+          }
+        }
+      }
+
+      // 如果已经在目标位置或更前，无需移动
+      if (idx <= targetIdx) {
+        return
+      }
+
+      chats.splice(idx, 1)
+      chats.splice(targetIdx, 0, chat)
+      chat.stored = false
+      chat.lastSendTime = new Date().getTime()
+      this.saveToStorage()
     },
     //选择一个chat
     activateChat(idx: number): void {
@@ -321,8 +337,12 @@ const useChatStore = defineStore('chatStore', {
         return
       }
       console.log('refresh chat')
-      //按最新时间排序（在前）
+      //按固定状态和最新时间排序（固定在前，同状态按时间排序）
       cacheChats.sort((chat1, chat2) => {
+        // 固定的会话排在前面
+        if (chat1.pinned && !chat2.pinned) return -1
+        if (!chat1.pinned && chat2.pinned) return 1
+        // 同样固定或同样不固定，按时间排序
         return chat2.lastSendTime - chat1.lastSendTime
       })
       // 将消息一次性装载回来
@@ -361,34 +381,49 @@ const useChatStore = defineStore('chatStore', {
       this.saveToStorage()
     },
 
-    //移除私聊消息
+    //移除私聊会话
     removePrivateChat(friendId: number) {
-      const chats = this.getChatList
-      for (let idx = 0; idx < chats.length; idx++) {
-        const chat = chats[idx]
-        if (!chat) {
-          continue
-        }
-        if (chat.type == CHATINFO_TYPE.PRIVATE && chat.targetId == friendId) {
-          this.removeChat(idx)
-          break
-        }
-      }
+      const idx = this.findChatIdx({ type: CHATINFO_TYPE.PRIVATE, targetId: friendId } as ChatInfo)
+      if (idx !== undefined) this.removeChat(idx)
     },
 
-    //移除群组消息
+    //移除群组会话
     removeGroupChat(groupId: number) {
-      const chats = this.getChatList
-      for (let idx = 0; idx < chats.length; idx++) {
-        const chat = chats[idx]
-        if (!chat) {
-          continue
-        }
-        if (chat.type == CHATINFO_TYPE.GROUP && chat.targetId == groupId) {
-          this.removeChat(idx)
-          break
-        }
-      }
+      const idx = this.findChatIdx({ type: CHATINFO_TYPE.GROUP, targetId: groupId } as ChatInfo)
+      if (idx !== undefined) this.removeChat(idx)
+    },
+
+    //固定会话
+    pinChat(chatInfo: ChatInfo) {
+      const chat = this.findChat(chatInfo)
+      if (!chat || chat.pinned) return
+      chat.pinned = true
+      chat.stored = false
+      // 重新排序，将固定的会话移到最前面
+      this.sortChats()
+      this.saveToStorage()
+    },
+
+    //取消固定会话
+    unpinChat(chatInfo: ChatInfo) {
+      const chat = this.findChat(chatInfo)
+      if (!chat || !chat.pinned) return
+      chat.pinned = false
+      chat.stored = false
+      // 重新排序
+      this.sortChats()
+      this.saveToStorage()
+    },
+
+    //对会话列表排序
+    sortChats() {
+      this.chats.sort((chat1, chat2) => {
+        // 固定的会话排在前面
+        if (chat1.pinned && !chat2.pinned) return -1
+        if (!chat1.pinned && chat2.pinned) return 1
+        // 同样固定或同样不固定，按时间排序
+        return chat2.lastSendTime - chat1.lastSendTime
+      })
     },
 
     updateChatFromFriend(friend: FriendInfoUpdate) {

@@ -38,6 +38,7 @@ export interface GroupChat {
   messages: (GroupMessage | TimeTipMessage)[]
   showName: string // 显示名称,由ChatInfo决定
   groupName: string
+  pinned?: boolean // 是否固定
   stored: boolean
   targetId: number
   type: string
@@ -53,6 +54,7 @@ export interface PrivateChat {
   lastTimeTip?: number
   messages: (PrivateMessage | TimeTipMessage)[]
   showName: string // 显示名称,由ChatInfo决定
+  pinned?: boolean // 是否固定
   stored: boolean
   targetId: number
   type: string
