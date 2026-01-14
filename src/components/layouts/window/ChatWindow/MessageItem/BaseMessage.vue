@@ -38,14 +38,14 @@ import { useSendMessage } from '@/composable/useSendMessage'
 import useChatStore from '@/stores/chatStore'
 import { useMessageRead } from '@/composable/useMessageRead'
 import useUserStore from '@/stores/userStore'
-import { getUserInfo } from '@/api/user'
-import type { User } from '@/types'
+import type { User, GroupMember } from '@/types'
 import FileMessage from './FileMessage.vue'
 import VoiceMessage from './VoiceMessage.vue'
 import VideoMessage from './VideoMessage.vue'
 
 const props = defineProps<{
   message: BaseMessage
+  groupMembers?: GroupMember[]
 }>()
 
 const messageRef = ref<HTMLElement | null>(null)
@@ -61,8 +61,11 @@ const readCount = computed(() => {
   return undefined
 })
 
-//群聊其他成员头像（异步获取）
-const groupMemberHeadImage = ref<string>('')
+// 从 groupMembers 中查找对应成员
+const groupMember = computed(() => {
+  if (!props.groupMembers || props.message.selfSend) return null
+  return props.groupMembers.find((m) => m.userId === props.message.sendId)
+})
 
 //头像 - 使用 computed 确保响应式更新
 const headImage = computed(() => {
@@ -74,19 +77,20 @@ const headImage = computed(() => {
     // 私聊
     return chatStore.activeChat.headImage || ''
   }
-  // 群聊其他成员：使用异步获取的头像
-  return groupMemberHeadImage.value
+  // 群聊其他成员：从 groupMembers 中获取
+  return groupMember.value?.headImage || ''
 })
 
 //名称（fallback）
 const name = computed(() => {
+  if (props.message.selfSend) {
+    return (userStore.userInfo as User).nickname
+  }
   if (chatStore.activeChat?.type === CHATINFO_TYPE.PRIVATE) {
-    if (props.message.selfSend) {
-      return (userStore.userInfo as User).nickname
-    }
     return chatStore.activeChat.showName
   }
-  return (props.message as GroupMessage).sendNickname
+  // 群聊：优先使用 groupMembers 中的昵称
+  return groupMember.value?.showNickname || (props.message as GroupMessage).sendNickname
 })
 
 // 消息可见时自动标记已读
@@ -134,15 +138,6 @@ onMounted(async () => {
         resendMessage(props.message, chatInfo)
       }
     }, 10000)
-  }
-  // 群聊其他成员：异步获取头像
-  if (chatStore.activeChat?.type === CHATINFO_TYPE.GROUP && !props.message.selfSend) {
-    try {
-      const userInfo = await getUserInfo(props.message.sendId)
-      groupMemberHeadImage.value = userInfo.headImage || ''
-    } catch (e) {
-      console.error('获取群成员头像失败', e)
-    }
   }
 })
 

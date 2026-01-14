@@ -5,7 +5,10 @@ import { nextTick } from 'vue'
  * @param selector CSS 选择器，默认为聊天窗口的滚动区域
  * @param smooth 是否使用平滑滚动，默认为 false
  */
-export function scrollToBottom(selector = '[data-slot="scroll-area-viewport"]', smooth = false) {
+export function scrollToBottom(
+  selector = '#chat-scroll-area [data-slot="scroll-area-viewport"]',
+  smooth = false,
+) {
   nextTick(() => {
     const container = document.querySelector(selector)
     if (container) {
@@ -49,7 +52,7 @@ export function scrollToTop(selector = '[data-slot="scroll-area-viewport"]', smo
  * @returns boolean 是否在底部
  */
 export function isScrollAtBottom(
-  selector = '[data-slot="scroll-area-viewport"]',
+  selector = '#chat-scroll-area [data-slot="scroll-area-viewport"]',
   threshold = 20,
 ): boolean {
   const container = document.querySelector(selector)

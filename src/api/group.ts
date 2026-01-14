@@ -122,7 +122,7 @@ export const kickGroup = async (groupId: number, userId: number): Promise<void> 
 
 export const searchGroup = async (groupId: number): Promise<GroupResult> => {
   const res = await http({
-    url: `/group/search/${groupId}`,
+    url: '/group/search',
     method: 'GET',
     params: { groupId },
   })
@@ -138,4 +138,19 @@ export const getManagedGroupIds = async (): Promise<number[]> => {
     method: 'GET',
   })
   return res.data.data
+}
+
+/**
+ * 设置或移除群管理员
+ */
+export const setGroupAdmin = async (
+  groupId: number,
+  userId: number,
+  isAdmin: boolean,
+): Promise<void> => {
+  await http({
+    url: `/group/admin/${groupId}`,
+    method: 'PUT',
+    params: { userId, isAdmin },
+  })
 }

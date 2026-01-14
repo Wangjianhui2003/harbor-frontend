@@ -136,6 +136,16 @@ export const WEBRTC_MODE = {
 export const WEBSOCKET_CLOSE_CODE = {
   FORCE_LOGOUT: 3000,
 }
+
+/**
+ * 群成员角色
+ */
+export const GROUP_ROLE = {
+  OWNER: 0,
+  ADMIN: 1,
+  MEMBER: 2,
+} as const
+
 // 类型导出
 export type MessageType = (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE]
 export type RTCStateType = (typeof RTC_STATE)[keyof typeof RTC_STATE]
@@ -148,3 +158,4 @@ export type MsgItemOpType = (typeof MSG_ITEM_OP)[keyof typeof MSG_ITEM_OP]
 export type WebRTCStateType = (typeof WEBRTC_STATE)[keyof typeof WEBRTC_STATE]
 export type WebRTCModeType = (typeof WEBRTC_MODE)[keyof typeof WEBRTC_MODE]
 export type MsgInfoLoadStatusType = (typeof MSG_INFO_LOAD_STATUS)[keyof typeof MSG_INFO_LOAD_STATUS]
+export type GroupRoleType = (typeof GROUP_ROLE)[keyof typeof GROUP_ROLE]

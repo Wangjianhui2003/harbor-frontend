@@ -6,10 +6,10 @@
         :key="item.label"
         :variant="isActive(item.to) ? 'default' : 'ghost'"
         :aria-label="item.label"
-        class="h-10 w-10 p-0"
+        class="size-10 p-0"
         @click="navigate(item.to)"
       >
-        <component :is="item.icon" class="h-5 w-5" />
+        <component :is="item.icon" class="size-5" />
       </Button>
     </div>
     <UserDropdownMenu>

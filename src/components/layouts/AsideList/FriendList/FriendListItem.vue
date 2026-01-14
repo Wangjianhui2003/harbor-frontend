@@ -2,7 +2,15 @@
   <Item :class="['h-16 p-1 hover:bg-primary/10 rounded-none', { 'bg-primary/10': isChosen }]">
     <ItemContent>
       <div class="flex flex-row items-center h-13 gap-3">
-        <BaseAvatar :headImage="props.friend.headImage" :name="props.friend.friendNickname" />
+        <!-- 头像和在线状态 -->
+        <div class="relative">
+          <BaseAvatar :headImage="props.friend.headImage" :name="props.friend.friendNickname" />
+          <!-- 在线状态指示器 -->
+          <span
+            v-if="props.friend.onlineWeb || props.friend.onlineApp"
+            class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background"
+          />
+        </div>
         <div class="flex flex-col justify-around gap-1 text-sm text-40xl">
           <div>{{ props.friend.friendNickname }}</div>
         </div>

@@ -69,7 +69,8 @@ export interface GroupMember {
   headImage: string
   showNickname: string
   remark: string
-  isOwner: boolean
+  role: number // 0-群主 1-管理员 2-普通成员
+  online: boolean
   quit: boolean
 }
 
