@@ -12,6 +12,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AboutPage: typeof import('./src/components/layouts/Window/SettingWindow/AboutPage.vue')['default']
     AddFriendDialog: typeof import('./src/components/layouts/Dialog/AddFriendDialog.vue')['default']
     AddGroupDialog: typeof import('./src/components/layouts/Dialog/AddGroupDialog.vue')['default']
     Badge: typeof import('./src/components/ui/badge/Badge.vue')['default']
@@ -126,7 +127,11 @@ declare module 'vue' {
     ItemTitle: typeof import('./src/components/ui/item/ItemTitle.vue')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
     NaviBar: typeof import('./src/components/layouts/Navigator/NaviBar.vue')['default']
+    Profile: typeof import('./src/components/layouts/Window/SettingWindow/Profile.vue')['default']
+    ProfilePage: typeof import('./src/components/layouts/Window/SettingWindow/ProfilePage.vue')['default']
     QuitGroupDialog: typeof import('./src/components/layouts/Window/GroupInfo/QuitGroupDialog.vue')['default']
+    RadioGroup: typeof import('./src/components/ui/radio-group/RadioGroup.vue')['default']
+    RadioGroupItem: typeof import('./src/components/ui/radio-group/RadioGroupItem.vue')['default']
     RemoveFriendDialog: typeof import('./src/components/layouts/Window/FriendInfo/RemoveFriendDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -179,6 +184,7 @@ declare module 'vue' {
     SidebarTrigger: typeof import('./src/components/ui/sidebar/SidebarTrigger.vue')['default']
     Skeleton: typeof import('./src/components/ui/skeleton/Skeleton.vue')['default']
     Slider: typeof import('./src/components/ui/slider/Slider.vue')['default']
+    StorageManagePage: typeof import('./src/components/layouts/Window/SettingWindow/StorageManagePage.vue')['default']
     Switch: typeof import('./src/components/ui/switch/Switch.vue')['default']
     Tabs: typeof import('./src/components/ui/tabs/Tabs.vue')['default']
     TabsContent: typeof import('./src/components/ui/tabs/TabsContent.vue')['default']
@@ -209,6 +215,7 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
+  const AboutPage: typeof import('./src/components/layouts/Window/SettingWindow/AboutPage.vue')['default']
   const AddFriendDialog: typeof import('./src/components/layouts/Dialog/AddFriendDialog.vue')['default']
   const AddGroupDialog: typeof import('./src/components/layouts/Dialog/AddGroupDialog.vue')['default']
   const Badge: typeof import('./src/components/ui/badge/Badge.vue')['default']
@@ -323,7 +330,11 @@ declare global {
   const ItemTitle: typeof import('./src/components/ui/item/ItemTitle.vue')['default']
   const Label: typeof import('./src/components/ui/label/Label.vue')['default']
   const NaviBar: typeof import('./src/components/layouts/Navigator/NaviBar.vue')['default']
+  const Profile: typeof import('./src/components/layouts/Window/SettingWindow/Profile.vue')['default']
+  const ProfilePage: typeof import('./src/components/layouts/Window/SettingWindow/ProfilePage.vue')['default']
   const QuitGroupDialog: typeof import('./src/components/layouts/Window/GroupInfo/QuitGroupDialog.vue')['default']
+  const RadioGroup: typeof import('./src/components/ui/radio-group/RadioGroup.vue')['default']
+  const RadioGroupItem: typeof import('./src/components/ui/radio-group/RadioGroupItem.vue')['default']
   const RemoveFriendDialog: typeof import('./src/components/layouts/Window/FriendInfo/RemoveFriendDialog.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']
   const RouterView: typeof import('vue-router')['RouterView']
@@ -376,6 +387,7 @@ declare global {
   const SidebarTrigger: typeof import('./src/components/ui/sidebar/SidebarTrigger.vue')['default']
   const Skeleton: typeof import('./src/components/ui/skeleton/Skeleton.vue')['default']
   const Slider: typeof import('./src/components/ui/slider/Slider.vue')['default']
+  const StorageManagePage: typeof import('./src/components/layouts/Window/SettingWindow/StorageManagePage.vue')['default']
   const Switch: typeof import('./src/components/ui/switch/Switch.vue')['default']
   const Tabs: typeof import('./src/components/ui/tabs/Tabs.vue')['default']
   const TabsContent: typeof import('./src/components/ui/tabs/TabsContent.vue')['default']
