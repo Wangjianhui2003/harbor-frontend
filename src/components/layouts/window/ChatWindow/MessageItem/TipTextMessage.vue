@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap-anywhere text-center select-none py-8 text-muted-foreground">
+  <div class="wrap-anywhere text-center select-none py-8 text-muted-foreground text-sm">
     {{ props.message.content }}
   </div>
 </template>
