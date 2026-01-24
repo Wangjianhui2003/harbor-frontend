@@ -8,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import FriendListItem from '../FriendList/FriendListItem.vue'
 import useFriendStore from '@/stores/friendStore'
 
@@ -20,6 +21,10 @@ const chooseFriend = (index: number) => {
   }
   friendStore.activateFriend(index)
 }
+
+onMounted(() => {
+  friendStore.loadFriend()
+})
 </script>
 
 <style scoped></style>

@@ -58,7 +58,9 @@ const currentFriend = computed(() => {
   return friends.value[activeFriendIndex.value] ?? null
 })
 
-const friendName = computed(() => currentFriend.value?.friendNickname ?? '该用户')
+const friendName = computed(
+  () => currentFriend.value?.remark || currentFriend.value?.friendNickname || '该用户',
+)
 
 const onOpenChange = (open: boolean) => {
   emit('update:visible', open)

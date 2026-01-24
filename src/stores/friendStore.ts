@@ -40,10 +40,10 @@ const useFriendStore = defineStore('friendStore', () => {
     })
   }
 
-  const updateFriendNickName = (friendId: number, newNickName: string): void => {
+  const updateFriendRemark = (friendId: number, newRemark: string): void => {
     for (const friend of friends.value) {
       if (friend.id == friendId) {
-        friend.friendNickname = newNickName
+        friend.remark = newRemark
         break
       }
     }
@@ -125,7 +125,7 @@ const useFriendStore = defineStore('friendStore', () => {
     setOnlineStatus,
     clear,
     activateFriend,
-    updateFriendNickName,
+    updateFriendRemark,
     isFriend,
     findFriend,
   }

@@ -14,8 +14,7 @@ import type {
   TimeTipMessage,
 } from '@/types/chat.js'
 import type { ChatsData } from '@/types/chat'
-import type { Group, User } from '@/types/index.js'
-import type { FriendInfoUpdate } from '@/types/friend.js'
+import type { Friend, Group, User } from '@/types/index.js'
 import { isScrollAtBottom, scrollToBottom } from '@/utils/dom.js'
 
 /* 为了加速拉取离线消息效率，拉取时消息暂时存储到cacheChats,等
@@ -431,17 +430,18 @@ const useChatStore = defineStore('chatStore', {
       })
     },
 
-    updateChatFromFriend(friend: FriendInfoUpdate) {
+    //当用户是好友时，用friend更新chat
+    updateChatFromFriend(friend: Friend) {
       const chat = this.findChatByFriendId(friend.id)
       if (chat && (chat.headImage != friend.headImage || chat.showName != friend.friendNickname)) {
         chat.headImage = friend.headImage
-        chat.showName = friend.friendNickname
+        chat.showName = friend.remark || friend.friendNickname
         chat.stored = false
         this.saveToStorage()
       }
     },
 
-    //用userInfo更新chat
+    //当用户非好友时，用user信息更新chat
     updateChatFromUser(userInfo: User) {
       const chat = this.findChatByFriendId(userInfo.id)
       // 更新会话中的昵称和头像

@@ -4,7 +4,10 @@
       <div class="flex flex-row items-center h-13 gap-3">
         <!-- 头像和在线状态 -->
         <div class="relative">
-          <BaseAvatar :headImage="props.friend.headImage" :name="props.friend.friendNickname" />
+          <BaseAvatar
+            :headImage="props.friend.headImage"
+            :name="props.friend.remark || props.friend.friendNickname"
+          />
           <!-- 在线状态指示器 -->
           <span
             v-if="props.friend.onlineWeb || props.friend.onlineApp"
@@ -12,7 +15,7 @@
           />
         </div>
         <div class="flex flex-col justify-around gap-1 text-sm text-40xl">
-          <div>{{ props.friend.friendNickname }}</div>
+          <div>{{ props.friend.remark || props.friend.friendNickname }}</div>
         </div>
         <div class="flex flex-col gap-1">
           <Monitor v-if="props.friend.onlineWeb" class="w-4 h-4 text-green-500" />

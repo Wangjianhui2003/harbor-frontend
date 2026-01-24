@@ -61,19 +61,29 @@ import ChatHistorySheet from './Sheet/ChatHistorySheet.vue'
 import GroupMemberSheet from './Sheet/GroupMemberSheet.vue'
 import TipTextMessage from './MessageItem/TipTextMessage.vue'
 import { findGroupMembers } from '@/api/group'
-import type { GroupMember } from '@/types'
+import type { Friend, GroupMember } from '@/types'
 import { getUserInfo } from '@/api/user'
+import type { ChatInfo } from '@/types/chat'
+import { readPrivateMessage } from '@/api/private-msg'
+import { readGroupMessage } from '@/api/group-msg'
+import { findFriend } from '@/api/friend'
+import useFriendStore from '@/stores/friendStore'
 
-const chatStore = useChatStore()
 const messageComponentMap: Record<number, Component> = {
   [MESSAGE_TYPE.TIP_TIME]: TipTimeMessage,
   [MESSAGE_TYPE.TIP_TEXT]: TipTextMessage,
 }
 
-//群聊/私聊
+const chatStore = useChatStore()
+
+//mode
 const mode = computed(() => {
   return chatStore.activeChat?.type
 })
+
+/**
+ *  group_mode
+ */
 
 // 群成员数据
 const groupMembers = ref<GroupMember[]>([])
@@ -99,12 +109,31 @@ const loadGroupMembers = async () => {
   }
 }
 
+/**
+ * private chat mode
+ */
+
+const friendStore = useFriendStore()
+
+const isFriend = computed(() => {
+  if (!chatStore.activeChat) {
+    return false
+  }
+  return friendStore.isFriend(chatStore.activeChat.targetId)
+})
+
 //更新chat用户信息
 const updateUserInfo = async () => {
   if (!chatStore.activeChat) {
     return
   }
   if (mode.value !== CHATINFO_TYPE.PRIVATE) {
+    return
+  }
+  if (isFriend.value) {
+    const friend: Friend = await findFriend(chatStore.activeChat.targetId)
+    chatStore.updateChatFromFriend(friend)
+    console.log('updateChatFromFriend', friend)
     return
   }
   const userInfo = await getUserInfo(chatStore.activeChat.targetId)
@@ -114,15 +143,35 @@ const updateUserInfo = async () => {
 // 监听聊天切换
 watch(
   () => chatStore.activeChat,
-  (newChat, oldChat) => {
-    scrollToBottom()
+  async (newChat, oldChat) => {
+    if (newChat === null) {
+      return
+    }
+
+    //标记已读
+    if (newChat.unreadCount != 0) {
+      const chatInfo = {
+        targetId: newChat.targetId,
+        type: newChat.type,
+      } as ChatInfo
+      chatStore.resetUnread(chatInfo)
+      if (chatInfo.type == CHATINFO_TYPE.PRIVATE) {
+        readPrivateMessage(chatInfo.targetId)
+      } else {
+        readGroupMessage(chatInfo.targetId)
+      }
+    }
+
     // 切换到群聊时加载群成员
     if (mode.value === CHATINFO_TYPE.GROUP && newChat?.targetId !== oldChat?.targetId) {
-      loadGroupMembers()
-    } else if (mode.value !== CHATINFO_TYPE.GROUP) {
+      await loadGroupMembers()
+    } else if (mode.value != CHATINFO_TYPE.GROUP) {
+      //私聊更新用户信息
       groupMembers.value = []
-      updateUserInfo()
+      await updateUserInfo()
     }
+
+    scrollToBottom()
   },
   { immediate: true },
 )

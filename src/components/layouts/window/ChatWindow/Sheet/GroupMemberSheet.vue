@@ -102,7 +102,7 @@ const sortedMembers = computed(() => {
       }
 
       // 同角色同在线状态按昵称排序
-      return (a.showNickname || '').localeCompare(b.showNickname || '', 'zh-CN')
+      return (a.userNickname || '').localeCompare(b.userNickname || '', 'zh-CN')
     })
 })
 </script>

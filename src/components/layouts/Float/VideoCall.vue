@@ -17,9 +17,13 @@
           class="p-3 gap-4 cursor-move select-none flex items-center justify-center"
         >
           <div class="flex items-center gap-2">
-            <BaseAvatar :headImage="friend?.headImage" :name="friend?.friendNickname" :size="2" />
+            <BaseAvatar
+              :headImage="friend?.headImage"
+              :name="friend?.remark || friend?.friendNickname"
+              :size="2"
+            />
             <span class="text-sm font-medium truncate max-w-32">
-              {{ friend?.friendNickname }}
+              {{ friend?.remark || friend?.friendNickname }}
             </span>
           </div>
           <div class="flex items-center gap-2 text-xs text-muted-foreground">

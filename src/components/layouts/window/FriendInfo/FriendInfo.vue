@@ -118,7 +118,7 @@ const sendMessage = () => {
   }
   const chatInfo: ChatInfo = {
     targetId: friendUserInfo.value.id,
-    showName: friend.friendNickname || friendUserInfo.value.nickname,
+    showName: friend.remark || friend.friendNickname || friendUserInfo.value.nickname,
     type: CHATINFO_TYPE.PRIVATE,
     headImage: friendUserInfo.value.headImage,
   }

@@ -6,7 +6,7 @@
       >
         <!-- 头像和在线状态 -->
         <div class="relative">
-          <BaseAvatar :headImage="member.headImage" :name="member.showNickname" :size="2.5" />
+          <BaseAvatar :headImage="member.headImage" :name="displayName" :size="2.5" />
           <!-- 在线状态指示器 -->
           <span
             v-if="member.online"
@@ -17,7 +17,7 @@
         <!-- 昵称和角色 -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2">
-            <span class="truncate text-sm font-medium">{{ member.showNickname }}</span>
+            <span class="truncate text-sm font-medium">{{ displayName }}</span>
             <!-- 角色标签 -->
             <Badge
               v-if="member.role === GroupRole.OWNER"
@@ -88,6 +88,7 @@ import { setGroupAdmin, kickGroup } from '@/api/group'
 import type { GroupMember } from '@/types'
 import { showSuccess, showError } from '@/utils/message'
 import { useToast } from 'primevue/usetoast'
+import useFriendStore from '@/stores/friendStore'
 
 const props = defineProps<{
   member: GroupMember
@@ -102,6 +103,22 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
+const friendStore = useFriendStore()
+
+// 显示名称优先级：群内备注 > 好友备注 > 好友昵称 > 用户原昵称
+const displayName = computed(() => {
+  // 1. 群内设置的备注昵称优先
+  if (props.member.remarkNickname) {
+    return props.member.remarkNickname
+  }
+  // 2. 好友备注 > 好友昵称
+  const friend = friendStore.findFriend(props.member.userId)
+  if (friend) {
+    return friend.remark || friend.friendNickname
+  }
+  // 3. 用户原昵称
+  return props.member.userNickname
+})
 
 // 群成员角色常量
 const GroupRole = {
@@ -142,7 +159,7 @@ const handleSetAdmin = async () => {
   actionLoading.value = true
   try {
     await setGroupAdmin(props.groupId, props.member.userId, isAdmin)
-    showSuccess(toast, isAdmin ? '已设为管理员' : '已移除管理员', props.member.showNickname)
+    showSuccess(toast, isAdmin ? '已设为管理员' : '已移除管理员', displayName.value)
     emit('refresh')
   } catch (error) {
     console.error('设置管理员失败:', error)
@@ -157,7 +174,7 @@ const handleKick = async () => {
   actionLoading.value = true
   try {
     await kickGroup(props.groupId, props.member.userId)
-    showSuccess(toast, '已移出群聊', props.member.showNickname)
+    showSuccess(toast, '已移出群聊', displayName.value)
     emit('refresh')
   } catch (error) {
     console.error('踢出群聊失败:', error)

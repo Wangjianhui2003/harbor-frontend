@@ -7,12 +7,14 @@
       <div class="flex items-center gap-3">
         <BaseAvatar
           :headImage="friend?.headImage"
-          :name="friend?.friendNickname"
+          :name="friend?.remark || friend?.friendNickname"
           :size="3"
           class="border-2 border-primary/30 rounded-full"
         />
         <div class="flex-1 min-w-0">
-          <CardTitle class="text-base truncate">{{ friend?.friendNickname }}</CardTitle>
+          <CardTitle class="text-base truncate">{{
+            friend?.remark || friend?.friendNickname
+          }}</CardTitle>
           <CardDescription class="text-sm">
             {{ isCaller ? '正在呼叫...' : '语音来电...' }}
           </CardDescription>

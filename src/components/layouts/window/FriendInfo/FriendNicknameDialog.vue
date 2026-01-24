@@ -62,7 +62,7 @@ watch(
   () => props.visible,
   (visible) => {
     if (visible && currentFriend.value) {
-      nickname.value = currentFriend.value.friendNickname ?? ''
+      nickname.value = currentFriend.value.remark ?? ''
     }
   },
   { immediate: true },
@@ -89,6 +89,9 @@ const submit = async () => {
       friendNickname: nickname.value.trim(),
     } as Friend
     await updateFriendNickName(payload)
+    // 更新本地状态：更新 remark
+    const newRemark = nickname.value.trim()
+    friendStore.updateFriendRemark(currentFriend.value.id, newRemark)
     close()
     showSuccess(toast, '成功', '好友备注已更新')
   } catch (err) {

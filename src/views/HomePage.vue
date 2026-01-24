@@ -492,7 +492,7 @@ const insertPrivateMsg = (friend: Friend, msgInfo: PrivateMessage) => {
   const chatInfo: ChatInfo = {
     type: CHATINFO_TYPE.PRIVATE,
     targetId: friend.id,
-    showName: friend.friendNickname,
+    showName: friend.remark || friend.friendNickname,
     headImage: friend.headImage,
   }
   //打开会话

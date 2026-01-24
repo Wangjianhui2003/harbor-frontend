@@ -34,6 +34,7 @@ import useChatStore from '@/stores/chatStore'
 import { useMessageRead } from '@/composable/useMessageRead'
 import useUserStore from '@/stores/userStore'
 import type { User, GroupMember } from '@/types'
+import useFriendStore from '@/stores/friendStore'
 import FileMessage from './FileMessage.vue'
 import VoiceMessage from './VoiceMessage.vue'
 import VideoMessage from './VideoMessage.vue'
@@ -47,6 +48,7 @@ const messageRef = ref<HTMLElement | null>(null)
 const chatStore = useChatStore()
 const { resendMessage } = useSendMessage()
 const userStore = useUserStore()
+const friendStore = useFriendStore()
 
 //TODO:群聊已读人数
 const readCount = computed(() => {
@@ -84,8 +86,20 @@ const name = computed(() => {
   if (chatStore.activeChat?.type === CHATINFO_TYPE.PRIVATE) {
     return chatStore.activeChat.showName
   }
-  // 群聊：优先使用 groupMembers 中的昵称
-  return groupMember.value?.showNickname || (props.message as GroupMessage).sendNickname
+  // 群聊优先级：群内备注 > 好友备注 > 好友昵称 > 用户原昵称 > 发送者昵称
+  const member = groupMember.value
+  // 1. 群内设置的备注昵称优先
+  if (member?.remarkNickname) {
+    return member.remarkNickname
+  }
+  // 2. 好友备注 > 好友昵称
+  const senderId = props.message.sendId
+  const friend = friendStore.findFriend(senderId)
+  if (friend) {
+    return friend.remark || friend.friendNickname
+  }
+  // 3. 用户原昵称或发送者昵称
+  return member?.userNickname || (props.message as GroupMessage).sendNickname
 })
 
 // 消息可见时自动标记已读

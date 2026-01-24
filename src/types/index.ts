@@ -34,7 +34,8 @@ export interface User {
 // 好友state
 export interface Friend {
   id: number
-  friendNickname: string //后端返回的好友昵称 备注 > 原昵称
+  friendNickname: string //好友原始昵称
+  remark?: string //好友备注名
   headImage: string
   headImageThumb?: string
   online: boolean
@@ -67,7 +68,8 @@ export interface GroupMember {
   userId: number
   nickname: string
   headImage: string
-  showNickname: string
+  userNickname: string //用户原昵称
+  remarkNickname?: string //群内设置的备注昵称
   remark: string
   role: number // 0-群主 1-管理员 2-普通成员
   online: boolean

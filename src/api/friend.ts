@@ -25,17 +25,6 @@ export const getFriendList = async (): Promise<Friend[]> => {
 }
 
 /**
- * 移除好友
- */
-export const removeFriend = async (friendId: number): Promise<void> => {
-  await http({
-    url: `/friend/delete/${friendId}`,
-    method: 'delete',
-  })
-  return undefined
-}
-
-/**
  * 查找单个好友的信息
  */
 export const findFriend = async (friendId: number): Promise<Friend> => {
@@ -44,6 +33,17 @@ export const findFriend = async (friendId: number): Promise<Friend> => {
     method: 'get',
   })
   return res.data.data
+}
+
+/**
+ * 移除好友
+ */
+export const removeFriend = async (friendId: number): Promise<void> => {
+  await http({
+    url: `/friend/delete/${friendId}`,
+    method: 'delete',
+  })
+  return undefined
 }
 
 export const updateFriendNickName = async (friend: Friend) => {

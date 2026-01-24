@@ -18,12 +18,12 @@
       <div class="flex flex-col items-center">
         <BaseAvatar
           :headImage="friend?.headImage"
-          :name="friend?.friendNickname"
+          :name="friend?.remark || friend?.friendNickname"
           :size="5"
           class="rounded-full"
         />
         <div class="text-center">
-          <div class="font-medium">{{ friend?.friendNickname }}</div>
+          <div class="font-medium">{{ friend?.remark || friend?.friendNickname }}</div>
           <div class="text-sm text-muted-foreground">
             {{ isCalling ? '正在呼叫...' : isChatting ? '通话中' : '连接中...' }}
           </div>
