@@ -60,10 +60,11 @@ export const TERMINAL_TYPE = {
 } as const
 
 export const MESSAGE_STATUS = {
-  UNSENT: 0,
-  SENT: 1,
-  RECALL: 2,
-  READ: 3,
+  SENDING:-1, //发送中
+  UNSENT: 0, //save，not delivered
+  SENT: 1, //Delivered
+  RECALL: 2, //撤回
+  READ: 3, //已读
   ERROR: 4, //后端没有这个状态，前端用来标记重发
 } as const
 

@@ -15,4 +15,11 @@ export interface UploadFileResp {
   size: number
 }
 
+export interface VideoContent {
+  url: string
+  duration: number
+  name: string
+  size: number
+}
+
 export type fileUrl = string

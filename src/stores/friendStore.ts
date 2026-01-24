@@ -41,11 +41,12 @@ const useFriendStore = defineStore('friendStore', () => {
   }
 
   const updateFriendNickName = (friendId: number, newNickName: string): void => {
-    friends.value.forEach((f) => {
-      if (f.id == friendId) {
-        f.friendNickname = newNickName
+    for (const friend of friends.value) {
+      if (friend.id == friendId) {
+        friend.friendNickname = newNickName
+        break
       }
-    })
+    }
   }
 
   const removeFriend = (id: number): void => {

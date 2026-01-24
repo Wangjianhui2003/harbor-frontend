@@ -129,6 +129,7 @@ export const searchGroup = async (groupId: number): Promise<GroupResult> => {
   return res.data.data
 }
 
+
 /**
  * 获取当前用户管理的群组ID列表（群主或管理员）
  */

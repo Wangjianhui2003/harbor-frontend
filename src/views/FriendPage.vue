@@ -1,21 +1,23 @@
 <template>
   <div class="flex flex-row h-screen">
     <div class="basis-4/24">
-      <Card class="h-full flex flex-col rounded-xs">
+      <Card class="border-r-0 h-full flex flex-col rounded-xs">
         <CardHeader class="gap-0">
           <div class="flex flex-row gap-2">
             <Input class="flex-1 bg-background" />
             <HoverTip content="搜索">
-              <Button class="w-9" variant="ghost"><Search /></Button
-            ></HoverTip>
-            <Button class="w-9" variant="ghost" @click="showAddFriendDialog = true"
-              ><UserRoundPlus
-            /></Button>
+              <Button class="w-9" variant="ghost">
+                <Search />
+              </Button>
+            </HoverTip>
+            <Button class="w-9" variant="ghost" @click="showAddFriendDialog = true">
+              <UserRoundPlus />
+            </Button>
           </div>
         </CardHeader>
         <CardContent class="flex-1 min-h-0 p-0">
           <ScrollArea class="h-full w-full">
-            <FriendList :friends="friendStore.friends" />
+            <FriendList />
           </ScrollArea>
         </CardContent>
       </Card>
@@ -37,6 +39,8 @@ import { UserRoundPlus, Search } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import HoverTip from '@/components/common/HoverTip.vue'
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {CardContent, CardHeader} from "@/components/ui/card";
 
 const friendStore = useFriendStore()
 const showAddFriendDialog = ref(false)

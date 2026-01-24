@@ -14,6 +14,7 @@ import { useSendMessage } from '@/composable/useSendMessage'
 import { scrollToBottom } from '@/utils/dom'
 import uploadFile from '@/api/file'
 import type { UploadImageResp, UploadVideoResp } from '@/types/file'
+import type { VideoContent } from '@/types/file'
 
 const { sendImageMessage, sendVideoMessage } = useSendMessage()
 
@@ -43,13 +44,13 @@ function handleSendMedia() {
       if (isVideoFile(file)) {
         // 视频文件上传
         const result = await uploadFile<UploadVideoResp>(formData, '/video/upload')
-        const content = JSON.stringify({
+        const videoContent: VideoContent = {
           url: result.url,
-          coverUrl: result.coverUrl,
           duration: result.duration,
           name: file.name,
           size: file.size,
-        })
+        }
+        const content = JSON.stringify(videoContent)
         await sendVideoMessage(content)
       } else if (isImageFile(file)) {
         // 图片文件上传

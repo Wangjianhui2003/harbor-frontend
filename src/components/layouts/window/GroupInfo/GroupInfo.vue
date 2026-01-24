@@ -59,7 +59,13 @@
           class="flex items-center"
         >
           <Shield />
-          {{ groupInfo.joinType === 0 ? '直接加入' : '需要管理员同意' }}
+          {{
+            groupInfo.joinType === 0
+              ? '直接加入'
+              : groupInfo.joinType === 1
+                ? '需要管理员同意'
+                : '禁止加入'
+          }}
         </div>
       </div>
       <QuitGroupDialog

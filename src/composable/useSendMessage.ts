@@ -68,7 +68,7 @@ export function useSendMessage() {
           recvId: chat.targetId,
           sendTime: Date.now(),
           selfSend: true,
-          status: MESSAGE_STATUS.UNSENT,
+          status: MESSAGE_STATUS.SENDING,
           quoteMessage: quoteMessage as PrivateMessage | undefined,
         }
         chatStore.insertMessage(localMsg, chatInfo)
@@ -80,7 +80,7 @@ export function useSendMessage() {
         }
         const result = await sendPrivateMessage(dto)
         chatStore.updateMessage(
-          { ...localMsg, id: result.id, status: MESSAGE_STATUS.SENT },
+          { ...localMsg, id: result.id, status: MESSAGE_STATUS.UNSENT },
           chatInfo,
         )
       } else {
@@ -94,7 +94,7 @@ export function useSendMessage() {
           sendNickname: userStore.userInfo.nickname,
           sendTime: Date.now(),
           selfSend: true,
-          status: MESSAGE_STATUS.UNSENT,
+          status: MESSAGE_STATUS.SENDING,
           readCount: 0,
           receipt,
           receiptOk: null,
@@ -112,11 +112,10 @@ export function useSendMessage() {
         }
         const result = await sendGroupMessage(dto)
         chatStore.updateMessage(
-          { ...localMsg, id: result.id, status: MESSAGE_STATUS.SENT },
+          { ...localMsg, id: result.id, status: MESSAGE_STATUS.UNSENT },
           chatInfo,
         )
       }
-
       return true
     } catch (err) {
       console.error('消息发送失败', err)
@@ -157,7 +156,6 @@ export function useSendMessage() {
         }
         chatStore.updateMessage(errorMsg, chatInfo)
       }
-
       return false
     } finally {
       isSending.value = false
@@ -196,9 +194,9 @@ export function useSendMessage() {
    * @returns 是否发送成功
    */
   async function resendMessage(message: BaseMessage, chatInfo: ChatInfo): Promise<boolean> {
-    // 支持 UNSENT（定时器超时重发）或 ERROR（用户手动重发）状态
+    // ERROR重发
     if (
-      (message.status !== MESSAGE_STATUS.ERROR && message.status !== MESSAGE_STATUS.UNSENT) ||
+      (message.status !== MESSAGE_STATUS.ERROR) ||
       isSending.value
     ) {
       return false
@@ -207,8 +205,8 @@ export function useSendMessage() {
     isSending.value = true
     error.value = null
 
-    // 先将状态改为 UNSENT
-    chatStore.updateMessage({ ...message, status: MESSAGE_STATUS.UNSENT }, chatInfo)
+    // 先将状态改为 SENDING
+    chatStore.updateMessage({ ...message, status: MESSAGE_STATUS.SENDING}, chatInfo)
 
     try {
       if (chatInfo.type === CHATINFO_TYPE.PRIVATE) {
@@ -220,7 +218,7 @@ export function useSendMessage() {
         }
         const result = await sendPrivateMessage(dto)
         chatStore.updateMessage(
-          { ...message, id: result.id, status: MESSAGE_STATUS.SENT },
+          { ...message, id: result.id, status: MESSAGE_STATUS.UNSENT },
           chatInfo,
         )
       } else {
@@ -234,7 +232,7 @@ export function useSendMessage() {
         }
         const result = await sendGroupMessage(dto)
         chatStore.updateMessage(
-          { ...message, id: result.id, status: MESSAGE_STATUS.SENT },
+          { ...message, id: result.id, status: MESSAGE_STATUS.UNSENT },
           chatInfo,
         )
       }

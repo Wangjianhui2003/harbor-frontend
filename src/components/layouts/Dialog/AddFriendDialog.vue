@@ -59,8 +59,8 @@
                   class="w-10 h-10 rounded-full overflow-hidden bg-muted flex items-center justify-center flex-shrink-0"
                 >
                   <img
-                    v-if="user.headImageThumb || user.headImage"
-                    :src="user.headImageThumb || user.headImage"
+                    v-if="user.headImage"
+                    :src="user.headImage"
                     :alt="user.nickname"
                     class="w-full h-full object-cover"
                   />
@@ -72,10 +72,20 @@
                 </div>
                 <Button
                   size="sm"
-                  :disabled="isSendingRequest[user.id]"
+                  :disabled="
+                    isSendingRequest[user.id] ||
+                    user.addType === 2 ||
+                    user.id === useUserStore().userInfo.id
+                  "
                   @click="handleSendRequest(user)"
                 >
-                  {{ isSendingRequest[user.id] ? '发送中...' : '发送请求' }}
+                  {{
+                    user.addType === 2
+                      ? '禁止添加'
+                      : isSendingRequest[user.id]
+                        ? '发送中...'
+                        : '发送请求'
+                  }}
                 </Button>
               </div>
             </div>
@@ -216,6 +226,7 @@ import {
 import { useToast } from 'primevue/usetoast'
 import { showError, showSuccess } from '@/utils/message'
 import type { User } from '@/types'
+import useUserStore from '@/stores/userStore'
 
 const props = defineProps<{
   visible: boolean

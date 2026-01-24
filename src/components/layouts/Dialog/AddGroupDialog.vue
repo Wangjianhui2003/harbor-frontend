@@ -58,10 +58,16 @@
                   </div>
                   <Button
                     size="sm"
-                    :disabled="isSendingRequest"
+                    :disabled="isSendingRequest || searchedGroup?.joinType === 2"
                     @click="handleSendRequest(searchedGroup)"
                   >
-                    {{ isSendingRequest ? '发送中...' : '发送请求' }}
+                    {{
+                      searchedGroup?.joinType === 2
+                        ? '禁止加入'
+                        : isSendingRequest
+                          ? '发送中...'
+                          : '发送请求'
+                    }}
                   </Button>
                 </div>
               </div>

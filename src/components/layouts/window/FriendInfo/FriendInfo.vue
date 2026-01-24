@@ -47,16 +47,10 @@
       <FriendNicknameDialog
         v-if="friendInfo && friendUserInfo"
         v-model:visible="editNicknameVisible"
-        :friend-id="friendInfo.id"
-        :current-nickname="friendInfo.friendNickname || friendUserInfo.nickname"
-        @updated="handleNicknameUpdated"
       />
       <RemoveFriendDialog
         v-if="friendInfo && friendUserInfo"
         v-model:visible="removeFriendVisible"
-        :friend-id="friendInfo.id"
-        :friend-name="friendInfo.friendNickname || friendUserInfo.nickname"
-        @removed="handleRemoved"
       />
     </div>
   </Card>
@@ -138,20 +132,9 @@ const openEditNicknameDialog = () => {
   editNicknameVisible.value = true
 }
 
-const handleNicknameUpdated = (newNickname: string) => {
-  if (!friendInfo.value) return
-  friendInfo.value.friendNickname = newNickname
-  friendStore.updateFriendNickName(friendInfo.value.id, newNickname)
-}
-
 const openRemoveDialog = () => {
   if (!friendInfo.value) return
   removeFriendVisible.value = true
-}
-
-const handleRemoved = (id: number) => {
-  friendStore.removeFriend(id)
-  removeFriendVisible.value = false
 }
 </script>
 

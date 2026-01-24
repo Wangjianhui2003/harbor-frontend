@@ -8,20 +8,15 @@
         'max-w-1/2',
       ]"
     >
-      <component :is="messageMap[props.message.type] || TextMessage" :message="props.message">
-      </component>
+      <component :is="messageMap[props.message.type] || TextMessage" :message="props.message" />
+      <span v-if="readCount">{{ readCount }}</span>
     </Item>
-    <LoaderCircle class="animate-spin" v-if="props.message.status === MESSAGE_STATUS.UNSENT" />
-    <MailCheck v-else-if="props.message.status === MESSAGE_STATUS.SENT" />
-    <MessageCircleReply v-else-if="props.message.status === MESSAGE_STATUS.RECALL" />
-    <CircleX
-      class="cursor-pointer text-destructive hover:text-destructive/80"
-      v-else-if="props.message.status === MESSAGE_STATUS.ERROR"
-      @click="handleResend"
-      title="点击重发"
+    <MessageStatusIcon
+      class="self-end mx-4"
+      :size="18"
+      :status="props.message.status"
+      @resend="handleResend"
     />
-    <Check v-else />
-    <span v-if="readCount">{{ readCount }}</span>
   </div>
 </template>
 
@@ -33,7 +28,7 @@ import { computed, ref, onMounted, onUnmounted, type Component } from 'vue'
 import TextMessage from './TextMessage.vue'
 import ImageMessage from './ImageMessage.vue'
 import Item from '@/components/ui/item/Item.vue'
-import { LoaderCircle, MessageCircleReply, Check, MailCheck, CircleX } from 'lucide-vue-next'
+import MessageStatusIcon from './MessageStatusIcon.vue'
 import { useSendMessage } from '@/composable/useSendMessage'
 import useChatStore from '@/stores/chatStore'
 import { useMessageRead } from '@/composable/useMessageRead'

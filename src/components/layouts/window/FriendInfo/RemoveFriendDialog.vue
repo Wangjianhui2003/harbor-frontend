@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import {
   Dialog,
   DialogContent,
@@ -37,21 +37,28 @@ import { removeFriend as removeFriendApi } from '@/api/friend.ts'
 import { useToast } from 'primevue/usetoast'
 import { showError, showSuccess } from '@/utils/message.ts'
 import useFriendStore from '@/stores/friendStore.ts'
+import { storeToRefs } from 'pinia'
 
 const friendStore = useFriendStore()
-const props = defineProps<{
+const { activeFriendIndex, friends } = storeToRefs(friendStore)
+
+defineProps<{
   visible: boolean
-  friendId: number | null
-  friendName?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void
-  (e: 'removed', friendId: number): void
 }>()
 
 const toast = useToast()
 const submitting = ref(false)
+
+const currentFriend = computed(() => {
+  if (activeFriendIndex.value === null) return null
+  return friends.value[activeFriendIndex.value] ?? null
+})
+
+const friendName = computed(() => currentFriend.value?.friendNickname ?? '该用户')
 
 const onOpenChange = (open: boolean) => {
   emit('update:visible', open)
@@ -62,16 +69,15 @@ const close = () => {
 }
 
 const submit = async () => {
-  if (!props.friendId) {
+  if (!currentFriend.value) {
     showError(toast, '错误', '缺少好友信息')
     return
   }
 
   submitting.value = true
   try {
-    await removeFriendApi(props.friendId)
-    emit('removed', props.friendId)
-    friendStore.removeFriend(props.friendId as number)
+    await removeFriendApi(currentFriend.value.id)
+    friendStore.removeFriend(currentFriend.value.id)
     friendStore.loadFriend()
     close()
     showSuccess(toast, '成功', '已移除好友')

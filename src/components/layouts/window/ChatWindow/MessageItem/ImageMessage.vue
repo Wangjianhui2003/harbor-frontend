@@ -12,7 +12,6 @@
 import type { BaseMessage } from '@/types/chat'
 import { useCached } from '@/composable/useCached'
 import { toRef } from 'vue'
-// import { useImage } from '@vueuse/core'
 import { NImage } from 'naive-ui'
 import { ImageOff } from 'lucide-vue-next'
 

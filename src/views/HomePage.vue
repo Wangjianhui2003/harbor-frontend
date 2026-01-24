@@ -77,6 +77,7 @@ import VideoCallAlert from '@/components/layouts/Float/VideoCallAlert.vue'
 import VideoCall from '@/components/layouts/Float/VideoCall.vue'
 import VoiceCallAlert from '@/components/layouts/Float/VoiceCallAlert.vue'
 import VoiceCall from '@/components/layouts/Float/VoiceCall.vue'
+import NaviBar from '@/components/layouts/Navigator/NaviBar.vue'
 
 const toast = useToast()
 const wsClient = createWebSocketClient()

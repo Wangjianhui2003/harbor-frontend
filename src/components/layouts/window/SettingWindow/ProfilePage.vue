@@ -8,7 +8,7 @@
       未保存修改
     </div>
     <!-- 顶部背景横幅 -->
-    <div class="w-full bg-linear-to-r from-blue-400 to-purple-500 h-30 relative">
+    <div class="w-full bg-blue-50 h-30 relative">
       <div class="absolute top-10 left-10 p-1 bg-card rounded-full z-10">
         <div class="relative group cursor-pointer" @click="triggerAvatarUpload">
           <BaseAvatar :headImage="form.headImage" :name="form.nickname" :size="8" />
@@ -152,6 +152,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
 import useUserStore from '@/stores/userStore'
 import { updateUserInfo } from '@/api/user'
+import uploadFile from '@/api/file'
 import { showSuccess, showError } from '@/utils/message'
 import { useToast } from 'primevue/usetoast'
 import type { User } from '@/types'
@@ -173,6 +174,7 @@ const userStore = useUserStore()
 const toast = useToast()
 const saving = ref(false)
 const avatarInput = ref<HTMLInputElement | null>(null)
+const avatarFile = ref<File | null>(null)
 
 // 表单数据
 const form = reactive<Partial<User>>({
@@ -240,13 +242,14 @@ const handleAvatarChange = (event: Event) => {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (file) {
+    // 保存文件引用用于后续上传
+    avatarFile.value = file
     // 预览头像
     const reader = new FileReader()
     reader.onload = (e) => {
       form.headImage = e.target?.result as string
     }
     reader.readAsDataURL(file)
-    // TODO: 实际应该上传到服务器获取 URL
   }
 }
 
@@ -259,6 +262,18 @@ const handleSave = async () => {
 
   saving.value = true
   try {
+    // 如果有选择新头像，先上传
+    if (avatarFile.value) {
+      const formData = new FormData()
+      formData.append('file', avatarFile.value)
+      const uploadResp = await uploadFile<{ originUrl: string; thumbUrl: string }>(
+        formData,
+        '/image/upload',
+      )
+      form.headImage = uploadResp.originUrl
+      avatarFile.value = null
+    }
+
     await updateUserInfo(form as User)
     // 更新本地 store
     userStore.setUserInfo({ ...userStore.userInfo, ...form } as User)

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-row h-screen">
     <div class="basis-4/24">
-      <Card class="h-full flex flex-col rounded-xs">
+      <Card class="border-r-0 h-full flex flex-col rounded-xs">
         <CardHeader class="gap-0">
           <Input class="bg-background" />
         </CardHeader>
@@ -23,8 +23,6 @@ import ChatWindow from '@/components/layouts/Window/ChatWindow/ChatWindow.vue'
 import { Input } from '@/components/ui/input'
 
 const chatStore = useChatStore()
-
-
 </script>
 
 <style scoped></style>

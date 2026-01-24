@@ -52,6 +52,7 @@ import { ref, toRef, computed } from 'vue'
 import type { BaseMessage } from '@/types/chat'
 import { useCached } from '@/composable/useCached'
 import { Play } from 'lucide-vue-next'
+import type { VideoContent } from '@/types/file'
 
 // 视频显示的最大尺寸限制
 const MAX_WIDTH = 320
@@ -59,12 +60,6 @@ const MAX_HEIGHT = 400
 
 const props = defineProps<{ message: BaseMessage }>()
 
-interface VideoContent {
-  url: string
-  duration?: number
-  name?: string
-  size?: number
-}
 
 const videoInfo = JSON.parse(props.message.content) as VideoContent
 

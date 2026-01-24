@@ -76,6 +76,7 @@ async function handleSend() {
   scrollToBottom()
   const success = await sendTextMessage(message)
   if (success) {
+    
   }
 }
 

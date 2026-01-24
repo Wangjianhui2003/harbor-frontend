@@ -1,5 +1,5 @@
 <template>
-  <Card class="h-screen flex flex-col items-center gap-3 rounded-xs justify-between">
+  <Card class="border-x-0 h-screen flex flex-col items-center gap-3 rounded-xs justify-between">
     <div class="flex flex-col items-center gap-3">
       <Button
         v-for="item in navButtons"

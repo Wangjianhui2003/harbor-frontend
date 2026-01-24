@@ -94,13 +94,8 @@ const useChatStore = defineStore('chatStore', {
         chat.messages.forEach((msg) => {
           // 处理消息内容类型（非 TIP_TIME）
           if (!('status' in msg)) return
-
-          // UNSENT 状态的消息在页面刷新后应变为 ERROR，让用户手动重发
-          // 避免自动重发导致消息重复（无法确定后端是否已收到）
-          if (msg.status === MESSAGE_STATUS.UNSENT) {
-            msg.status = MESSAGE_STATUS.ERROR
-          }
-
+          //过滤Sending消息，该消息状态出现在没有发送成功或失败之前（例如用户刷新页面）
+          if (msg.status === MESSAGE_STATUS.SENDING) return
           // 防止图片一直处在加载中状态
           if (!('loadStatus' in msg)) return
           if (msg.loadStatus == MSG_INFO_LOAD_STATUS.LOADING) {
@@ -224,16 +219,17 @@ const useChatStore = defineStore('chatStore', {
         return
       }
 
+      //判断消息类型是否匹配聊天类型
       const isGroupChat = chat.type === CHATINFO_TYPE.GROUP
-      if (isGroupChat && !isGroupMessage(msgInfo)) {
-        console.warn('收到群聊消息但数据格式不正确', msgInfo)
-        return
-      }
-      if (!isGroupChat && !isPrivateMessage(msgInfo)) {
-        console.warn('收到私聊消息但数据格式不正确', msgInfo)
+      const isValidGroupMsg = isGroupChat && isGroupMessage(msgInfo)
+      const isValidPrivateMsg = !isGroupChat && isPrivateMessage(msgInfo)
+      if (!isValidGroupMsg && !isValidPrivateMsg) {
+        const chatType = isGroupChat ? '群聊' : '私聊'
+        console.warn(`收到${chatType}消息但数据格式不正确`, msgInfo)
         return
       }
 
+      //更新maxId
       if (
         msgInfo.id &&
         chatInfo.type === CHATINFO_TYPE.PRIVATE &&
@@ -245,6 +241,7 @@ const useChatStore = defineStore('chatStore', {
         this.groupMsgMaxId = msgInfo.id
       }
 
+      //已经存在，更新
       const message = this.findMessage(chat, msgInfo)
       if (message) {
         Object.assign(message, msgInfo)
@@ -253,6 +250,7 @@ const useChatStore = defineStore('chatStore', {
         return
       }
 
+      //lastContent
       if (
         msgInfo.type == MESSAGE_TYPE.TEXT ||
         msgInfo.type == MESSAGE_TYPE.RECALL ||
@@ -267,6 +265,7 @@ const useChatStore = defineStore('chatStore', {
         ).sendNickname
       }
 
+      //未读数+1
       if (
         !msgInfo.selfSend &&
         msgInfo.status != MESSAGE_STATUS.READ &&
@@ -276,6 +275,7 @@ const useChatStore = defineStore('chatStore', {
         chat.unreadCount++
       }
 
+      //@at
       if (
         isGroupChat &&
         isGroupMessage(msgInfo) &&
@@ -293,6 +293,7 @@ const useChatStore = defineStore('chatStore', {
         }
       }
 
+      //时间提示
       const messages = chat.messages as Message[]
       if (!chat.lastTimeTip || chat.lastTimeTip < msgInfo.sendTime - TIME_TIP_INTERVAL) {
         const timeTipMsg: TimeTipMessage = {
@@ -303,6 +304,7 @@ const useChatStore = defineStore('chatStore', {
         chat.lastTimeTip = msgInfo.sendTime
       }
 
+      //插入位置
       let insertPos = messages.length
       if (msgInfo.id && msgInfo.id > 0) {
         for (let idx = 0; idx < messages.length; idx++) {
@@ -317,7 +319,13 @@ const useChatStore = defineStore('chatStore', {
           }
         }
       }
-      //当前打开了该聊天，且滚动条在底部，直接设置为已读
+
+      //插入消息
+      messages.splice(insertPos, 0, msgInfo)
+      chat.stored = false
+      this.saveToStorage()
+
+      //如果当前在该聊天，且滚动条在底部，滚动到底部
       if (
         useChatStore().activeChat?.targetId == chatInfo.targetId &&
         useChatStore().activeChat?.type == chatInfo.type &&
@@ -325,9 +333,6 @@ const useChatStore = defineStore('chatStore', {
       ) {
         scrollToBottom()
       }
-      messages.splice(insertPos, 0, msgInfo)
-      chat.stored = false
-      this.saveToStorage()
     },
 
     //将cacheChats刷新到chats
@@ -428,7 +433,6 @@ const useChatStore = defineStore('chatStore', {
 
     updateChatFromFriend(friend: FriendInfoUpdate) {
       const chat = this.findChatByFriendId(friend.id)
-      // 更新会话中的群名和头像
       if (chat && (chat.headImage != friend.headImage || chat.showName != friend.friendNickname)) {
         chat.headImage = friend.headImage
         chat.showName = friend.friendNickname
@@ -437,15 +441,12 @@ const useChatStore = defineStore('chatStore', {
       }
     },
 
-    //用userInfo更新chat(不是好友但出现在会话里)
+    //用userInfo更新chat
     updateChatFromUser(userInfo: User) {
       const chat = this.findChatByFriendId(userInfo.id)
       // 更新会话中的昵称和头像
-      if (
-        chat &&
-        (chat.headImage != userInfo.headImageThumb || chat.showName != userInfo.nickname)
-      ) {
-        chat.headImage = userInfo.headImageThumb
+      if (chat && (chat.headImage != userInfo.headImage || chat.showName != userInfo.nickname)) {
+        chat.headImage = userInfo.headImage
         chat.showName = userInfo.nickname
         chat.stored = false
         this.saveToStorage()
@@ -545,12 +546,9 @@ const useChatStore = defineStore('chatStore', {
     //加载群信息后，如果头像和showGroupName变了要重新加载
     updateChatFromGroup(group: Group) {
       const chat: Chat | undefined = this.findChatByGroupId(group.id)
-      if (
-        chat &&
-        (chat.headImage != group.headImageThumb || chat.showName != group.showGroupName)
-      ) {
+      if (chat && (chat.headImage != group.headImage || chat.showName != group.showGroupName)) {
         // 更新会话中的群名称和头像
-        chat.headImage = group.headImageThumb
+        chat.headImage = group.headImage
         chat.showName = group.showGroupName as string
         chat.stored = false
         this.saveToStorage()
