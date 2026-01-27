@@ -6,7 +6,7 @@ import RegisterPage from '../views/RegisterPage.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/login',
+    redirect: '/home',
   },
   {
     name: 'Login',
