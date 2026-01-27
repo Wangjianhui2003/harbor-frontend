@@ -24,7 +24,7 @@ COPY . .
 RUN pnpm run build-only
 
 # Production stage
-FROM nginx:stable-alpine
+FROM nginx:mainline-alpine
 
 COPY nginx-docker.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/dist /harbor-frontend
