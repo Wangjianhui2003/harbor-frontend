@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen flex-row">
     <div class="basis-5/5 flex h-full flex-col items-center justify-center">
-      <Card class="w-[400px]">
+      <Card class="w-100">
         <CardHeader>
           <CardTitle>注册</CardTitle>
           <CardDescription>创建你的 Harbor 账户</CardDescription>
