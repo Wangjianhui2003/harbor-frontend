@@ -60,7 +60,6 @@ const MAX_HEIGHT = 400
 
 const props = defineProps<{ message: BaseMessage }>()
 
-
 const videoInfo = JSON.parse(props.message.content) as VideoContent
 
 const { cachedSrc: videoUrl } = useCached(

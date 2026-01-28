@@ -1,5 +1,5 @@
 <template>
-  <Card class="rounded-xs h-full p-0">
+  <div class="rounded-xs h-full p-0">
     <div class="h-full flex flex-col items-center">
       <div class="border-b p-1 w-full flex items-center justify-between px-3">
         <div></div>
@@ -40,7 +40,7 @@
       </div>
       <ChatInput />
     </div>
-  </Card>
+  </div>
 </template>
 
 <script setup lang="ts">

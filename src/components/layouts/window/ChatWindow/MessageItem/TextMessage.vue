@@ -1,11 +1,18 @@
 <template>
-  <div class="wrap-anywhere">
+  <Item
+    :class="[
+      'p-2 bg-primary/10 ',
+      props.message.selfSend && 'bg-primary/90 text-primary-foreground',
+      'wrap-anywhere',
+    ]"
+  >
     {{ props.message.content }}
-  </div>
+  </Item>
 </template>
 
 <script setup lang="ts">
 import type { BaseMessage } from '@/types/chat'
+import Item from '@/components/ui/item/Item.vue'
 
 const props = defineProps<{
   message: BaseMessage

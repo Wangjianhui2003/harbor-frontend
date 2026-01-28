@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-background/20 transition-colors min-w-52 max-w-72"
+    class="bg-primary/10 hover:bg-primary/20 flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-background/20 transition-colors min-w-52 max-w-72"
     @click="handleDownload"
   >
     <img :src="fileIcon" alt="file icon" class="size-10" />

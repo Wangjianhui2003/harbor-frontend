@@ -1,6 +1,6 @@
 <template>
   <div class="relative inline-block">
-    <n-image width="250" :src="originUrl">
+    <n-image width="250" :src="originUrl" class="rounded-lg">
       <template #error>
         <ImageOff />
       </template>

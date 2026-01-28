@@ -1,16 +1,9 @@
 <template>
   <div ref="messageRef" :class="['flex w-full', props.message.selfSend && 'flex-row-reverse']">
     <BaseAvatar :headImage="headImage" :name="name" class="px-3" />
-    <Item
-      :class="[
-        'p-2 bg-primary/10 ',
-        props.message.selfSend && 'bg-primary/90 text-primary-foreground',
-        'max-w-1/2',
-      ]"
-    >
+    <div class="max-w-1/2">
       <component :is="messageMap[props.message.type] || TextMessage" :message="props.message" />
-      <span v-if="readCount">{{ readCount }}</span>
-    </Item>
+    </div>
     <MessageStatusIcon
       class="self-end mx-4"
       :size="18"
@@ -27,7 +20,6 @@ import { CHATINFO_TYPE, MESSAGE_STATUS, MESSAGE_TYPE } from '@/utils/enums'
 import { computed, ref, onMounted, onUnmounted, type Component } from 'vue'
 import TextMessage from './TextMessage.vue'
 import ImageMessage from './ImageMessage.vue'
-import Item from '@/components/ui/item/Item.vue'
 import MessageStatusIcon from './MessageStatusIcon.vue'
 import { useSendMessage } from '@/composable/useSendMessage'
 import useChatStore from '@/stores/chatStore'
@@ -51,12 +43,12 @@ const userStore = useUserStore()
 const friendStore = useFriendStore()
 
 //TODO:群聊已读人数
-const readCount = computed(() => {
-  if (chatStore.activeChat?.type === CHATINFO_TYPE.GROUP) {
-    return (props.message as GroupMessage).readCount
-  }
-  return undefined
-})
+// const readCount = computed(() => {
+//   if (chatStore.activeChat?.type === CHATINFO_TYPE.GROUP) {
+//     return (props.message as GroupMessage).readCount
+//   }
+//   return undefined
+// })
 
 // 从 groupMembers 中查找对应成员
 const groupMember = computed(() => {
