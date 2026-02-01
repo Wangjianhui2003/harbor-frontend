@@ -14,7 +14,7 @@
         <div class="flex items-center text-3xl">{{ friendUserInfo?.nickname }}</div>
         <div class="flex items-center text-muted-foreground">@{{ friendUserInfo?.username }}</div>
         <div class="flex gap-x-3">
-          <Button class="w-8 h-8 rounded-full cursor-pointer" title="发送信息" @click="sendMessage">
+          <Button class="w-8 h-8 rounded-mfull cursor-pointer" title="发送信息" @click="sendMessage">
             <MailPlus />
           </Button>
           <Button
