@@ -25,7 +25,7 @@
 import { ref } from 'vue'
 import GroupList from '@/components/layouts/AsideList/GroupList/GroupList.vue'
 import GroupInfo from '@/components/layouts/Window/GroupInfo/GroupInfo.vue'
-import AddGroupDialog from '@/components/layouts/Dialog/AddGroupDialog.vue'
+import AddGroupDialog from '@/components/layouts/AsideList/GroupList/AddGroup/AddGroupDialog.vue'
 import useGroupStore from '@/stores/groupStore'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'

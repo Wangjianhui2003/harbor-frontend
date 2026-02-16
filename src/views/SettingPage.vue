@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full w-full">
+  <div class="border-l flex h-full w-full">
     <!-- Settings Sidebar -->
     <aside class="basis-4/24 shrink-0 border-r border-sidebar-border bg-sidebar">
       <div class="flex h-full flex-col">

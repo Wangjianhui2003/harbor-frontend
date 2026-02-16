@@ -148,11 +148,19 @@ function formatFileSize(bytes: number): string {
 /**
  * 处理文件下载
  */
-function handleDownload() {
-  const link = document.createElement('a')
-  link.href = fileInfo.url
-  link.download = fileInfo.name
-  link.target = '_blank'
-  link.click()
+async function handleDownload() {
+  try {
+    const response = await fetch(fileInfo.url)
+    const blob = await response.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = fileInfo.name
+    link.click()
+    URL.revokeObjectURL(blobUrl)
+  } catch {
+    // 降级方案：直接打开链接
+    window.open(fileInfo.url, '_blank')
+  }
 }
 </script>

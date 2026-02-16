@@ -158,7 +158,10 @@ const onReset = (resetForm: (state?: { values?: Partial<LoginFormValues> }) => v
   loadCaptcha()
 }
 
-const onFormSubmit = async (values: GenericObject) => {
+const onFormSubmit = async (
+  values: GenericObject,
+  { setFieldValue }: { setFieldValue: (field: string, value: unknown) => void },
+) => {
   const formValues = values as LoginFormValues
   const loginReqData: LoginData = {
     terminal: TERMINAL_TYPE.WEB,
@@ -168,13 +171,20 @@ const onFormSubmit = async (values: GenericObject) => {
     captchaKey: captchaKey.value,
   }
   showInfo(toast, '提示', '正在登录...')
-  const loginRespData = await login(loginReqData)
-  setCookie('username', formValues.username)
-  setCookie('password', formValues.password)
-  sessionStorage.setItem(ACCESS_TOKEN_KEY, loginRespData.accessToken)
-  sessionStorage.setItem(REFRESH_TOKEN_KEY, loginRespData.refreshToken)
-  showSuccess(toast, '成功', '登录成功')
-  router.push('/home')
+  try {
+    const loginRespData = await login(loginReqData)
+    setCookie('username', formValues.username)
+    setCookie('password', formValues.password)
+    sessionStorage.setItem(ACCESS_TOKEN_KEY, loginRespData.accessToken)
+    sessionStorage.setItem(REFRESH_TOKEN_KEY, loginRespData.refreshToken)
+    showSuccess(toast, '成功', '登录成功')
+    router.push('/home')
+  } catch (e: unknown) {
+    const err = e as { message?: string }
+    showError(toast, '登录失败', err.message || '请检查输入后重试')
+    setFieldValue('captcha', '')
+    loadCaptcha()
+  }
 }
 
 onMounted(() => {
