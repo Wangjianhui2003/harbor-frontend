@@ -40,7 +40,7 @@ const useFriendStore = defineStore('friendStore', () => {
     })
   }
 
-  const updateFriendRemark = (friendId: number, newRemark: string): void => {
+  const updateFriendRemark = (friendId: string, newRemark: string): void => {
     for (const friend of friends.value) {
       if (friend.id == friendId) {
         friend.remark = newRemark
@@ -49,7 +49,7 @@ const useFriendStore = defineStore('friendStore', () => {
     }
   }
 
-  const removeFriend = (id: number): void => {
+  const removeFriend = (id: string): void => {
     friends.value.filter((f) => f.id == id).forEach((f) => (f.deleted = true))
   }
 
@@ -107,10 +107,10 @@ const useFriendStore = defineStore('friendStore', () => {
   }
 
   const isFriend = computed(
-    () => (userId: number) => friends.value.filter((f) => !f.deleted).some((f) => f.id == userId),
+    () => (userId: string) => friends.value.filter((f) => !f.deleted).some((f) => f.id == userId),
   )
 
-  const findFriend = computed(() => (userId: number) => friends.value.find((f) => f.id == userId))
+  const findFriend = computed(() => (userId: string) => friends.value.find((f) => f.id == userId))
 
   return {
     friends,

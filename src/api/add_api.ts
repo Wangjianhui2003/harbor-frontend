@@ -1,8 +1,8 @@
 import http from '@/api/http/http'
 
 export interface AddFriendReq {
-  requestUserId: number
-  receiveUserId: number
+  requestUserId: string
+  receiveUserId: string
   requestNote: string
 }
 
@@ -10,9 +10,9 @@ export interface AddFriendReq {
  * 查询添加好友请求
  */
 export interface AddUserRequestRecord {
-  id: number
-  requestUserId: number
-  receiveUserId: number
+  id: string
+  requestUserId: string
+  receiveUserId: string
   status: number
   requestNote: string
   dealTime: string | null // datetime
@@ -22,9 +22,9 @@ export interface AddUserRequestRecord {
 }
 
 export interface DealAddFriendReq {
-  id: number
-  requestUserId: number
-  receiveUserId: number
+  id: string
+  requestUserId: string
+  receiveUserId: string
   status: number //1: 同意 2: 拒绝
   comment: string
 }
@@ -33,8 +33,8 @@ export interface DealAddFriendReq {
  * 加群请求
  */
 export interface AddGroupReq {
-  groupId: number
-  requestUserId: number
+  groupId: string
+  requestUserId: string
   requestNote: string
 }
 
@@ -42,12 +42,12 @@ export interface AddGroupReq {
  * 对应第二张图的接口结构
  */
 export interface AddGroupRequestRecord {
-  id: number
-  groupId: number
-  requestUserId: number
+  id: string
+  groupId: string
+  requestUserId: string
   status: number
   requestNote: string
-  dealUserId: number | null
+  dealUserId: string | null
   comment: string | null
   dealTime: string | null // datetime
   createdTime: string //
@@ -55,10 +55,10 @@ export interface AddGroupRequestRecord {
 }
 
 export interface DealAddGroupReq {
-  id: number
-  groupId: number
-  requestUserId: number
-  dealUserId: number
+  id: string
+  groupId: string
+  requestUserId: string
+  dealUserId: string
   status: number
   comment: string
 }
@@ -147,7 +147,7 @@ export const getSentGroupRequests = async (): Promise<AddGroupRequestRecord[]> =
 /**
  * 查询指定群组的请求列表
  */
-export const getGroupRequests = async (groupId: number): Promise<AddGroupRequestRecord[]> => {
+export const getGroupRequests = async (groupId: string): Promise<AddGroupRequestRecord[]> => {
   const res = await http({
     url: `/add/group/${groupId}`,
     method: 'get',
@@ -159,7 +159,7 @@ export const getGroupRequests = async (groupId: number): Promise<AddGroupRequest
  * 根据群组ID列表查询请求
  */
 export const findRequestsByGroupIds = async (
-  groupIds: number[],
+  groupIds: string[],
 ): Promise<AddGroupRequestRecord[]> => {
   const res = await http({
     url: '/add/group/list',

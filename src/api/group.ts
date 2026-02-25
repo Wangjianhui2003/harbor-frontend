@@ -3,9 +3,9 @@ import type { Group, GroupMember } from '../types'
 
 //群聊信息
 export interface GroupResult {
-  id: number
+  id: string
   name: string
-  ownerId: number
+  ownerId: string
   headImage: string
   headImageThumb: string
   notice: string
@@ -19,11 +19,11 @@ export interface GroupResult {
 
 interface CreateGroupData {
   name: string
-  memberIds: number[]
+  memberIds: string[]
 }
 
 interface ModifyGroupData {
-  id: number
+  id: string
   name?: string
   headImage?: string
   notice?: string
@@ -31,8 +31,8 @@ interface ModifyGroupData {
 }
 
 interface InviteData {
-  groupId: number
-  friendIds: number[]
+  groupId: string
+  friendIds: string[]
 }
 
 // 创建群聊
@@ -56,7 +56,7 @@ export const modifyGroup = async (data: ModifyGroupData): Promise<void> => {
 }
 
 // 解散群聊
-export const deleteGroup = async (groupId: number): Promise<void> => {
+export const deleteGroup = async (groupId: string): Promise<void> => {
   await http({
     url: `/group/delete/${groupId}`,
     method: 'DELETE',
@@ -65,7 +65,7 @@ export const deleteGroup = async (groupId: number): Promise<void> => {
 }
 
 // 查询单个所在群聊信息
-export const findGroup = async (groupId: number): Promise<Group> => {
+export const findGroup = async (groupId: string): Promise<Group> => {
   const res = await http({
     url: `/group/find/${groupId}`,
     method: 'GET',
@@ -93,7 +93,7 @@ export const inviteToGroup = async (data: InviteData): Promise<void> => {
 }
 
 // 查询群聊成员
-export const findGroupMembers = async (groupId: number): Promise<GroupMember[]> => {
+export const findGroupMembers = async (groupId: string): Promise<GroupMember[]> => {
   const res = await http({
     url: `/group/members/${groupId}`,
     method: 'GET',
@@ -102,7 +102,7 @@ export const findGroupMembers = async (groupId: number): Promise<GroupMember[]> 
 }
 
 // 退出群聊
-export const quitGroup = async (groupId: number): Promise<void> => {
+export const quitGroup = async (groupId: string): Promise<void> => {
   await http({
     url: `/group/quit/${groupId}`,
     method: 'DELETE',
@@ -111,7 +111,7 @@ export const quitGroup = async (groupId: number): Promise<void> => {
 }
 
 // 踢出群聊
-export const kickGroup = async (groupId: number, userId: number): Promise<void> => {
+export const kickGroup = async (groupId: string, userId: string): Promise<void> => {
   await http({
     url: `/group/kick/${groupId}`,
     method: 'DELETE',
@@ -120,7 +120,7 @@ export const kickGroup = async (groupId: number, userId: number): Promise<void> 
   return undefined
 }
 
-export const searchGroup = async (groupId: number): Promise<GroupResult> => {
+export const searchGroup = async (groupId: string): Promise<GroupResult> => {
   const res = await http({
     url: '/group/search',
     method: 'GET',
@@ -133,7 +133,7 @@ export const searchGroup = async (groupId: number): Promise<GroupResult> => {
 /**
  * 获取当前用户管理的群组ID列表（群主或管理员）
  */
-export const getManagedGroupIds = async (): Promise<number[]> => {
+export const getManagedGroupIds = async (): Promise<string[]> => {
   const res = await http({
     url: '/group/managed',
     method: 'GET',
@@ -145,8 +145,8 @@ export const getManagedGroupIds = async (): Promise<number[]> => {
  * 设置或移除群管理员
  */
 export const setGroupAdmin = async (
-  groupId: number,
-  userId: number,
+  groupId: string,
+  userId: string,
   isAdmin: boolean,
 ): Promise<void> => {
   await http({

@@ -12,7 +12,7 @@ const sendPrivateMessage = async (data: PrivateMessageDTO) => {
 }
 
 //撤回私聊消息
-const recallPrivateMessage = async (id: number) => {
+const recallPrivateMessage = async (id: string) => {
   await http({
     url: `/message/private/recall/${id}`,
     method: 'delete',
@@ -21,7 +21,7 @@ const recallPrivateMessage = async (id: number) => {
 }
 
 //拉取离线消息（通过 websocket 异步推送）
-const pullOfflinePrivateMessage = async (minId: number) => {
+const pullOfflinePrivateMessage = async (minId: string) => {
   const res = await http({
     url: '/message/private/pullOfflineMessage',
     method: 'get',
@@ -31,7 +31,7 @@ const pullOfflinePrivateMessage = async (minId: number) => {
 }
 
 //设置会话中接收的消息为已读
-const readPrivateMessage = async (friendId: number) => {
+const readPrivateMessage = async (friendId: string) => {
   await http({
     url: '/message/private/readed',
     method: 'put',
@@ -41,7 +41,7 @@ const readPrivateMessage = async (friendId: number) => {
 }
 
 //获取某个会话中已读消息的最大 ID
-const getMaxReadPrivateMessageId = async (friendId: number): Promise<number> => {
+const getMaxReadPrivateMessageId = async (friendId: string): Promise<string> => {
   const res = await http({
     url: '/message/private/maxReadedId',
     method: 'get',
@@ -51,7 +51,7 @@ const getMaxReadPrivateMessageId = async (friendId: number): Promise<number> => 
 }
 
 //查询聊天记录
-const getPrivateMessageHistory = async (friendId: number, page: number, size: number) => {
+const getPrivateMessageHistory = async (friendId: string, page: number, size: number) => {
   const res = await http({
     url: '/message/private/history',
     method: 'get',

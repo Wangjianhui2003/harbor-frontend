@@ -45,8 +45,8 @@ const isContentMessage = (msg: Message): msg is BaseMessage => msg.type !== MESS
 const useChatStore = defineStore('chatStore', {
   state: () => ({
     activeChat: null as Chat | null,
-    privateMsgMaxId: 0,
-    groupMsgMaxId: 0,
+    privateMsgMaxId: '0' as string,
+    groupMsgMaxId: '0' as string,
     loadingPrivateMsg: false,
     loadingGroupMsg: false,
     chats: [] as Chat[],
@@ -85,8 +85,8 @@ const useChatStore = defineStore('chatStore', {
     //初始化
     initChat(chatsData: ChatsData): void {
       this.chats = []
-      this.privateMsgMaxId = chatsData.privateMsgMaxId || 0
-      this.groupMsgMaxId = chatsData.groupMsgMaxId || 0
+      this.privateMsgMaxId = chatsData.privateMsgMaxId || '0'
+      this.groupMsgMaxId = chatsData.groupMsgMaxId || '0'
       cacheChats = chatsData.chats || []
       // 处理加载状态
       cacheChats.forEach((chat) => {
@@ -287,7 +287,7 @@ const useChatStore = defineStore('chatStore', {
         if (msgInfo.atUserIds.indexOf(id) >= 0) {
           chat.atMe = true
         }
-        if (msgInfo.atUserIds.indexOf(-1) >= 0) {
+      if (msgInfo.atUserIds.indexOf('-1') >= 0) {
           ;(chat as GroupChat).atAll = true
         }
       }
@@ -386,13 +386,13 @@ const useChatStore = defineStore('chatStore', {
     },
 
     //移除私聊会话
-    removePrivateChat(friendId: number) {
+    removePrivateChat(friendId: string) {
       const idx = this.findChatIdx({ type: CHATINFO_TYPE.PRIVATE, targetId: friendId } as ChatInfo)
       if (idx !== undefined) this.removeChat(idx)
     },
 
     //移除群组会话
-    removeGroupChat(groupId: number) {
+    removeGroupChat(groupId: string) {
       const idx = this.findChatIdx({ type: CHATINFO_TYPE.GROUP, targetId: groupId } as ChatInfo)
       if (idx !== undefined) this.removeChat(idx)
     },
@@ -479,7 +479,7 @@ const useChatStore = defineStore('chatStore', {
     },
 
     //将私聊会话maxId以下的全部设为已读(多时其他客户端已读客户端)
-    markReadMessage(friendId: number, maxId: number | null) {
+    markReadMessage(friendId: string, maxId: string | null) {
       const chat = this.findChatByFriendId(friendId)
       if (!chat) return
 
@@ -506,7 +506,7 @@ const useChatStore = defineStore('chatStore', {
       const chat = this.findChat(chatInfo)
       if (!chat) return
       //要撤回的消息id
-      const id: number = Number(msgInfo.content)
+      const id: string = msgInfo.content
       //群聊和私聊撤回标识
       let name = '对方'
       if (msgInfo.selfSend) {
@@ -615,14 +615,14 @@ const useChatStore = defineStore('chatStore', {
     },
     //根据friendId找chat
     findChatByFriendId() {
-      return (friendId: number) => {
+      return (friendId: string) => {
         const chats = this.getChatList
         return chats.find((chat) => chat.type == CHATINFO_TYPE.PRIVATE && chat.targetId == friendId)
       }
     },
     //根据groupId找chat
     findChatByGroupId() {
-      return (groupId: number) => {
+      return (groupId: string) => {
         const chats = this.getChatList
         return chats.find((chat) => chat.type == CHATINFO_TYPE.GROUP && chat.targetId == groupId)
       }

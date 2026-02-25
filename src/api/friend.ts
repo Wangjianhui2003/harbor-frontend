@@ -4,7 +4,7 @@ import type { Friend } from '../types'
 /**
  * 添加好友
  */
-export const addFriend = async (friendId: number): Promise<void> => {
+export const addFriend = async (friendId: string): Promise<void> => {
   await http({
     url: '/friend/add',
     method: 'post',
@@ -27,7 +27,7 @@ export const getFriendList = async (): Promise<Friend[]> => {
 /**
  * 查找单个好友的信息
  */
-export const findFriend = async (friendId: number): Promise<Friend> => {
+export const findFriend = async (friendId: string): Promise<Friend> => {
   const res = await http({
     url: `/friend/find/${friendId}`,
     method: 'get',
@@ -38,7 +38,7 @@ export const findFriend = async (friendId: number): Promise<Friend> => {
 /**
  * 移除好友
  */
-export const removeFriend = async (friendId: number): Promise<void> => {
+export const removeFriend = async (friendId: string): Promise<void> => {
   await http({
     url: `/friend/delete/${friendId}`,
     method: 'delete',

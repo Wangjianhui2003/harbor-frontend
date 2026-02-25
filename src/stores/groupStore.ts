@@ -30,7 +30,7 @@ const useGroupStore = defineStore('groupStore', () => {
   }
 
   //逻辑移除
-  const removeGroup = (id: number): void => {
+  const removeGroup = (id: string): void => {
     groups.value
       .filter((group) => group.id == id)
       .forEach((group) => {
@@ -53,7 +53,7 @@ const useGroupStore = defineStore('groupStore', () => {
   //根据id查找group
   const findGroup = computed(
     () =>
-      (id: number): Group | undefined =>
+      (id: string): Group | undefined =>
         groups.value.find((g) => g.id == id),
   )
 

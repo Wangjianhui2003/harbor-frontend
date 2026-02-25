@@ -13,7 +13,7 @@ export interface CaptchaResp {
 
 // 用户
 export interface User {
-  id: number
+  id: string
   username: string
   nickname: string
   headImage: string
@@ -33,7 +33,7 @@ export interface User {
 
 // 好友state
 export interface Friend {
-  id: number
+  id: string
   friendNickname: string //好友原始昵称
   remark?: string //好友备注名
   headImage: string
@@ -46,9 +46,9 @@ export interface Friend {
 
 // 群组相关类型
 export interface Group {
-  id: number
+  id: string
   name: string
-  ownerId: number
+  ownerId: string
   headImage: string
   headImageThumb: string
   notice?: string
@@ -65,7 +65,7 @@ export interface Group {
 }
 
 export interface GroupMember {
-  userId: number
+  userId: string
   nickname: string
   headImage: string
   userNickname: string //用户原昵称
@@ -91,7 +91,7 @@ export interface WebRTCConfig {
 
 // 在线终端类型
 export interface OnlineTerminal {
-  userId: number
+  userId: string
   terminals: number[]
 }
 

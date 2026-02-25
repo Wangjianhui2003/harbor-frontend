@@ -48,7 +48,7 @@ const getSelfInfo = async (): Promise<User> => {
   return res.data.data
 }
 
-const getUserOnlineStatus = async (userIds: number[]): Promise<OnlineTerminal[]> => {
+const getUserOnlineStatus = async (userIds: string[]): Promise<OnlineTerminal[]> => {
   const res = await http({
     url: '/user/terminal/online',
     method: 'get',
@@ -58,7 +58,7 @@ const getUserOnlineStatus = async (userIds: number[]): Promise<OnlineTerminal[]>
 }
 
 //查看某人的userInfo
-const getUserInfo = async (id: number): Promise<User> => {
+const getUserInfo = async (id: string): Promise<User> => {
   const res = await http({
     url: `/user/find/${id}`,
     method: 'get',

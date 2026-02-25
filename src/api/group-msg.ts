@@ -12,7 +12,7 @@ const sendGroupMessage = async (data: GroupMessageDTO) => {
 }
 
 //撤回消息
-const recallGroupMessage = async (id: number) => {
+const recallGroupMessage = async (id: string) => {
   await http({
     url: `/message/group/recall/${id}`,
     method: 'delete',
@@ -21,7 +21,7 @@ const recallGroupMessage = async (id: number) => {
 }
 
 //拉取离线消息（消息将通过 websocket 异步推送）
-const pullOfflineGroupMessage = async (minId: number) => {
+const pullOfflineGroupMessage = async (minId: string) => {
   const res = await http({
     url: '/message/group/pullOfflineMessage',
     method: 'get',
@@ -31,7 +31,7 @@ const pullOfflineGroupMessage = async (minId: number) => {
 }
 
 //设置群聊消息为已读
-const readGroupMessage = async (groupId: number) => {
+const readGroupMessage = async (groupId: string) => {
   await http({
     url: '/message/group/readed',
     method: 'put',
@@ -41,7 +41,7 @@ const readGroupMessage = async (groupId: number) => {
 }
 
 //获取某条消息的已读用户 ID 列表
-const getReadedUsers = async (groupId: number, messageId: number): Promise<number[]> => {
+const getReadedUsers = async (groupId: string, messageId: string): Promise<string[]> => {
   const res = await http({
     url: '/message/group/findReadedUsers',
     method: 'get',
@@ -51,7 +51,7 @@ const getReadedUsers = async (groupId: number, messageId: number): Promise<numbe
 }
 
 //查询聊天记录
-const getGroupHistoryMessages = async (groupId: number, page: number, size: number) => {
+const getGroupHistoryMessages = async (groupId: string, page: number, size: number) => {
   const res = await http({
     url: '/message/group/history',
     method: 'get',

@@ -200,10 +200,21 @@ const onFormSubmit: SubmissionHandler<GenericObject> = async (values) => {
     captcha: formValues.captcha,
     captchaKey: captchaKey.value,
   }
-  showInfo(toast, '提示', '正在注册...')
-  await register(registerReq)
-  showSuccess(toast, '成功', '注册成功，请登录')
-  router.push('/login')
+  try {
+    showInfo(toast, '提示', '正在注册...')
+    await register(registerReq)
+    showSuccess(toast, '成功', '注册成功，请登录')
+    router.push('/login')
+  } catch (error) {
+    let errorMessage = '注册时发生错误，请重试'
+    if (error && typeof error === 'object' && 'message' in error) {
+      errorMessage = String(error.message)
+    } else if (error instanceof Error) {
+      errorMessage = error.message
+    }
+    showError(toast, '注册失败', errorMessage)
+    loadCaptcha()
+  }
 }
 
 onMounted(() => {

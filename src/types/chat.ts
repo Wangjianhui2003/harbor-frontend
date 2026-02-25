@@ -13,7 +13,7 @@ export type Chat = GroupChat | PrivateChat
 
 // 聊天信息类型
 export interface ChatInfo {
-  targetId: number
+  targetId: string
   type: string
   showName: string
   headImage: string
@@ -21,8 +21,8 @@ export interface ChatInfo {
 
 //本地存储的聊天数据结构
 export interface ChatsData {
-  privateMsgMaxId: number
-  groupMsgMaxId: number
+  privateMsgMaxId: string
+  groupMsgMaxId: string
   chatKeys: string[]
   chats?: (GroupChat | PrivateChat)[]
 }
@@ -40,7 +40,7 @@ export interface GroupChat {
   groupName: string
   pinned?: boolean // 是否固定
   stored: boolean
-  targetId: number
+  targetId: string
   type: string
   unreadCount: number
 }
@@ -56,22 +56,22 @@ export interface PrivateChat {
   showName: string // 显示名称,由ChatInfo决定
   pinned?: boolean // 是否固定
   stored: boolean
-  targetId: number
+  targetId: string
   type: string
   unreadCount: number
 }
 
 // 群聊消息
 export interface GroupMessage {
-  atUserIds: number[]
+  atUserIds: string[]
   content: string
-  groupId: number
-  id: number
+  groupId: string
+  id: string
   readCount: number
   receipt: boolean
   receiptOk: boolean | null
   selfSend: boolean
-  sendId: number
+  sendId: string
   sendNickname: string
   sendTime: number
   status: MessageStatusType
@@ -84,10 +84,10 @@ export interface GroupMessage {
 // 私聊消息
 export interface PrivateMessage {
   content: string
-  id: number
-  recvId: number
+  id: string
+  recvId: string
   selfSend: boolean
-  sendId: number
+  sendId: string
   sendTime: number
   status: MessageStatusType
   type: MessageType
@@ -98,17 +98,17 @@ export interface PrivateMessage {
 
 // 私聊消息DTO
 export interface PrivateMessageDTO {
-  recvId: number
+  recvId: string
   content: string
   type: MessageType
 }
 
 // 群聊消息DTO
 export interface GroupMessageDTO {
-  groupId: number
+  groupId: string
   content: string
   type: MessageType
-  atUserIds?: number[]
+  atUserIds?: string[]
   receipt?: boolean
 }
 
