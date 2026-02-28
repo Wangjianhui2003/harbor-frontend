@@ -2,15 +2,16 @@ import { nextTick } from 'vue'
 
 /**
  * 滚动元素到底部
- * @param selector CSS 选择器，默认为聊天窗口的滚动区域
+ * @param target CSS 选择器或 DOM 元素，默认为聊天窗口的滚动区域
  * @param smooth 是否使用平滑滚动，默认为 false
  */
 export function scrollToBottom(
-  selector = '#chat-scroll-area [data-slot="scroll-area-viewport"]',
+  target: string | HTMLElement = '#chat-scroll-area [data-slot="scroll-area-viewport"]',
   smooth = false,
 ) {
   nextTick(() => {
-    const container = document.querySelector(selector)
+    const container =
+      typeof target === 'string' ? (document.querySelector(target) as HTMLElement | null) : target
     if (container) {
       if (smooth) {
         container.scrollTo({

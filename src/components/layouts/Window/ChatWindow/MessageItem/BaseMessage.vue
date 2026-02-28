@@ -1,15 +1,38 @@
 <template>
-  <div ref="messageRef" :class="['flex w-full', props.message.selfSend && 'flex-row-reverse']">
-    <BaseAvatar :headImage="headImage" :name="name" class="px-3" />
-    <div class="max-w-1/2">
-      <component :is="messageMap[props.message.type] || TextMessage" :message="props.message" />
-    </div>
-    <MessageStatusIcon
-      class="self-end mx-4"
-      :size="18"
-      :status="props.message.status"
-      @resend="handleResend"
-    />
+  <div>
+    <ContextMenu>
+      <ContextMenuTrigger class="block w-full">
+        <div
+          ref="messageRef"
+          :class="['flex w-full py-4', props.message.selfSend && 'flex-row-reverse']"
+        >
+          <BaseAvatar :headImage="headImage" :name="name" class="px-3" />
+          <div class="max-w-1/2">
+            <component
+              :is="messageMap[props.message.type] || TextMessage"
+              :message="props.message"
+            />
+          </div>
+          <MessageStatusIcon
+            class="self-end mx-4"
+            :size="18"
+            :status="props.message.status"
+            @resend="handleResend"
+          />
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent class="w-40">
+        <ContextMenuItem @click="handleDeleteMessage">删除消息</ContextMenuItem>
+        <ContextMenuItem
+          v-if="canShowRecall"
+          :disabled="!canRecall || recallLoading"
+          class="text-destructive focus:text-destructive"
+          @click="handleRecallMessage"
+        >
+          {{ recallLoading ? '撤回中...' : '撤回消息' }}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   </div>
 </template>
 
@@ -30,6 +53,16 @@ import useFriendStore from '@/stores/friendStore'
 import FileMessage from './FileMessage.vue'
 import VoiceMessage from './VoiceMessage.vue'
 import VideoMessage from './VideoMessage.vue'
+import { recallPrivateMessage } from '@/api/private-msg'
+import { recallGroupMessage } from '@/api/group-msg'
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
+import { useToast } from 'primevue/usetoast'
+import { showError } from '@/utils/message'
 
 const props = defineProps<{
   message: BaseMessage
@@ -41,6 +74,17 @@ const chatStore = useChatStore()
 const { resendMessage } = useSendMessage()
 const userStore = useUserStore()
 const friendStore = useFriendStore()
+const toast = useToast()
+const recallLoading = ref(false)
+
+const RECALL_EXPIRE_MS = 5 * 60 * 1000
+const RECALL_TYPES = new Set<number>([
+  MESSAGE_TYPE.TEXT,
+  MESSAGE_TYPE.IMAGE,
+  MESSAGE_TYPE.FILE,
+  MESSAGE_TYPE.AUDIO,
+  MESSAGE_TYPE.VIDEO,
+])
 
 //TODO:群聊已读人数
 // const readCount = computed(() => {
@@ -104,6 +148,96 @@ const messageMap: Record<number, Component> = {
   [MESSAGE_TYPE.FILE]: FileMessage,
   [MESSAGE_TYPE.AUDIO]: VoiceMessage,
   [MESSAGE_TYPE.VIDEO]: VideoMessage,
+}
+
+const canShowRecall = computed(() => {
+  return props.message.selfSend && !!props.message.id && RECALL_TYPES.has(props.message.type)
+})
+
+const canRecall = computed(() => {
+  if (!canShowRecall.value) return false
+  if (
+    props.message.status === MESSAGE_STATUS.RECALL ||
+    props.message.status === MESSAGE_STATUS.SENDING ||
+    props.message.status === MESSAGE_STATUS.ERROR
+  ) {
+    return false
+  }
+  return Date.now() - props.message.sendTime <= RECALL_EXPIRE_MS
+})
+
+const getCurrentChatInfo = (): ChatInfo | null => {
+  if (!chatStore.activeChat) {
+    return null
+  }
+  return {
+    targetId: chatStore.activeChat.targetId,
+    type: chatStore.activeChat.type,
+    showName: chatStore.activeChat.showName,
+    headImage: chatStore.activeChat.headImage,
+  }
+}
+
+const normalizeId = (id: string | number | null | undefined): string => {
+  if (id === null || id === undefined) {
+    return ''
+  }
+  return String(id)
+}
+
+const extractErrorMessage = (error: unknown): string => {
+  if (typeof error !== 'object' || error === null) {
+    return ''
+  }
+  const err = error as {
+    response?: { data?: { message?: string } }
+    message?: string
+  }
+  return err.response?.data?.message || err.message || ''
+}
+
+const handleDeleteMessage = () => {
+  const chatInfo = getCurrentChatInfo()
+  if (!chatInfo) return
+  chatStore.deleteMessage(props.message, chatInfo)
+}
+
+const handleRecallMessage = async () => {
+  if (!canRecall.value || recallLoading.value) {
+    return
+  }
+  const chatInfo = getCurrentChatInfo()
+  if (!chatInfo) {
+    return
+  }
+  const messageId = normalizeId(props.message.id)
+  if (!messageId) {
+    return
+  }
+  recallLoading.value = true
+  try {
+    if (chatInfo.type === CHATINFO_TYPE.PRIVATE) {
+      await recallPrivateMessage(messageId)
+    } else {
+      await recallGroupMessage(messageId)
+    }
+    chatStore.recallMsg(
+      {
+        ...props.message,
+        selfSend: true,
+        type: MESSAGE_TYPE.RECALL,
+        status: MESSAGE_STATUS.UNSENT,
+        content: messageId,
+        sendTime: Date.now(),
+      } as BaseMessage,
+      chatInfo,
+    )
+  } catch (error: unknown) {
+    console.error('撤回消息失败:', error)
+    showError(toast, '撤回失败', extractErrorMessage(error) || '请稍后重试')
+  } finally {
+    recallLoading.value = false
+  }
 }
 
 //处理重发
