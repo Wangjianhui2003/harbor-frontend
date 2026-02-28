@@ -62,7 +62,7 @@ import GroupMemberItem from './GroupMemberItem.vue'
 import { GROUP_ROLE } from '@/utils/enums'
 
 const props = defineProps<{
-  groupId: number
+  groupId: string
   members: GroupMember[]
   loading: boolean
 }>()

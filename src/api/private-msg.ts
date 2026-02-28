@@ -13,11 +13,11 @@ const sendPrivateMessage = async (data: PrivateMessageDTO) => {
 
 //撤回私聊消息
 const recallPrivateMessage = async (id: string) => {
-  await http({
+  const res = await http({
     url: `/message/private/recall/${id}`,
     method: 'delete',
   })
-  return undefined
+  return res.data.data
 }
 
 //拉取离线消息（通过 websocket 异步推送）

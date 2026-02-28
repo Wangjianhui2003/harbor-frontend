@@ -92,8 +92,8 @@ import useFriendStore from '@/stores/friendStore'
 
 const props = defineProps<{
   member: GroupMember
-  groupId: number
-  currentUserId: number | undefined
+  groupId: string
+  currentUserId: string | undefined
   isCurrentUserOwner: boolean
   isCurrentUserAdmin: boolean
 }>()

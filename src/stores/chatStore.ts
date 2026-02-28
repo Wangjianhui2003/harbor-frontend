@@ -24,6 +24,19 @@ let cacheChats: Chat[] = []
 const isGroupMessage = (msg: BaseMessage): msg is GroupMessage => 'groupId' in msg
 const isPrivateMessage = (msg: BaseMessage): msg is PrivateMessage => 'recvId' in msg
 const isContentMessage = (msg: Message): msg is BaseMessage => msg.type !== MESSAGE_TYPE.TIP_TIME
+const canUseAsLastContent = (msg: BaseMessage) =>
+  msg.type == MESSAGE_TYPE.TEXT ||
+  msg.type == MESSAGE_TYPE.RECALL ||
+  msg.type == MESSAGE_TYPE.TIP_TEXT
+const findLastContentMessage = (messages: Message[]): BaseMessage | null => {
+  for (let idx = messages.length - 1; idx >= 0; idx--) {
+    const msg = messages[idx]
+    if (msg && isContentMessage(msg)) {
+      return msg
+    }
+  }
+  return null
+}
 
 /**
  * key,chatKey,chatsData结构
@@ -232,11 +245,11 @@ const useChatStore = defineStore('chatStore', {
       if (
         msgInfo.id &&
         chatInfo.type === CHATINFO_TYPE.PRIVATE &&
-        msgInfo.id > this.privateMsgMaxId
+        BigInt(msgInfo.id) > BigInt(this.privateMsgMaxId)
       ) {
         this.privateMsgMaxId = msgInfo.id
       }
-      if (msgInfo.id && chatInfo.type === CHATINFO_TYPE.GROUP && msgInfo.id > this.groupMsgMaxId) {
+      if (msgInfo.id && chatInfo.type === CHATINFO_TYPE.GROUP && BigInt(msgInfo.id) > BigInt(this.groupMsgMaxId)) {
         this.groupMsgMaxId = msgInfo.id
       }
 
@@ -305,13 +318,13 @@ const useChatStore = defineStore('chatStore', {
 
       //插入位置
       let insertPos = messages.length
-      if (msgInfo.id && msgInfo.id > 0) {
+      if (msgInfo.id && BigInt(msgInfo.id) > 0n) {
         for (let idx = 0; idx < messages.length; idx++) {
           const currentMsg = messages[idx] as Message
           if (!isContentMessage(currentMsg) || !currentMsg.id) {
             continue
           }
-          if (msgInfo.id < currentMsg.id) {
+          if (BigInt(msgInfo.id) < BigInt(currentMsg.id)) {
             insertPos = idx
             console.log(`消息出现乱序,位置:${messages.length},修正至:${insertPos}`)
             break
@@ -501,6 +514,67 @@ const useChatStore = defineStore('chatStore', {
       this.saveToStorage()
     },
 
+    //单向删除消息(仅当前用户本地)
+    deleteMessage(msgInfo: BaseMessage, chatInfo: ChatInfo) {
+      const chat = this.findChat(chatInfo)
+      if (!chat) {
+        return
+      }
+      const messages = chat.messages as Message[]
+      let targetIdx = -1
+      for (let idx = 0; idx < messages.length; idx++) {
+        const msg = messages[idx]
+        if (!msg || !isContentMessage(msg)) {
+          continue
+        }
+        if (msgInfo.id && msg.id && msg.id == msgInfo.id) {
+          targetIdx = idx
+          break
+        }
+        if (msgInfo.tmpId && msg.tmpId && msg.tmpId == msgInfo.tmpId) {
+          targetIdx = idx
+          break
+        }
+      }
+      if (targetIdx < 0) {
+        return
+      }
+      messages.splice(targetIdx, 1)
+
+      // 清理尾部或连续的时间提示
+      for (let idx = messages.length - 1; idx >= 0; idx--) {
+        const msg = messages[idx]
+        if (!msg || isContentMessage(msg)) {
+          continue
+        }
+        const next = messages[idx + 1]
+        if (!next || !isContentMessage(next)) {
+          messages.splice(idx, 1)
+        }
+      }
+
+      const lastMsg = findLastContentMessage(messages)
+      if (lastMsg) {
+        chat.lastSendTime = lastMsg.sendTime
+        chat.lastContent = canUseAsLastContent(lastMsg) ? lastMsg.content : ''
+        if (chat.type === CHATINFO_TYPE.GROUP) {
+          ;(chat as Chat & { sendNickname?: string }).sendNickname = isGroupMessage(lastMsg)
+            ? lastMsg.sendNickname
+            : ''
+        }
+      } else {
+        chat.lastContent = ''
+        if (chat.type === CHATINFO_TYPE.GROUP) {
+          ;(chat as Chat & { sendNickname?: string }).sendNickname = ''
+        }
+      }
+
+      const lastTimeTip = [...messages].reverse().find((msg) => msg && !isContentMessage(msg))
+      chat.lastTimeTip = lastTimeTip ? lastTimeTip.sendTime : undefined
+      chat.stored = false
+      this.saveToStorage()
+    },
+
     //处理撤回消息
     recallMsg(msgInfo: BaseMessage, chatInfo: ChatInfo) {
       const chat = this.findChat(chatInfo)
@@ -518,7 +592,7 @@ const useChatStore = defineStore('chatStore', {
       const messages = chat.messages as Message[]
       for (let idx = 0; idx < messages.length; idx++) {
         const msg = messages[idx]
-        if (!msg) return
+        if (!msg) continue
         if (!isContentMessage(msg)) {
           continue
         }
@@ -529,12 +603,9 @@ const useChatStore = defineStore('chatStore', {
           chat.lastContent = msg.content
           chat.lastSendTime = msgInfo.sendTime
           ;(chat as Chat & { sendNickname?: string }).sendNickname = ''
-          if (!msgInfo.selfSend && msgInfo.status != MESSAGE_STATUS.READ) {
-            chat.unreadCount++
-          }
         }
         const quoted = msg.quoteMessage
-        if (quoted && quoted.id == msgInfo.id) {
+        if (quoted && quoted.id == id) {
           quoted.content = '引用内容已撤回'
           quoted.status = MESSAGE_STATUS.RECALL
           quoted.type = MESSAGE_TYPE.TIP_TEXT
@@ -584,7 +655,7 @@ const useChatStore = defineStore('chatStore', {
           const message = chat.messages[idx] as BaseMessage
           if (!message) continue
           // 通过id判断
-          if (msgInfo.id != -1 && msgInfo.id && message.id == msgInfo.id) {
+          if (msgInfo.id && message.id == msgInfo.id) {
             return message
           }
           // 正在发送中的消息可能没有id,只有tmpId

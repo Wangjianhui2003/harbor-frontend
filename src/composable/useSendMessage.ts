@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import useChatStore from '@/stores/chatStore'
 import useUserStore from '@/stores/userStore'
 import { sendPrivateMessage } from '@/api/private-msg'
@@ -18,7 +18,7 @@ export interface SendMessageOptions {
   content: string
   type: MessageType
   /** 群聊 @ 用户 ID 列表（仅群聊有效） */
-  atUserIds?: number[]
+  atUserIds?: string[]
   /** 是否需要回执（仅群聊有效） */
   receipt?: boolean
   /** 引用的消息 */
@@ -29,7 +29,8 @@ export function useSendMessage() {
   const chatStore = useChatStore()
   const userStore = useUserStore()
 
-  const isSending = ref(false)
+  const pendingMessageCount = ref(0)
+  const isSending = computed(() => pendingMessageCount.value > 0)
   const error = ref<Error | null>(null)
 
   /**
@@ -41,7 +42,7 @@ export function useSendMessage() {
     const { content, type, atUserIds = [], receipt = false, quoteMessage } = options
     const trimmedContent = content.trim()
 
-    if (!trimmedContent || !chatStore.activeChat || isSending.value) {
+    if (!trimmedContent || !chatStore.activeChat) {
       return false
     }
 
@@ -54,13 +55,13 @@ export function useSendMessage() {
       headImage: chat.headImage,
     }
 
-    isSending.value = true
+    pendingMessageCount.value++
     error.value = null
 
     try {
       if (chat.type === CHATINFO_TYPE.PRIVATE) {
         const localMsg: PrivateMessage = {
-          id: 0,
+          id: '',
           tmpId,
           content: trimmedContent,
           type,
@@ -85,7 +86,7 @@ export function useSendMessage() {
         )
       } else {
         const localMsg: GroupMessage = {
-          id: 0,
+          id: '',
           tmpId,
           content: trimmedContent,
           type,
@@ -124,7 +125,7 @@ export function useSendMessage() {
       // 更新消息状态为 ERROR
       if (chat.type === CHATINFO_TYPE.PRIVATE) {
         const errorMsg: PrivateMessage = {
-          id: -1,
+          id: '',
           tmpId,
           content: trimmedContent,
           type,
@@ -138,7 +139,7 @@ export function useSendMessage() {
         chatStore.updateMessage(errorMsg, chatInfo)
       } else {
         const errorMsg: GroupMessage = {
-          id: -1,
+          id: '',
           tmpId,
           content: trimmedContent,
           type,
@@ -158,7 +159,7 @@ export function useSendMessage() {
       }
       return false
     } finally {
-      isSending.value = false
+      pendingMessageCount.value = Math.max(0, pendingMessageCount.value - 1)
     }
   }
 
@@ -196,17 +197,16 @@ export function useSendMessage() {
   async function resendMessage(message: BaseMessage, chatInfo: ChatInfo): Promise<boolean> {
     // ERROR重发
     if (
-      (message.status !== MESSAGE_STATUS.ERROR) ||
-      isSending.value
+      (message.status !== MESSAGE_STATUS.ERROR)
     ) {
       return false
     }
 
-    isSending.value = true
+    pendingMessageCount.value++
     error.value = null
 
     // 先将状态改为 SENDING
-    chatStore.updateMessage({ ...message, status: MESSAGE_STATUS.SENDING}, chatInfo)
+    chatStore.updateMessage({ ...message, status: MESSAGE_STATUS.SENDING }, chatInfo)
 
     try {
       if (chatInfo.type === CHATINFO_TYPE.PRIVATE) {
@@ -244,7 +244,7 @@ export function useSendMessage() {
       chatStore.updateMessage({ ...message, status: MESSAGE_STATUS.ERROR }, chatInfo)
       return false
     } finally {
-      isSending.value = false
+      pendingMessageCount.value = Math.max(0, pendingMessageCount.value - 1)
     }
   }
 

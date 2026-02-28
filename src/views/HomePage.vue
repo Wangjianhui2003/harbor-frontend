@@ -135,6 +135,7 @@ const init = async () => {
       import.meta.env.VITE_WEBSOCKET_URL,
       sessionStorage.getItem(ACCESS_TOKEN_KEY) || '',
     )
+    // 注册WebSocket事件监听
     wsClient.onWebSocketLogin(handleWebSocketLogin)
     wsClient.onClose(handleWebSocketClose)
     wsClient.onMessage(handleWebSocketMessage)
@@ -342,11 +343,32 @@ const handleWebSocketMessage = (msg: WebSocketMessage) => {
   }
 }
 
+const normalizeId = (id: string | number | null | undefined): string => {
+  if (id === null || id === undefined) {
+    return ''
+  }
+  return String(id)
+}
+
 //处理消息
 const handlePrivateMessage = (msgInfo: PrivateMessage) => {
+  const selfId = normalizeId(userStore.userInfo.id)
+  const sendId = normalizeId(msgInfo.sendId)
+  const recvId = normalizeId(msgInfo.recvId)
+
+  msgInfo.sendId = sendId
+  msgInfo.recvId = recvId
   // 标记这条消息是不是自己发的
-  msgInfo.selfSend = msgInfo.sendId === userStore.userInfo.id
-  const friendId = msgInfo.selfSend ? msgInfo.recvId : msgInfo.sendId
+  msgInfo.selfSend = sendId === selfId
+
+  // 优先按 selfSend 计算对方 ID；若异常命中自己，则回退到另一侧字段，避免创建“自己和自己”的会话。
+  let friendId = msgInfo.selfSend ? recvId : sendId
+  if (friendId === selfId) {
+    const fallbackPeerId = msgInfo.selfSend ? sendId : recvId
+    if (fallbackPeerId && fallbackPeerId !== selfId) {
+      friendId = fallbackPeerId
+    }
+  }
 
   //会话信息
   const chatInfo = {
@@ -410,11 +432,17 @@ const handlePrivateMessage = (msgInfo: PrivateMessage) => {
 
 //TODO:处理群聊消息
 const handleGroupMessage = (msgInfo: GroupMessage) => {
+  const selfId = normalizeId(userStore.userInfo.id)
+  const sendId = normalizeId(msgInfo.sendId)
+  const groupId = normalizeId(msgInfo.groupId)
+
+  msgInfo.sendId = sendId
+  msgInfo.groupId = groupId
   //表示是否是自己发的(其他终端或其他功能)
-  msgInfo.selfSend = msgInfo.sendId === userStore.userInfo.id
+  msgInfo.selfSend = sendId === selfId
   const chatInfo = {
     type: CHATINFO_TYPE.GROUP,
-    targetId: msgInfo.groupId,
+    targetId: groupId,
   } as ChatInfo
   //更改加载标记
   if (msgInfo.type === MESSAGE_TYPE.LOADING) {
@@ -471,7 +499,7 @@ const handleSystemMessage = (msgInfo: BaseMessage) => {
 }
 
 //加载好友信息(好友给你发消息)
-const loadFriendInfo = (friendId: number): Friend => {
+const loadFriendInfo = (friendId: string): Friend => {
   const friend = friendStore.findFriend(friendId)
   if (!friend) {
     return {
@@ -501,7 +529,7 @@ const insertPrivateMsg = (friend: Friend, msgInfo: PrivateMessage) => {
   chatStore.insertMessage(msgInfo, chatInfo)
 }
 
-const loadGroupInfo = (groupId: number): Group => {
+const loadGroupInfo = (groupId: string): Group => {
   const group = groupStore.findGroup(groupId)
   if (!group) {
     return {

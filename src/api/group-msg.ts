@@ -13,11 +13,11 @@ const sendGroupMessage = async (data: GroupMessageDTO) => {
 
 //撤回消息
 const recallGroupMessage = async (id: string) => {
-  await http({
+  const res = await http({
     url: `/message/group/recall/${id}`,
     method: 'delete',
   })
-  return undefined
+  return res.data.data
 }
 
 //拉取离线消息（消息将通过 websocket 异步推送）
