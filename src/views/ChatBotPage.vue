@@ -106,7 +106,7 @@ import { Button } from '@/components/ui/button'
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
 
 interface Message {
-  id: number
+  id: string
   role: 'user' | 'assistant'
   content: string
   timestamp: number
@@ -118,7 +118,7 @@ const scrollAreaRef = ref<InstanceType<typeof ScrollArea> | null>(null)
 
 const messages = ref<Message[]>([
   {
-    id: 1,
+    id: '1',
     role: 'assistant',
     content: 'Hello! I am your AI assistant. How can I help you today?',
     timestamp: Date.now(),
@@ -144,7 +144,7 @@ const sendMessage = async () => {
 
   // 1. Add User Message
   messages.value.push({
-    id: Date.now(),
+    id: String(Date.now()),
     role: 'user',
     content,
     timestamp: Date.now(),
@@ -158,7 +158,7 @@ const sendMessage = async () => {
   setTimeout(
     () => {
       messages.value.push({
-        id: Date.now() + 1,
+        id: String(Date.now() + 1),
         role: 'assistant',
         content: generateMockResponse(content),
         timestamp: Date.now(),

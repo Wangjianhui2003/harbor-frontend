@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { findGroups } from '../api/group.js'
 import type { Group } from '@/types/index.js'
+import useChatStore from './chatStore'
 
 const useGroupStore = defineStore('groupStore', () => {
   const groups = ref<Group[]>([])
@@ -21,7 +22,10 @@ const useGroupStore = defineStore('groupStore', () => {
 
   //设置群聊
   const setGroups = (groupVOs: Group[]): void => {
-    groups.value = groupVOs
+    groups.value = groupVOs.map((group) => ({
+      ...group,
+      showGroupName: group.showGroupName || group.name,
+    }))
   }
 
   //添加群聊
@@ -40,9 +44,16 @@ const useGroupStore = defineStore('groupStore', () => {
 
   //更新group
   const updateGroup = (group: Group): void => {
+    const chatStore = useChatStore()
+    const normalizedGroup: Group = {
+      ...group,
+      showGroupName: group.showGroupName || group.name,
+    }
+
     const g = groups.value.find((item) => item.id === group.id)
     if (g) {
-      Object.assign(g, group)
+      Object.assign(g, normalizedGroup)
+      chatStore.updateChatFromGroup(g)
     }
   }
 

@@ -3,7 +3,7 @@ import { WEBRTC_MODE } from '@/utils/enums'
 import type { WebRTCModeType } from '@/utils/enums'
 
 //呼叫视频通话
-const call = async (userId: number, mode: WebRTCModeType = WEBRTC_MODE.VIDEO, offer: string) => {
+const call = async (userId: string, mode: WebRTCModeType = WEBRTC_MODE.VIDEO, offer: string) => {
   const res = await http({
     url: '/webrtc/private/call',
     method: 'post',
@@ -17,7 +17,7 @@ const call = async (userId: number, mode: WebRTCModeType = WEBRTC_MODE.VIDEO, of
 }
 
 //接受视频通话
-const accept = async (userId: number, answer: string) => {
+const accept = async (userId: string, answer: string) => {
   const res = await http({
     url: '/webrtc/private/accept',
     method: 'post',
@@ -31,7 +31,7 @@ const accept = async (userId: number, answer: string) => {
 }
 
 //拒绝视频通话
-const reject = async (userId: number) => {
+const reject = async (userId: string) => {
   await http({
     url: '/webrtc/private/reject',
     method: 'post',
@@ -41,7 +41,7 @@ const reject = async (userId: number) => {
 }
 
 //取消呼叫
-const cancel = async (userId: number) => {
+const cancel = async (userId: string) => {
   await http({
     url: '/webrtc/private/cancel',
     method: 'post',
@@ -51,7 +51,7 @@ const cancel = async (userId: number) => {
 }
 
 //呼叫失败
-const failed = async (userId: number, reason: string) => {
+const failed = async (userId: string, reason: string) => {
   await http({
     url: '/webrtc/private/failed',
     method: 'post',
@@ -61,7 +61,7 @@ const failed = async (userId: number, reason: string) => {
 }
 
 //挂断
-const hangup = async (userId: number) => {
+const hangup = async (userId: string) => {
   await http({
     url: '/webrtc/private/hangup',
     method: 'post',
@@ -71,7 +71,7 @@ const hangup = async (userId: number) => {
 }
 
 //同步 candidate
-const sendCandidate = async (userId: number, candidate: string) => {
+const sendCandidate = async (userId: string, candidate: string) => {
   const res = await http({
     url: '/webrtc/private/candidate',
     method: 'post',
@@ -85,7 +85,7 @@ const sendCandidate = async (userId: number, candidate: string) => {
 }
 
 //心跳
-const heartbeat = async (userId: number) => {
+const heartbeat = async (userId: string) => {
   await http({
     url: '/webrtc/private/heartbeat',
     method: 'post',

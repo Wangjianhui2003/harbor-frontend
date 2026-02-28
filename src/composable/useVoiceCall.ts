@@ -320,7 +320,7 @@ export function useVoiceCall() {
   // 注册事件监听
   function setupEventListeners() {
     mitter.on(RTC_EVENTS.VOICE_CALL_START, (data: unknown) => {
-      const { friendId } = data as { friendId: number }
+      const { friendId } = data as { friendId: string }
       const friend = friendStore.findFriend(friendId)
       if (friend) {
         startCall(friend)

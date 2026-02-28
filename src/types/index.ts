@@ -59,9 +59,11 @@ export interface Group {
   dissolve: boolean
   isBanned: boolean
   reason: string
-  memberCount: number
+  memberCount?: number
   joinType?: number
   quit: boolean
+  updateTime?: string
+  createdTime?: string
 }
 
 export interface GroupMember {
