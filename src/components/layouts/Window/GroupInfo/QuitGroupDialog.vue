@@ -41,13 +41,13 @@ import useGroupStore from '@/stores/groupStore.ts'
 const groupStore = useGroupStore()
 const props = defineProps<{
   visible: boolean
-  groupId: number | null
+  groupId: string | null
   groupName?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'update:visible', value: boolean): void
-  (e: 'quit', groupId: number): void
+  (e: 'quit', groupId: string): void
 }>()
 
 const toast = useToast()

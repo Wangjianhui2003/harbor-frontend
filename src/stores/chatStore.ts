@@ -249,7 +249,11 @@ const useChatStore = defineStore('chatStore', {
       ) {
         this.privateMsgMaxId = msgInfo.id
       }
-      if (msgInfo.id && chatInfo.type === CHATINFO_TYPE.GROUP && BigInt(msgInfo.id) > BigInt(this.groupMsgMaxId)) {
+      if (
+        msgInfo.id &&
+        chatInfo.type === CHATINFO_TYPE.GROUP &&
+        BigInt(msgInfo.id) > BigInt(this.groupMsgMaxId)
+      ) {
         this.groupMsgMaxId = msgInfo.id
       }
 
@@ -300,7 +304,7 @@ const useChatStore = defineStore('chatStore', {
         if (msgInfo.atUserIds.indexOf(id) >= 0) {
           chat.atMe = true
         }
-      if (msgInfo.atUserIds.indexOf('-1') >= 0) {
+        if (msgInfo.atUserIds.indexOf('-1') >= 0) {
           ;(chat as GroupChat).atAll = true
         }
       }
@@ -506,7 +510,7 @@ const useChatStore = defineStore('chatStore', {
         if (!msg.id || !msg.selfSend || msg.status == MESSAGE_STATUS.RECALL) {
           continue
         }
-        if (!maxId || msg.id <= maxId) {
+        if (!maxId || BigInt(msg.id) <= BigInt(maxId)) {
           msg.status = MESSAGE_STATUS.READ
           chat.stored = false
         }
@@ -616,11 +620,13 @@ const useChatStore = defineStore('chatStore', {
     },
     //加载群信息后，如果头像和showGroupName变了要重新加载
     updateChatFromGroup(group: Group) {
+      const resolvedName = group.showGroupName || group.name || '未知群聊'
       const chat: Chat | undefined = this.findChatByGroupId(group.id)
-      if (chat && (chat.headImage != group.headImage || chat.showName != group.showGroupName)) {
+
+      if (chat && (chat.headImage != group.headImage || chat.showName != resolvedName)) {
         // 更新会话中的群名称和头像
         chat.headImage = group.headImage
-        chat.showName = group.showGroupName as string
+        chat.showName = resolvedName
         chat.stored = false
         this.saveToStorage()
       }

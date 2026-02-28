@@ -52,15 +52,17 @@
 </template>
 
 <script setup lang="ts">
+import { searchGroup, type GroupResult } from '@/api/group'
 import { pullOfflineGroupMessage } from '@/api/group-msg'
 import { pullOfflinePrivateMessage } from '@/api/private-msg'
+import { getUserInfo } from '@/api/user'
 import { useAuth } from '@/composable/useAuth'
 import useMainStore from '@/stores'
 import useChatStore from '@/stores/chatStore'
 import useFriendStore from '@/stores/friendStore'
 import useGroupStore from '@/stores/groupStore'
 import useUserStore from '@/stores/userStore'
-import type { Friend, Group, WebSocketMessage } from '@/types'
+import type { Friend, Group, User, WebSocketMessage } from '@/types'
 import type { ChatInfo, BaseMessage, GroupMessage, PrivateMessage } from '@/types/chat'
 import checkMessageType from '@/utils/check-msgtype'
 import { ACCESS_TOKEN_KEY } from '@/utils/constant'
@@ -87,6 +89,8 @@ const friendStore = useFriendStore()
 const groupStore = useGroupStore()
 
 const isWebSocketReconnecting = ref<boolean>(false)
+const pendingPrivateChatInfoRequests = new Map<string, Promise<ChatInfo>>()
+const pendingGroupChatInfoRequests = new Map<string, Promise<ChatInfo>>()
 
 onMounted(() => {
   //初始化
@@ -425,8 +429,7 @@ const handlePrivateMessage = (msgInfo: PrivateMessage) => {
     checkMessageType.isTip(msgInfo.type) ||
     checkMessageType.isAction(msgInfo.type)
   ) {
-    const friend = loadFriendInfo(friendId)
-    insertPrivateMsg(friend, msgInfo)
+    void insertPrivateMsg(friendId, msgInfo)
   }
 }
 
@@ -487,8 +490,7 @@ const handleGroupMessage = (msgInfo: GroupMessage) => {
     checkMessageType.isTip(msgInfo.type) ||
     checkMessageType.isAction(msgInfo.type)
   ) {
-    const group: Group = loadGroupInfo(msgInfo.groupId)
-    insertGroupMsg(group, msgInfo)
+    void insertGroupMsg(msgInfo.groupId, msgInfo)
   }
   // TODO:群视频
 }
@@ -498,56 +500,144 @@ const handleSystemMessage = (msgInfo: BaseMessage) => {
   console.log('系统消息:', msgInfo)
 }
 
-//加载好友信息(好友给你发消息)
-const loadFriendInfo = (friendId: string): Friend => {
-  const friend = friendStore.findFriend(friendId)
-  if (!friend) {
-    return {
-      id: friendId,
-      friendNickname: '未知用户',
-      headImage: '',
-      online: false,
-      onlineWeb: false,
-      onlineApp: false,
-      deleted: false,
-    }
-  }
-  return friend
-}
-
-//插入私聊消息(有人发消息)
-const insertPrivateMsg = (friend: Friend, msgInfo: PrivateMessage) => {
-  const chatInfo: ChatInfo = {
+const buildPrivateChatInfoFromFriend = (friend: Friend): ChatInfo => {
+  return {
     type: CHATINFO_TYPE.PRIVATE,
     targetId: friend.id,
     showName: friend.remark || friend.friendNickname,
     headImage: friend.headImage,
   }
+}
+
+const buildPrivateChatInfoFromUser = (user: User): ChatInfo => {
+  return {
+    type: CHATINFO_TYPE.PRIVATE,
+    targetId: user.id,
+    showName: user.nickname,
+    headImage: user.headImage,
+  }
+}
+
+const buildFallbackPrivateChatInfo = (
+  friendId: string,
+  friend?: Friend,
+): ChatInfo => {
+  if (friend) {
+    return buildPrivateChatInfoFromFriend(friend)
+  }
+  return {
+    type: CHATINFO_TYPE.PRIVATE,
+    targetId: friendId,
+    showName: '未知用户',
+    headImage: '',
+  }
+}
+
+const resolvePrivateChatInfo = async (friendId: string): Promise<ChatInfo> => {
+  const friend = friendStore.findFriend(friendId)
+  if (friend && !friend.deleted) {
+    return buildPrivateChatInfoFromFriend(friend)
+  }
+
+  const pendingRequest = pendingPrivateChatInfoRequests.get(friendId)
+  if (pendingRequest) {
+    return pendingRequest
+  }
+
+  const request = (async () => {
+    try {
+      const userInfo = await getUserInfo(friendId)
+      return buildPrivateChatInfoFromUser(userInfo)
+    } catch (error) {
+      console.error('加载私聊对象信息失败:', error)
+      return buildFallbackPrivateChatInfo(friendId, friend)
+    } finally {
+      pendingPrivateChatInfoRequests.delete(friendId)
+    }
+  })()
+
+  pendingPrivateChatInfoRequests.set(friendId, request)
+  return request
+}
+
+//插入私聊消息(有人发消息)
+const insertPrivateMsg = async (friendId: string, msgInfo: PrivateMessage) => {
+  const chatInfo = await resolvePrivateChatInfo(friendId)
   //打开会话
   chatStore.openChat(chatInfo)
   //插入信息
   chatStore.insertMessage(msgInfo, chatInfo)
 }
 
-const loadGroupInfo = (groupId: string): Group => {
-  const group = groupStore.findGroup(groupId)
-  if (!group) {
-    return {
-      id: groupId,
-      showGroupName: '未知群聊',
-      headImageThumb: '',
-    } as Group
-  }
-  return group
-}
-
-const insertGroupMsg = (group: Group, msgInfo: GroupMessage) => {
-  const chatInfo: ChatInfo = {
+const buildGroupChatInfo = (
+  group: Pick<Group, 'id' | 'name' | 'showGroupName' | 'headImageThumb'>,
+): ChatInfo => {
+  return {
     type: CHATINFO_TYPE.GROUP,
     targetId: group.id,
-    showName: group.showGroupName || '未知',
+    showName: group.showGroupName || group.name || '未知群聊',
     headImage: group.headImageThumb,
   }
+}
+
+const buildGroupChatInfoFromSearchResult = (
+  group: Pick<GroupResult, 'id' | 'name' | 'headImageThumb'>,
+): ChatInfo => {
+  return {
+    type: CHATINFO_TYPE.GROUP,
+    targetId: group.id,
+    showName: group.name || '未知群聊',
+    headImage: group.headImageThumb,
+  }
+}
+
+const buildFallbackGroupChatInfo = (
+  groupId: string,
+  group?: Group,
+): ChatInfo => {
+  if (group) {
+    return buildGroupChatInfo(group)
+  }
+  return {
+    type: CHATINFO_TYPE.GROUP,
+    targetId: groupId,
+    showName: '未知群聊',
+    headImage: '',
+  }
+}
+
+const resolveGroupChatInfo = async (groupId: string): Promise<ChatInfo> => {
+  const group = groupStore.findGroup(groupId)
+  if (group && !group.quit) {
+    return buildGroupChatInfo(group)
+  }
+
+  const pendingRequest = pendingGroupChatInfoRequests.get(groupId)
+  if (pendingRequest) {
+    return pendingRequest
+  }
+
+  const request = (async () => {
+    try {
+      const groupInfo = await searchGroup(groupId)
+      if (groupInfo?.id) {
+        return buildGroupChatInfoFromSearchResult(groupInfo)
+      }
+      return buildFallbackGroupChatInfo(groupId, group)
+    } catch (error) {
+      console.error('加载群聊信息失败:', error)
+      return buildFallbackGroupChatInfo(groupId, group)
+    } finally {
+      pendingGroupChatInfoRequests.delete(groupId)
+    }
+  })()
+
+  pendingGroupChatInfoRequests.set(groupId, request)
+  return request
+}
+
+const insertGroupMsg = async (groupId: string, msgInfo: GroupMessage) => {
+  const chatInfo = await resolveGroupChatInfo(groupId)
   //打开会话
   chatStore.openChat(chatInfo)
   //插入信息

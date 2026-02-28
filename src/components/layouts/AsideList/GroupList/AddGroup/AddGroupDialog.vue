@@ -1,33 +1,30 @@
 <template>
   <Dialog :open="visible" @update:open="onOpenChange">
-    <DialogContent class="h-180 flex flex-col">
+    <DialogContent class="flex h-[42rem] max-h-[85vh] flex-col overflow-hidden sm:max-w-5xl">
       <DialogHeader>
-        <DialogTitle>加入群聊</DialogTitle>
+        <DialogTitle>群聊</DialogTitle>
       </DialogHeader>
-      <div class="flex flex-col flex-1 min-h-0">
-        <!-- 标签切换 -->
-        <div class="flex border-b mb-4">
-          <button
-            v-for="tab in tabs"
-            :key="tab.value"
-            :class="[
-              'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
-              activeTab === tab.value
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground',
-            ]"
-            @click="activeTab = tab.value"
-          >
+
+      <Tabs v-model="activeTab" class="flex min-h-0 flex-1 flex-col">
+        <TabsList class="grid w-full grid-cols-4">
+          <TabsTrigger v-for="tab in tabs" :key="tab.value" :value="tab.value">
             {{ tab.label }}
-          </button>
-        </div>
-        <!-- 查找群组 -->
-        <SearchGroupTab v-if="activeTab === 'search'" @switch-tab="handleSwitchTab" />
-        <!-- 我发送的请求 -->
-        <SentGroupRequestsTab v-if="activeTab === 'sent'" ref="sentTabRef" />
-        <!-- 群组请求列表 -->
-        <GroupRequestsTab v-if="activeTab === 'group'" ref="groupTabRef" />
-      </div>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="create" class="mt-4 min-h-0 flex-1">
+          <CreateGroupTab @created="handleCreated" />
+        </TabsContent>
+        <TabsContent value="search" class="mt-4 min-h-0 flex-1">
+          <SearchGroupTab @switch-tab="handleSwitchTab" />
+        </TabsContent>
+        <TabsContent value="sent" class="mt-4 min-h-0 flex-1">
+          <SentGroupRequestsTab ref="sentTabRef" />
+        </TabsContent>
+        <TabsContent value="group" class="mt-4 min-h-0 flex-1">
+          <GroupRequestsTab ref="groupTabRef" />
+        </TabsContent>
+      </Tabs>
     </DialogContent>
   </Dialog>
 </template>
@@ -35,6 +32,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import CreateGroupTab from './CreateGroupTab.vue'
 import SearchGroupTab from './SearchGroupTab.vue'
 import SentGroupRequestsTab from './SentGroupRequestsTab.vue'
 import GroupRequestsTab from './GroupRequestsTab.vue'
@@ -48,11 +47,12 @@ const emit = defineEmits<{
 }>()
 
 const tabs = [
+  { label: '创建群聊', value: 'create' },
   { label: '查找群组', value: 'search' },
   { label: '我发送的', value: 'sent' },
   { label: '群组请求', value: 'group' },
 ]
-const activeTab = ref('search')
+const activeTab = ref('create')
 const sentTabRef = ref<InstanceType<typeof SentGroupRequestsTab> | null>(null)
 const groupTabRef = ref<InstanceType<typeof GroupRequestsTab> | null>(null)
 
@@ -64,7 +64,11 @@ const handleSwitchTab = (tab: string) => {
   activeTab.value = tab
 }
 
-// 监听标签页切换，自动加载数据
+const handleCreated = () => {
+  activeTab.value = 'create'
+  emit('update:visible', false)
+}
+
 watch(activeTab, (newTab) => {
   if (newTab === 'sent') {
     sentTabRef.value?.loadSentRequests()
@@ -77,8 +81,14 @@ watch(activeTab, (newTab) => {
 watch(
   () => props.visible,
   (newVal) => {
-    if (newVal && activeTab.value === 'sent') {
+    if (!newVal) {
+      return
+    }
+
+    if (activeTab.value === 'sent') {
       sentTabRef.value?.loadSentRequests()
+    } else if (activeTab.value === 'group') {
+      groupTabRef.value?.loadGroupRequests()
     }
   },
 )

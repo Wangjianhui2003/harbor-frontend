@@ -76,7 +76,7 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
-const searchGroupId = ref<number>()
+const searchGroupId = ref('')
 const searchedGroup = ref<GroupResult | null>(null)
 const searching = ref(false)
 const isSendingRequest = ref(false)
@@ -88,8 +88,8 @@ const handleSearch = async () => {
     return
   }
 
-  const groupId = Number(searchGroupId.value)
-  if (isNaN(groupId) || groupId <= 0) {
+  const groupId = searchGroupId.value.trim()
+  if (!/^\d+$/.test(groupId)) {
     showError(toast, '提示', '请输入有效的群组ID')
     return
   }
@@ -117,7 +117,7 @@ const handleSendRequest = async (group: GroupResult) => {
   try {
     await addGroupRequest({
       groupId: group.id,
-      requestUserId: 0,
+      requestUserId: '',
       requestNote: '',
     })
     showSuccess(toast, '成功', '群组请求已发送')

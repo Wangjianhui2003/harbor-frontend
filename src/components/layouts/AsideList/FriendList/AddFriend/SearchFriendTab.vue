@@ -114,7 +114,7 @@ const handleSendRequest = async (user: User) => {
   isSendingRequest.value[user.id] = true
   try {
     await addFriendRequest({
-      requestUserId: 0,
+      requestUserId: '',
       receiveUserId: user.id,
       requestNote: '',
     })

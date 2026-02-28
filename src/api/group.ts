@@ -17,17 +17,22 @@ export interface GroupResult {
   createdTime: string
 }
 
-interface CreateGroupData {
+export interface CreateGroupData {
   name: string
-  memberIds: string[]
+  notice?: string
+  joinType?: number
+  friendIds?: string[]
 }
 
-interface ModifyGroupData {
+export interface ModifyGroupData {
   id: string
   name?: string
   headImage?: string
+  headImageThumb?: string
   notice?: string
-  remark?: string
+  remarkNickname?: string
+  remarkGroupName?: string
+  joinType?: number
 }
 
 interface InviteData {
@@ -46,13 +51,13 @@ export const createGroup = async (data: CreateGroupData): Promise<Group> => {
 }
 
 // 修改群聊信息
-export const modifyGroup = async (data: ModifyGroupData): Promise<void> => {
-  await http({
+export const modifyGroup = async (data: ModifyGroupData): Promise<Group> => {
+  const res = await http({
     url: '/group/modify',
     method: 'PUT',
     data,
   })
-  return undefined
+  return res.data.data
 }
 
 // 解散群聊
@@ -138,7 +143,7 @@ export const getManagedGroupIds = async (): Promise<string[]> => {
     url: '/group/managed',
     method: 'GET',
   })
-  return res.data.data
+  return (res.data.data || []).map((id: string | number) => String(id))
 }
 
 /**

@@ -74,8 +74,8 @@ import { showError, showSuccess } from '@/utils/message.ts'
 const toast = useToast()
 const groupRequests = ref<AddGroupRequestRecord[]>([])
 const loadingGroup = ref(false)
-const managedGroupIds = ref<number[]>([])
-const isProcessing = ref<Record<number, boolean>>({})
+const managedGroupIds = ref<string[]>([])
+const isProcessing = ref<Record<string, boolean>>({})
 
 const loadGroupRequests = async () => {
   loadingGroup.value = true
@@ -110,7 +110,7 @@ const handleDealRequest = async (request: AddGroupRequestRecord, status: number)
       id: request.id,
       groupId: request.groupId,
       requestUserId: request.requestUserId,
-      dealUserId: 0,
+      dealUserId: '',
       status,
       comment: status === 1 ? '已同意' : '已拒绝',
     }
