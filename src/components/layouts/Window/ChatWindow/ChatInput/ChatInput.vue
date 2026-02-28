@@ -23,7 +23,6 @@
         <InputGroupButton
           variant="default"
           class="rounded-full cursor-pointer size-7"
-          :disabled="isSending"
           @click="handleSend"
         >
           <ArrowUpIcon class="size-5" />
@@ -59,7 +58,7 @@ import VideoCallButton from './VideoCallButton.vue'
 
 const chatStore = useChatStore()
 const messageContent = ref('')
-const { sendTextMessage, isSending } = useSendMessage()
+const { sendTextMessage } = useSendMessage()
 
 /** 处理键盘事件 - Enter 发送，Ctrl+Enter 换行 */
 function handleKeydown(event: KeyboardEvent) {
@@ -70,14 +69,14 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 /** 发送消息 */
-async function handleSend() {
+function handleSend() {
   const message = messageContent.value
+  if (!message.trim()) {
+    return
+  }
   messageContent.value = ''
   scrollToBottom()
-  const success = await sendTextMessage(message)
-  if (success) {
-    
-  }
+  void sendTextMessage(message)
 }
 
 const unreadCount = computed(() => {
