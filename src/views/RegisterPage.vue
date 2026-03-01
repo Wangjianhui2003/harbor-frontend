@@ -92,12 +92,19 @@
                       v-bind="componentField"
                       class="flex-1"
                     />
-                    <img
-                      :src="captchaPic"
-                      alt="验证码"
-                      class="h-10 min-w-24 cursor-pointer rounded-md border"
+                    <button
+                      type="button"
+                      class="flex h-10 min-w-24 items-center justify-center overflow-hidden rounded-md border px-3 text-sm text-muted-foreground"
                       @click="loadCaptcha"
-                    />
+                    >
+                      <img
+                        v-if="captchaPic"
+                        :src="captchaPic"
+                        alt="验证码"
+                        class="h-full w-full object-cover"
+                      />
+                      <span v-else>获取验证码</span>
+                    </button>
                   </div>
                 </FormControl>
               </FormItem>
