@@ -72,7 +72,7 @@ import { showError, showSuccess } from '@/utils/message.ts'
 const toast = useToast()
 const receivedRequests = ref<AddUserRequestRecord[]>([])
 const loadingReceived = ref(false)
-const isProcessing = ref<Record<number, boolean>>({})
+const isProcessing = ref<Record<string, boolean>>({})
 
 const loadReceivedRequests = async () => {
   loadingReceived.value = true

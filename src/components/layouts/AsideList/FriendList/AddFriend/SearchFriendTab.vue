@@ -85,7 +85,7 @@ const toast = useToast()
 const searchKeyword = ref('')
 const searchResults = ref<User[]>([])
 const searching = ref(false)
-const isSendingRequest = ref<Record<number, boolean>>({})
+const isSendingRequest = ref<Record<string, boolean>>({})
 
 // 搜索用户
 const handleSearch = async () => {
