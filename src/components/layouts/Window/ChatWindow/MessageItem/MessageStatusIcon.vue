@@ -1,7 +1,6 @@
 <template>
   <LoaderCircle :size="size" class="animate-spin" v-if="status === MESSAGE_STATUS.SENDING" />
-  <Check :size="size" v-else-if="status === MESSAGE_STATUS.UNSENT" />
-  <MailCheck :size="size" v-else-if="status === MESSAGE_STATUS.SENT" />
+  <Check :size="size" v-else-if="status === MESSAGE_STATUS.SAVE || status === 1" />
   <MessageCircleReply :size="size" v-else-if="status === MESSAGE_STATUS.RECALL" />
   <CircleX
     :size="size"
@@ -19,7 +18,6 @@ import {
   LoaderCircle,
   MessageCircleReply,
   Check,
-  MailCheck,
   CircleX,
   CheckCheck,
 } from 'lucide-vue-next'

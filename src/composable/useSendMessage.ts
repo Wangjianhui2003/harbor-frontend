@@ -81,7 +81,7 @@ export function useSendMessage() {
         }
         const result = await sendPrivateMessage(dto)
         chatStore.updateMessage(
-          { ...localMsg, id: result.id, status: MESSAGE_STATUS.UNSENT },
+          { ...localMsg, id: result.id, status: MESSAGE_STATUS.SAVE },
           chatInfo,
         )
       } else {
@@ -113,7 +113,7 @@ export function useSendMessage() {
         }
         const result = await sendGroupMessage(dto)
         chatStore.updateMessage(
-          { ...localMsg, id: result.id, status: MESSAGE_STATUS.UNSENT },
+          { ...localMsg, id: result.id, status: MESSAGE_STATUS.SAVE },
           chatInfo,
         )
       }
@@ -218,7 +218,7 @@ export function useSendMessage() {
         }
         const result = await sendPrivateMessage(dto)
         chatStore.updateMessage(
-          { ...message, id: result.id, status: MESSAGE_STATUS.UNSENT },
+          { ...message, id: result.id, status: MESSAGE_STATUS.SAVE },
           chatInfo,
         )
       } else {
@@ -232,7 +232,7 @@ export function useSendMessage() {
         }
         const result = await sendGroupMessage(dto)
         chatStore.updateMessage(
-          { ...message, id: result.id, status: MESSAGE_STATUS.UNSENT },
+          { ...message, id: result.id, status: MESSAGE_STATUS.SAVE },
           chatInfo,
         )
       }

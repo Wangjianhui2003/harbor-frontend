@@ -24,6 +24,16 @@ let cacheChats: Chat[] = []
 const isGroupMessage = (msg: BaseMessage): msg is GroupMessage => 'groupId' in msg
 const isPrivateMessage = (msg: BaseMessage): msg is PrivateMessage => 'recvId' in msg
 const isContentMessage = (msg: Message): msg is BaseMessage => msg.type !== MESSAGE_TYPE.TIP_TIME
+const LEGACY_SENT_STATUS = 1
+const normalizeLegacyStatus = <T extends BaseMessage>(msg: T): T => {
+  if (Number(msg.status) === LEGACY_SENT_STATUS) {
+    msg.status = MESSAGE_STATUS.SAVE
+  }
+  if (msg.quoteMessage && Number(msg.quoteMessage.status) === LEGACY_SENT_STATUS) {
+    msg.quoteMessage.status = MESSAGE_STATUS.SAVE
+  }
+  return msg
+}
 const canUseAsLastContent = (msg: BaseMessage) =>
   msg.type == MESSAGE_TYPE.TEXT ||
   msg.type == MESSAGE_TYPE.RECALL ||
@@ -106,6 +116,7 @@ const useChatStore = defineStore('chatStore', {
         chat.messages.forEach((msg) => {
           // 处理消息内容类型（非 TIP_TIME）
           if (!('status' in msg)) return
+          normalizeLegacyStatus(msg)
           //过滤Sending消息，该消息状态出现在没有发送成功或失败之前（例如用户刷新页面）
           if (msg.status === MESSAGE_STATUS.SENDING) return
           // 防止图片一直处在加载中状态
@@ -240,6 +251,8 @@ const useChatStore = defineStore('chatStore', {
         console.warn(`收到${chatType}消息但数据格式不正确`, msgInfo)
         return
       }
+
+      normalizeLegacyStatus(msgInfo)
 
       //更新maxId
       if (
@@ -635,6 +648,7 @@ const useChatStore = defineStore('chatStore', {
     updateMessage(msgInfo: BaseMessage, chatInfo: ChatInfo) {
       const chat = this.findChat(chatInfo)
       if (!chat) return
+      normalizeLegacyStatus(msgInfo)
       const message = this.findMessage(chat, msgInfo)
       if (message) {
         Object.assign(message, msgInfo)

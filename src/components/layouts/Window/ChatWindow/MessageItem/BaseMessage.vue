@@ -40,7 +40,7 @@
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
 import type { BaseMessage, ChatInfo, GroupMessage } from '@/types/chat'
 import { CHATINFO_TYPE, MESSAGE_STATUS, MESSAGE_TYPE } from '@/utils/enums'
-import { computed, ref, onMounted, onUnmounted, type Component } from 'vue'
+import { computed, ref, type Component } from 'vue'
 import TextMessage from './TextMessage.vue'
 import ImageMessage from './ImageMessage.vue'
 import MessageStatusIcon from './MessageStatusIcon.vue'
@@ -226,7 +226,7 @@ const handleRecallMessage = async () => {
         ...props.message,
         selfSend: true,
         type: MESSAGE_TYPE.RECALL,
-        status: MESSAGE_STATUS.UNSENT,
+        status: MESSAGE_STATUS.SAVE,
         content: messageId,
         sendTime: Date.now(),
       } as BaseMessage,
@@ -254,34 +254,6 @@ async function handleResend() {
   await resendMessage(props.message, chatInfo)
 }
 
-//重发定时器
-let resendTimer: ReturnType<typeof setTimeout> | null = null
-
-//初始化
-onMounted(async () => {
-  // 只有未发送的消息才设置定时器
-  if (props.message.status === MESSAGE_STATUS.UNSENT) {
-    resendTimer = setTimeout(() => {
-      // 双重检查：定时器触发时再次确认状态
-      if (props.message.status === MESSAGE_STATUS.UNSENT) {
-        const chatInfo = {
-          targetId: chatStore.activeChat?.targetId,
-          type: chatStore.activeChat?.type,
-          showName: chatStore.activeChat?.showName,
-          headImage: chatStore.activeChat?.headImage,
-        } as ChatInfo
-        resendMessage(props.message, chatInfo)
-      }
-    }, 10000)
-  }
-})
-
-//清理定时器
-onUnmounted(() => {
-  if (resendTimer) {
-    clearTimeout(resendTimer)
-  }
-})
 </script>
 
 <style scoped></style>

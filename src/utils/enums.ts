@@ -61,8 +61,7 @@ export const TERMINAL_TYPE = {
 
 export const MESSAGE_STATUS = {
   SENDING:-1, //发送中
-  UNSENT: 0, //save，not delivered
-  SENT: 1, //Delivered
+  SAVE: 0, //已保存
   RECALL: 2, //撤回
   READ: 3, //已读
   ERROR: 4, //后端没有这个状态，前端用来标记重发
