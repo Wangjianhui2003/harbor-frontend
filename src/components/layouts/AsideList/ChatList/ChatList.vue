@@ -1,7 +1,7 @@
 <template>
   <chat-list-item
     v-for="(chat, index) in props.chats"
-    :key="index"
+    :key="`${chat.type}-${chat.targetId}`"
     :chat="chat"
     @click="chooseChat(index)"
   />

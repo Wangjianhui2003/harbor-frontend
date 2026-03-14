@@ -6,7 +6,9 @@
           <Input class="bg-background" />
         </CardHeader>
         <CardContent class="flex-1 min-h-0 p-0">
-          <ScrollArea class="h-full w-full"> <ChatList :chats="chatStore.chats" /></ScrollArea>
+          <ScrollArea class="h-full w-full">
+            <ChatList :chats="chatStore.getChatList" />
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>
