@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { findGroups } from '../api/group.js'
-import type { Group } from '@/types/index.js'
+import type { Group } from '@/types'
 import useChatStore from './chatStore'
 
 const useGroupStore = defineStore('groupStore', () => {

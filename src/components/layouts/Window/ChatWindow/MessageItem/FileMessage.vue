@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BaseMessage } from '@/types/chat'
+import type { BaseMessage } from '@/types'
 
 // 导入所有文件图标
 import aiIcon from '@/assets/fileicon/ai.svg'

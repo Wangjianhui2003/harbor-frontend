@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, type Ref } from 'vue'
-import type { BaseMessage } from '@/types/chat'
+import type { BaseMessage } from '@/types'
 import { MESSAGE_STATUS, CHATINFO_TYPE } from '@/utils/enums'
 import { readPrivateMessage } from '@/api/private-msg'
 import { readGroupMessage } from '@/api/group-msg'

@@ -1,6 +1,5 @@
 import axios, { type AxiosResponse } from 'axios'
-import type { HttpResponse } from '../../types/index.ts'
-import type { LoginResp as Token } from '@/types/login.ts'
+import type { HttpResponse, LoginResp as Token } from '@/types'
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,

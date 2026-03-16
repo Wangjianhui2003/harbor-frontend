@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { RTC_STATE, WEBRTC_MODE } from '@/utils/enums'
 import { getSelfInfo } from '@/api/user'
-import type { Friend, User } from '@/types/index'
+import type { Friend, User } from '@/types'
 import { showError } from '@/utils/message'
 import { defineStore } from 'pinia'
 import type { RTCStateType, WebRTCModeType } from '@/utils/enums'

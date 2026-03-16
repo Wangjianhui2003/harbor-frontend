@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import useChatStore from '@/stores/chatStore'
-import type { Chat } from '@/types/chat'
+import type { Chat } from '@/types'
 import ChatListItem from './ChatListItem.vue'
 
 const props = defineProps<{

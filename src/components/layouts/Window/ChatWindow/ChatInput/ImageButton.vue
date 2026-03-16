@@ -13,8 +13,7 @@ import HoverTip from '@/components/common/HoverTip.vue'
 import { useSendMessage } from '@/composable/useSendMessage'
 import { scrollToBottom } from '@/utils/dom'
 import uploadFile from '@/api/file'
-import type { UploadImageResp, UploadVideoResp } from '@/types/file'
-import type { VideoContent } from '@/types/file'
+import type { UploadImageResp, UploadVideoResp, VideoContent } from '@/types'
 
 const { sendImageMessage, sendVideoMessage } = useSendMessage()
 

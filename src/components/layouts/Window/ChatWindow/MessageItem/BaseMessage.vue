@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
-import type { BaseMessage, ChatInfo, GroupMessage } from '@/types/chat'
+import type { BaseMessage, ChatInfo, GroupMember, GroupMessage, User } from '@/types'
 import { CHATINFO_TYPE, MESSAGE_STATUS, MESSAGE_TYPE } from '@/utils/enums'
 import { computed, ref, type Component } from 'vue'
 import TextMessage from './TextMessage.vue'
@@ -48,7 +48,6 @@ import { useSendMessage } from '@/composable/useSendMessage'
 import useChatStore from '@/stores/chatStore'
 import { useMessageRead } from '@/composable/useMessageRead'
 import useUserStore from '@/stores/userStore'
-import type { User, GroupMember } from '@/types'
 import useFriendStore from '@/stores/friendStore'
 import FileMessage from './FileMessage.vue'
 import VoiceMessage from './VoiceMessage.vue'

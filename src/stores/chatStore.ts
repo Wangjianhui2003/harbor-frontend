@@ -7,14 +7,16 @@ import type {
   BaseMessage,
   Chat,
   ChatInfo,
+  ChatsData,
+  Friend,
+  Group,
   GroupChat,
   GroupMessage,
   Message,
   PrivateMessage,
   TimeTipMessage,
-} from '@/types/chat.js'
-import type { ChatsData } from '@/types/chat'
-import type { Friend, Group, User } from '@/types/index.js'
+  User,
+} from '@/types'
 import { isScrollAtBottom, scrollToBottom } from '@/utils/dom.js'
 
 /* 为了加速拉取离线消息效率，拉取时消息暂时存储到cacheChats,等

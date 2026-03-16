@@ -7,7 +7,7 @@
  * - WebRTC SDP/ICE 信令处理
  */
 import { ref, computed, onUnmounted } from 'vue'
-import type { Friend } from '@/types'
+import type { Friend, PrivateMessage } from '@/types'
 import { WEBRTC_MODE } from '@/utils/enums'
 import WebRTC from '@/utils/webrtc'
 import IMCamera from '@/utils/camera'
@@ -16,7 +16,6 @@ import useWebRTCStore from '@/stores/webRTCStore'
 import useFriendStore from '@/stores/friendStore'
 import mitter from '@/event/mitt'
 import { RTC_EVENTS } from '@/event/rtc_events'
-import type { PrivateMessage } from '@/types/chat'
 
 // 语音通话状态
 export type VoiceCallState = 'IDLE' | 'CALLING' | 'INCOMING' | 'CONNECTING' | 'CHATTING'

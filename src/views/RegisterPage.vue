@@ -130,7 +130,7 @@
 <script setup lang="ts">
 import { register } from '@/api/user'
 import { useCaptcha } from '@/composable/useCaptcha'
-import type { RegisterReq } from '@/types/register'
+import type { RegisterReq } from '@/types'
 import { showError, showInfo, showSuccess } from '@/utils/message'
 import {
   Card,

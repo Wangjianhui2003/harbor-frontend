@@ -62,8 +62,16 @@ import useChatStore from '@/stores/chatStore'
 import useFriendStore from '@/stores/friendStore'
 import useGroupStore from '@/stores/groupStore'
 import useUserStore from '@/stores/userStore'
-import type { Friend, Group, User, WebSocketMessage } from '@/types'
-import type { ChatInfo, BaseMessage, GroupMessage, PrivateMessage } from '@/types/chat'
+import type {
+  BaseMessage,
+  ChatInfo,
+  Friend,
+  Group,
+  GroupMessage,
+  PrivateMessage,
+  User,
+  WebSocketMessage,
+} from '@/types'
 import checkMessageType from '@/utils/check-msgtype'
 import { ACCESS_TOKEN_KEY } from '@/utils/constant'
 import { CHATINFO_TYPE, CMD_TYPE, MESSAGE_TYPE, WEBSOCKET_CLOSE_CODE } from '@/utils/enums'

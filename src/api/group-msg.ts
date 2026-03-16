@@ -1,4 +1,4 @@
-import type { GroupMessageDTO } from '@/types/chat'
+import type { GroupMessageDTO } from '@/types'
 import http from './http/http'
 
 //发送群聊消息

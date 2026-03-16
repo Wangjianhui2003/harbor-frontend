@@ -1,4 +1,4 @@
-import type { PrivateMessageDTO } from '@/types/chat'
+import type { PrivateMessageDTO } from '@/types'
 import http from './http/http'
 
 //发送私聊消息

@@ -1,5 +1,5 @@
 import http from '@/api/http/http'
-import type { Group, GroupMember } from '../types'
+import type { Group, GroupMember } from '@/types'
 
 //群聊信息
 export interface GroupResult {

@@ -63,7 +63,7 @@ import useFriendStore from '@/stores/friendStore.ts'
 
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
 import { getUserInfo } from '@/api/user.ts'
-import type { Friend, User } from '@/types'
+import type { ChatInfo, Friend, User } from '@/types'
 import { storeToRefs } from 'pinia'
 import {
   Mail,
@@ -78,7 +78,6 @@ import {
   PenLine,
 } from 'lucide-vue-next'
 import useChatStore from '@/stores/chatStore.ts'
-import type { ChatInfo } from '@/types/chat.ts'
 import { CHATINFO_TYPE } from '@/utils/enums.ts'
 import { useRouter } from 'vue-router'
 import { findFriend } from '@/api/friend.ts'

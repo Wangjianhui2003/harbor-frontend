@@ -5,13 +5,13 @@ import { sendPrivateMessage } from '@/api/private-msg'
 import { sendGroupMessage } from '@/api/group-msg'
 import { MESSAGE_TYPE, MESSAGE_STATUS, CHATINFO_TYPE } from '@/utils/enums'
 import type {
-  PrivateMessage,
-  GroupMessage,
-  PrivateMessageDTO,
-  GroupMessageDTO,
-  ChatInfo,
   BaseMessage,
-} from '@/types/chat'
+  ChatInfo,
+  GroupMessageDTO,
+  GroupMessage,
+  PrivateMessage,
+  PrivateMessageDTO,
+} from '@/types'
 import type { MessageType } from '@/utils/enums'
 
 export interface SendMessageOptions {

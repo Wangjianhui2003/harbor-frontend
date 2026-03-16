@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { getFriendList } from '@/api/friend'
 import { getUserOnlineStatus } from '@/api/user'
 import { TERMINAL_TYPE } from '@/utils/enums'
-import type { Friend, OnlineTerminal } from '@/types/index.js'
+import type { Friend, OnlineTerminal } from '@/types'
 import { defineStore } from 'pinia'
 
 const useFriendStore = defineStore('friendStore', () => {

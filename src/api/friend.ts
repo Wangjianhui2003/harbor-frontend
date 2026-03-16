@@ -1,5 +1,5 @@
 import http from '@/api/http/http'
-import type { Friend } from '../types'
+import type { Friend } from '@/types'
 
 /**
  * 添加好友

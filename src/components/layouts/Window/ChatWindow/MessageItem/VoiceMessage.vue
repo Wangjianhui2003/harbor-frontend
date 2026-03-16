@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseMessage } from '@/types/chat'
+import type { BaseMessage } from '@/types'
 import { useCached } from '@/composable/useCached'
 import { toRef, computed } from 'vue'
 

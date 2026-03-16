@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { BaseMessage } from '@/types/chat'
+import type { BaseMessage } from '@/types'
 
 const props = defineProps<{ message: BaseMessage }>()
 </script>

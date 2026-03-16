@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TimeTipMessage } from '@/types/chat'
+import type { TimeTipMessage } from '@/types'
 import { toTimeText } from '@/utils/date'
 import { computed } from 'vue'
 import { Badge } from '@/components/ui/badge'

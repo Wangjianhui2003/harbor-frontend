@@ -136,8 +136,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import useChatStore from '@/stores/chatStore'
 import useGroupStore from '@/stores/groupStore'
-import type { Group, GroupMember, User } from '@/types'
-import type { ChatInfo } from '@/types/chat'
+import type { ChatInfo, Group, GroupMember, User } from '@/types'
 import { CHATINFO_TYPE } from '@/utils/enums'
 import {
   Clock,

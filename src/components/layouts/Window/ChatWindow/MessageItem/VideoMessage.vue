@@ -49,10 +49,9 @@
 
 <script setup lang="ts">
 import { ref, toRef, computed } from 'vue'
-import type { BaseMessage } from '@/types/chat'
+import type { BaseMessage, VideoContent } from '@/types'
 import { useCached } from '@/composable/useCached'
 import { Play } from 'lucide-vue-next'
-import type { VideoContent } from '@/types/file'
 
 // 视频显示的最大尺寸限制
 const MAX_WIDTH = 320

@@ -5,7 +5,7 @@ import ChatPage from '@/views/ChatPage.vue'
 import ChatList from '@/components/layouts/AsideList/ChatList/ChatList.vue'
 import useChatStore from '@/stores/chatStore'
 import { CHATINFO_TYPE } from '@/utils/enums'
-import type { ChatsData } from '@/types/chat'
+import type { ChatsData } from '@/types'
 
 describe('ChatPage', () => {
   beforeEach(() => {

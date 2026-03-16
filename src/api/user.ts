@@ -1,6 +1,12 @@
-import type { CaptchaResp, HttpResponse, OnlineTerminal, User } from '@/types/index'
-import type { RegisterReq } from '@/types/register'
-import type { LoginData, LoginResp } from '@/types/login.ts'
+import type {
+  CaptchaResp,
+  HttpResponse,
+  LoginData,
+  LoginResp,
+  OnlineTerminal,
+  RegisterReq,
+  User,
+} from '@/types'
 import http from './http/http.ts'
 
 const login = async (loginData: LoginData): Promise<LoginResp> => {

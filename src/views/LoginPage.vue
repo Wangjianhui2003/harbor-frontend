@@ -122,7 +122,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { login } from '@/api/user'
 import { useCaptcha } from '@/composable/useCaptcha'
-import type { LoginData } from '@/types/login'
+import type { LoginData } from '@/types'
 import { setCookie } from '@/utils/cookie-utils'
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '@/utils/constant'
 import { TERMINAL_TYPE } from '@/utils/enums'

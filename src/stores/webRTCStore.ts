@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { loadWebRTCConfig } from '@/api/webrtc'
-import type { WebRTCConfig } from '@/types/index'
+import type { WebRTCConfig } from '@/types'
 /**
  * 和webRTC相关的状态
  */

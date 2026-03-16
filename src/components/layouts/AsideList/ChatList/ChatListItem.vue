@@ -55,7 +55,7 @@
 import { computed } from 'vue'
 import { Item, ItemContent } from '@/components/ui/item'
 import useChatStore from '@/stores/chatStore'
-import type { Chat, ChatInfo } from '@/types/chat'
+import type { Chat, ChatInfo } from '@/types'
 import BaseAvatar from '@/components/common/BaseAvatar.vue'
 import { Badge } from '@/components/ui/badge'
 import { CHATINFO_TYPE } from '@/utils/enums'
